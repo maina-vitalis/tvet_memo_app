@@ -7,33 +7,39 @@ import {
   useStyleContext,
   type VariantProps,
 } from '@gluestack-ui/utils/nativewind-utils';
-import { cssInterop } from 'nativewind';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { PrimitiveIcon, UIIcon } from '@gluestack-ui/core/icon/creator';
+import { UIIcon } from '@gluestack-ui/core/icon/creator';
+import { withUniwind } from 'uniwind';
 
 const SCOPE = 'BUTTON';
 
 const Root = withStyleContext(Pressable, SCOPE);
+
+const StyledUIIcon = withUniwind(UIIcon, {
+  height: {
+    fromClassName: 'heightClassName',
+    styleProperty: 'height',
+  },
+  width: {
+    fromClassName: 'widthClassName',
+    styleProperty: 'width',
+  },
+  fill: {
+    fromClassName: 'fillClassName',
+    styleProperty: 'accentColor',
+  },
+  stroke: {
+    fromClassName: 'strokeClassName',
+    styleProperty: 'accentColor',
+  },
+});
 
 const UIButton = createButton({
   Root: Root,
   Text,
   Group: View,
   Spinner: ActivityIndicator,
-  Icon: UIIcon,
-});
-
-cssInterop(PrimitiveIcon, {
-  className: {
-    target: 'style',
-    nativeStyleToProp: {
-      height: true,
-      width: true,
-      fill: true,
-      color: 'classNameColor',
-      stroke: true,
-    },
-  },
+  Icon: StyledUIIcon,
 });
 
 const buttonStyle = tva({
