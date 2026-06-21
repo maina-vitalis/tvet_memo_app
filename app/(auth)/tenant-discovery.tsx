@@ -193,8 +193,8 @@ export default function TenantDiscoveryScreen() {
               ) : null}
 
               <Button
-                action="primary"
-                variant="solid"
+                // action="primary"
+                variant="outline"
                 size="lg"
                 isDisabled={!canContinue}
                 onPress={handleContinue}
@@ -205,8 +205,7 @@ export default function TenantDiscoveryScreen() {
                 </ButtonText>
                 <ButtonIcon
                   as={MaterialIcons}
-                  name="filter"
-                  size="md"
+                  size="icon"
                   className="text-typography-0"
                 />
               </Button>

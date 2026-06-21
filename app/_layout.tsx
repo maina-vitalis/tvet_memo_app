@@ -1,14 +1,14 @@
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import "react-native-reanimated";
 import {
   SafeAreaListener,
   SafeAreaProvider,
-} from 'react-native-safe-area-context';
-import { Uniwind } from 'uniwind';
+} from "react-native-safe-area-context";
+import { Uniwind } from "uniwind";
 
-import '@/global.css';
-import { GluestackUIProvider } from '@/src/components/ui/gluestack-ui-provider';
+import "@/global.css";
+import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 
 export default function RootLayout() {
   return (
@@ -18,9 +18,11 @@ export default function RootLayout() {
           Uniwind.updateInsets(insets);
         }}
       >
-        <GluestackUIProvider mode="system">
+        <GluestackUIProvider mode="light">
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="(auth)" />
           </Stack>
           <StatusBar style="auto" />
         </GluestackUIProvider>
