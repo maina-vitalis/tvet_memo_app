@@ -1,29 +1,26 @@
-import { useState } from "react";
-
 import { Avatar, AvatarImage } from "@/src/components/ui/avatar";
 import { Badge, BadgeIcon, BadgeText } from "@/src/components/ui/badge";
 import { Box } from "@/src/components/ui/box";
 import { Card } from "@/src/components/ui/card";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import {
-  AlertCircleIcon,
-  CheckCircleIcon,
-  GripVerticalIcon,
-  MessageCircleIcon,
-  RepeatIcon,
-  SearchIcon,
-} from "@/src/components/ui/icon";
 import { Image } from "@/src/components/ui/image";
 import { Input, InputField, InputSlot } from "@/src/components/ui/input";
 import { Pressable } from "@/src/components/ui/pressable";
 import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import {
+  AlertCircle,
+  CheckCircle,
+  GripVertical,
+  MessageCircle,
+  RefreshCcw,
+  Search,
+} from "lucide-react-native";
+import { useState } from "react";
 
-const INSTITUTION_LOGO =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCDZTfbDGLcrCdFCngtyxhhOzBQvtff7hWDFGzTsM-bGOBYPQQuh0wkWoz5my7CxV29kNut6j-5jFNdhzn6x55ZLuQ4GmtL_CbovXK_OmchK7LocPF7PCpFyB9zGQfYueXCLrCCjRMEDKu5JIqXXd2T_dv2O5Uf0yJrwVAqIQqt98s1PIr8HFBxHrdxO-wO9hd-H5_XncIJVYOO5_vA9Uk5ckB6LF1_Pg7iA-_2oZOpMGHIG0BuV8Ib-9ccTtIw1v-NC0oCcj_3hXPS";
-
+const INSTITUTION_LOGO = "./../../src/assets/images/icon.png";
 type MemoTag = {
   label: string;
   tone: "primary" | "destructive" | "muted";
@@ -106,7 +103,7 @@ function MemoTagBadge({ tag }: { tag: MemoTag }) {
     <Badge className={`rounded px-2 py-1 ${toneClassName}`}>
       {tag.showWarning ? (
         <BadgeIcon
-          as={AlertCircleIcon}
+          as={AlertCircle}
           size={16}
           className={`mr-1 ${textClassName}`}
         />
@@ -141,7 +138,7 @@ function MemoCard({ item }: { item: MemoItem }) {
             </Avatar>
           ) : (
             <Box className="h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <MessageCircleIcon className="h-[18px] w-[18px] text-muted-foreground" />
+              <MessageCircle className="h-4.5 w-4.5 text-muted-foreground" />
             </Box>
           )}
 
@@ -153,7 +150,7 @@ function MemoCard({ item }: { item: MemoItem }) {
           </VStack>
 
           {item.acknowledged ? (
-            <CheckCircleIcon className="h-[18px] w-[18px] text-primary" />
+            <CheckCircle className="h-4.5 w-4.5 text-primary" />
           ) : null}
         </HStack>
 
@@ -203,22 +200,22 @@ export default function FeedScreen() {
           </HStack>
 
           <Pressable className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted">
-            <RepeatIcon className="h-5 w-5 text-muted-foreground" />
+            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
           </Pressable>
         </HStack>
       </Box>
 
-      <HStack className="items-center justify-center gap-1 bg-accent px-4 py-2">
+      {/* <HStack className="items-center justify-center gap-1 bg-accent px-4 py-2">
         <CheckCircleIcon className="h-4 w-4 text-primary" />
         <Text className="text-xs text-muted-foreground">
           All synced • Just now
         </Text>
-      </HStack>
+      </HStack> */}
 
       <Box className="border-b border-border bg-background/95 px-4 py-4">
         <Input className="h-12 rounded-lg border-border bg-card shadow-sm">
           <InputSlot className="pl-3">
-            <SearchIcon className="h-[18px] w-[18px] text-muted-foreground" />
+            <Search className="h-4.5 w-4.5 text-muted-foreground" />
           </InputSlot>
           <InputField
             placeholder="Search memos, courses..."
@@ -228,7 +225,7 @@ export default function FeedScreen() {
           />
           <InputSlot className="pr-2">
             <Pressable className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted">
-              <GripVerticalIcon className="h-[18px] w-[18px] text-muted-foreground" />
+              <GripVertical className="h-4.5 w-4.5 text-muted-foreground" />
             </Pressable>
           </InputSlot>
         </Input>

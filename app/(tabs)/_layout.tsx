@@ -3,31 +3,35 @@ import { Tabs } from "expo-router";
 
 import { Box } from "@/src/components/ui/box";
 import { HStack } from "@/src/components/ui/hstack";
-import {
-  BellIcon,
-  CopyIcon,
-  GlobeIcon,
-  SettingsIcon,
-} from "@/src/components/ui/icon";
+
 import { Pressable } from "@/src/components/ui/pressable";
 import { Text } from "@/src/components/ui/text";
+import {
+  BellRing,
+  ChartLine,
+  LucideProps,
+  MessageSquare,
+  Settings,
+} from "lucide-react-native";
 
 type TabConfig = {
   name: string;
   label: string;
-  icon: typeof CopyIcon;
+  icon: React.ForwardRefExoticComponent<
+    LucideProps & React.RefAttributes<SVGSVGElement>
+  >;
 };
 
 const TAB_ITEMS: TabConfig[] = [
-  { name: "feed", label: "Feed", icon: CopyIcon },
-  { name: "alerts", label: "Alerts", icon: BellIcon },
-  { name: "analytics", label: "Analytics", icon: GlobeIcon },
-  { name: "settings", label: "Settings", icon: SettingsIcon },
+  { name: "feed", label: "Feed", icon: MessageSquare },
+  { name: "alerts", label: "Alerts", icon: BellRing },
+  { name: "analytics", label: "Analytics", icon: ChartLine },
+  { name: "settings", label: "Settings", icon: Settings },
 ];
 
 function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   return (
-    <Box className="border-t border-border bg-card shadow-lg md:hidden">
+    <Box className="border-t border-border bg-card shadow-lg md:hidden ">
       <HStack className="h-16 items-center justify-around px-1">
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
