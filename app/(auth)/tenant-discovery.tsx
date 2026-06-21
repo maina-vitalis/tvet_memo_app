@@ -1,35 +1,31 @@
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { useCallback, useState } from 'react';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useCallback, useState } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Box } from '@/src/components/ui/box';
-import {
-  Button,
-  ButtonIcon,
-  ButtonText,
-} from '@/src/components/ui/button';
-import { HStack } from '@/src/components/ui/hstack';
-import { Input, InputField, InputSlot } from '@/src/components/ui/input';
-import { Link, LinkText } from '@/src/components/ui/link';
-import { Pressable } from '@/src/components/ui/pressable';
-import { Spinner } from '@/src/components/ui/spinner';
-import { Text } from '@/src/components/ui/text';
-import { VStack } from '@/src/components/ui/vstack';
+import { Box } from "@/src/components/ui/box";
+import { Button, ButtonIcon, ButtonText } from "@/src/components/ui/button";
+import { HStack } from "@/src/components/ui/hstack";
+import { Input, InputField, InputSlot } from "@/src/components/ui/input";
+import { Link, LinkText } from "@/src/components/ui/link";
+import { Pressable } from "@/src/components/ui/pressable";
+import { Spinner } from "@/src/components/ui/spinner";
+import { Text } from "@/src/components/ui/text";
+import { VStack } from "@/src/components/ui/vstack";
 
-type DiscoveryMode = 'email' | 'shortcode';
+type DiscoveryMode = "email" | "shortcode";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function isInputValid(mode: DiscoveryMode, value: string) {
   const trimmed = value.trim();
 
-  if (mode === 'email') {
+  if (mode === "email") {
     return EMAIL_PATTERN.test(trimmed);
   }
 
@@ -37,8 +33,8 @@ function isInputValid(mode: DiscoveryMode, value: string) {
 }
 
 export default function TenantDiscoveryScreen() {
-  const [mode, setMode] = useState<DiscoveryMode>('email');
-  const [inputValue, setInputValue] = useState('');
+  const [mode, setMode] = useState<DiscoveryMode>("email");
+  const [inputValue, setInputValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [toggleWidth, setToggleWidth] = useState(0);
 
@@ -55,10 +51,13 @@ export default function TenantDiscoveryScreen() {
       }
 
       setMode(nextMode);
-      setInputValue('');
-      sliderOffset.value = withTiming(nextMode === 'email' ? 0 : toggleWidth / 2, {
-        duration: 300,
-      });
+      setInputValue("");
+      sliderOffset.value = withTiming(
+        nextMode === "email" ? 0 : toggleWidth / 2,
+        {
+          duration: 300,
+        },
+      );
     },
     [mode, sliderOffset, toggleWidth],
   );
@@ -78,20 +77,24 @@ export default function TenantDiscoveryScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background-50">
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         className="flex-1"
       >
         <Box className="absolute inset-0 overflow-hidden">
-          <Box className="absolute -top-[20%] -left-[10%] h-[50%] w-[50%] rounded-full bg-primary-100 opacity-30" />
-          <Box className="absolute top-[60%] -right-[10%] h-[60%] w-[40%] rounded-full bg-background-200 opacity-40" />
+          <Box className="absolute top-[-20%] left-[-10%] h-[50%] w-[50%] rounded-full bg-primary-100 opacity-30" />
+          <Box className="absolute top-[60%] right-[-10%] h-[60%] w-[40%] rounded-full bg-background-200 opacity-40" />
         </Box>
 
         <VStack className="z-10 flex-1 justify-center px-4 pb-8 md:px-6">
           <VStack className="mb-8 items-center">
             <Box className="mb-6 h-16 w-16 items-center justify-center rounded-xl border border-outline-100 bg-background-0 shadow-sm">
-              <MaterialIcons name="account-balance" size={30} color="rgb(26 54 93)" />
+              <MaterialIcons
+                name="account-balance"
+                size={30}
+                color="rgb(26 54 93)"
+              />
             </Box>
-            <Text className="text-center text-2xl font-bold leading-[30px] text-primary-700 md:text-[28px] md:leading-[34px]">
+            <Text className="text-center text-2xl font-bold leading-7.5 text-primary-700 md:text-[28px] md:leading-8.5">
               Welcome — let&apos;s find your institution.
             </Text>
           </VStack>
@@ -102,7 +105,7 @@ export default function TenantDiscoveryScreen() {
               onLayout={(event) => {
                 const width = event.nativeEvent.layout.width - 8;
                 setToggleWidth(width);
-                sliderOffset.value = mode === 'email' ? 0 : width / 2;
+                sliderOffset.value = mode === "email" ? 0 : width / 2;
               }}
             >
               {toggleWidth > 0 ? (
@@ -110,11 +113,11 @@ export default function TenantDiscoveryScreen() {
                   style={[
                     sliderStyle,
                     {
-                      position: 'absolute',
+                      position: "absolute",
                       top: 4,
                       left: 4,
                       width: toggleWidth / 2,
-                      height: '100%',
+                      height: "100%",
                     },
                   ]}
                   className="rounded-md bg-background-0 shadow-sm"
@@ -123,28 +126,28 @@ export default function TenantDiscoveryScreen() {
 
               <HStack>
                 <Pressable
-                  onPress={() => switchMode('email')}
+                  onPress={() => switchMode("email")}
                   className="flex-1 items-center py-2"
                 >
                   <Text
                     className={
-                      mode === 'email'
-                        ? 'text-sm font-semibold text-primary-700'
-                        : 'text-sm font-semibold text-typography-500'
+                      mode === "email"
+                        ? "text-sm font-semibold text-primary-700"
+                        : "text-sm font-semibold text-typography-500"
                     }
                   >
                     Email
                   </Text>
                 </Pressable>
                 <Pressable
-                  onPress={() => switchMode('shortcode')}
+                  onPress={() => switchMode("shortcode")}
                   className="flex-1 items-center py-2"
                 >
                   <Text
                     className={
-                      mode === 'shortcode'
-                        ? 'text-sm font-semibold text-primary-700'
-                        : 'text-sm font-semibold text-typography-500'
+                      mode === "shortcode"
+                        ? "text-sm font-semibold text-primary-700"
+                        : "text-sm font-semibold text-typography-500"
                     }
                   >
                     Shortcode
@@ -154,14 +157,10 @@ export default function TenantDiscoveryScreen() {
             </Box>
 
             <VStack space="sm">
-              <Input
-                variant="outline"
-                size="lg"
-                className="rounded-lg border-outline-200 bg-background-50 data-[focus=true]:border-primary-700"
-              >
+              <Input className="rounded-lg border-outline-200 bg-background-50 data-[focus=true]:border-primary-700">
                 <InputSlot className="pl-4">
                   <MaterialIcons
-                    name={mode === 'email' ? 'mail-outline' : 'sell'}
+                    name={mode === "email" ? "mail-outline" : "sell"}
                     size={22}
                     color="rgb(100 116 139)"
                   />
@@ -170,11 +169,9 @@ export default function TenantDiscoveryScreen() {
                   autoCapitalize="none"
                   autoComplete="off"
                   autoCorrect={false}
-                  keyboardType={mode === 'email' ? 'email-address' : 'default'}
+                  keyboardType={mode === "email" ? "email-address" : "default"}
                   placeholder={
-                    mode === 'email'
-                      ? 'you@institution.ac.ke'
-                      : 'e.g. KMTC-NRB'
+                    mode === "email" ? "you@institution.ac.ke" : "e.g. KMTC-NRB"
                   }
                   value={inputValue}
                   onChangeText={setInputValue}
@@ -208,8 +205,8 @@ export default function TenantDiscoveryScreen() {
                 </ButtonText>
                 <ButtonIcon
                   as={MaterialIcons}
-                  name="arrow-forward"
-                  size={16}
+                  name="filter"
+                  size="md"
                   className="text-typography-0"
                 />
               </Button>
