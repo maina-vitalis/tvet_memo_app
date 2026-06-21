@@ -1,279 +1,115 @@
 @import 'tailwindcss';
 @import 'uniwind';
-
-@source './app';
-@source './src';
-
-@theme static {
-  --color-typography-white: #ffffff;
-  --color-typography-gray: #718096;
-  --color-typography-black: #11233d;
-  --color-background-light: #f5f7fa;
-  --color-background-dark: #0c192e;
-}
-
+/* ─── UniWind theme variants ─────────────────────────────────────
+   Switched at runtime via Uniwind.setTheme('light' | 'dark' | 'system').
+   Uses :where(.dark, .dark *) selectors so that:
+     • Web:    selector matches html.dark directly, no nesting issues
+     • Native: ProcessorBuilder recognises :where(.dark) → theme-scoped vars  */
 @layer theme {
-  :root {
-    @variant light {
-      --color-background-0: rgb(255 255 255);
-      --color-background-100: rgb(237 242 247);
-      --color-background-200: rgb(226 232 240);
-      --color-background-300: rgb(203 213 225);
-      --color-background-400: rgb(160 174 192);
-      --color-background-50: rgb(245 247 250);
-      --color-background-500: rgb(113 128 150);
-      --color-background-600: rgb(74 85 104);
-      --color-background-700: rgb(51 65 85);
-      --color-background-800: rgb(45 55 72);
-      --color-background-900: rgb(30 41 59);
-      --color-background-950: rgb(15 23 42);
-      --color-background-error: rgb(254 215 215);
-      --color-background-info: rgb(232 240 251);
-      --color-background-muted: rgb(245 247 250);
-      --color-background-success: rgb(237 252 242);
-      --color-background-warning: rgb(255 235 213);
-      --color-error-0: rgb(255 245 245);
-      --color-error-100: rgb(254 215 215);
-      --color-error-200: rgb(254 178 178);
-      --color-error-300: rgb(252 129 129);
-      --color-error-400: rgb(245 101 101);
-      --color-error-50: rgb(254 235 235);
-      --color-error-500: rgb(229 62 62);
-      --color-error-600: rgb(197 48 48);
-      --color-error-700: rgb(155 44 44);
-      --color-error-800: rgb(130 38 38);
-      --color-error-900: rgb(107 32 32);
-      --color-error-950: rgb(74 22 22);
-      --color-indicator-error: rgb(155 44 44);
-      --color-indicator-info: rgb(44 112 196);
-      --color-indicator-primary: rgb(29 66 138);
-      --color-info-0: rgb(236 248 254);
-      --color-info-100: rgb(190 227 248);
-      --color-info-200: rgb(144 205 244);
-      --color-info-300: rgb(99 179 237);
-      --color-info-400: rgb(66 153 225);
-      --color-info-50: rgb(232 240 251);
-      --color-info-500: rgb(44 112 196);
-      --color-info-600: rgb(29 66 138);
-      --color-info-700: rgb(26 54 93);
-      --color-info-800: rgb(21 44 76);
-      --color-info-900: rgb(17 35 61);
-      --color-info-950: rgb(12 25 46);
-      --color-outline-0: rgb(255 255 255);
-      --color-outline-100: rgb(226 232 240);
-      --color-outline-200: rgb(203 213 225);
-      --color-outline-300: rgb(160 174 192);
-      --color-outline-400: rgb(113 128 150);
-      --color-outline-50: rgb(248 250 252);
-      --color-outline-500: rgb(100 116 139);
-      --color-outline-600: rgb(74 85 104);
-      --color-outline-700: rgb(51 65 85);
-      --color-outline-800: rgb(45 55 72);
-      --color-outline-900: rgb(30 41 59);
-      --color-outline-950: rgb(15 23 42);
-      --color-primary-0: rgb(238 244 255);
-      --color-primary-100: rgb(190 227 248);
-      --color-primary-200: rgb(144 205 244);
-      --color-primary-300: rgb(99 179 237);
-      --color-primary-400: rgb(66 153 225);
-      --color-primary-50: rgb(232 240 251);
-      --color-primary-500: rgb(44 112 196);
-      --color-primary-600: rgb(29 66 138);
-      --color-primary-700: rgb(26 54 93);
-      --color-primary-800: rgb(21 44 76);
-      --color-primary-900: rgb(17 35 61);
-      --color-primary-950: rgb(12 25 46);
-      --color-secondary-0: rgb(255 255 255);
-      --color-secondary-100: rgb(245 247 250);
-      --color-secondary-200: rgb(226 232 240);
-      --color-secondary-300: rgb(203 213 225);
-      --color-secondary-400: rgb(160 174 192);
-      --color-secondary-50: rgb(248 250 252);
-      --color-secondary-500: rgb(113 128 150);
-      --color-secondary-600: rgb(74 85 104);
-      --color-secondary-700: rgb(51 65 85);
-      --color-secondary-800: rgb(45 55 72);
-      --color-secondary-900: rgb(30 41 59);
-      --color-secondary-950: rgb(15 23 42);
-      --color-success-0: rgb(228 255 244);
-      --color-success-100: rgb(162 241 192);
-      --color-success-200: rgb(132 211 162);
-      --color-success-300: rgb(102 181 132);
-      --color-success-400: rgb(72 151 102);
-      --color-success-50: rgb(202 255 232);
-      --color-success-500: rgb(52 131 82);
-      --color-success-600: rgb(42 121 72);
-      --color-success-700: rgb(32 111 62);
-      --color-success-800: rgb(22 101 52);
-      --color-success-900: rgb(20 83 45);
-      --color-success-950: rgb(27 50 36);
-      --color-tertiary-0: rgb(255 250 245);
-      --color-tertiary-100: rgb(255 235 213);
-      --color-tertiary-200: rgb(254 215 170);
-      --color-tertiary-300: rgb(253 180 116);
-      --color-tertiary-400: rgb(255 107 43);
-      --color-tertiary-50: rgb(255 245 235);
-      --color-tertiary-500: rgb(245 130 32);
-      --color-tertiary-600: rgb(221 115 25);
-      --color-tertiary-700: rgb(194 98 20);
-      --color-tertiary-800: rgb(156 78 18);
-      --color-tertiary-900: rgb(124 62 15);
-      --color-tertiary-950: rgb(84 42 10);
-      --color-typography-0: rgb(255 255 255);
-      --color-typography-100: rgb(226 232 240);
-      --color-typography-200: rgb(203 213 225);
-      --color-typography-300: rgb(160 174 192);
-      --color-typography-400: rgb(113 128 150);
-      --color-typography-50: rgb(248 250 252);
-      --color-typography-500: rgb(100 116 139);
-      --color-typography-600: rgb(74 85 104);
-      --color-typography-700: rgb(45 55 72);
-      --color-typography-800: rgb(26 54 93);
-      --color-typography-900: rgb(17 35 61);
-      --color-typography-950: rgb(12 25 46);
-      --color-warning-0: rgb(255 249 245);
-      --color-warning-100: rgb(255 231 213);
-      --color-warning-200: rgb(254 205 170);
-      --color-warning-300: rgb(253 173 116);
-      --color-warning-400: rgb(255 107 43);
-      --color-warning-50: rgb(255 244 236);
-      --color-warning-500: rgb(245 130 32);
-      --color-warning-600: rgb(221 115 25);
-      --color-warning-700: rgb(194 98 20);
-      --color-warning-800: rgb(156 78 18);
-      --color-warning-900: rgb(124 62 15);
-      --color-warning-950: rgb(84 42 10);
-    }
+  :where(.light, .light *) {
+    --primary: 23 23 23;
+    --primary-foreground: 250 250 250;
+    --card: 255 255 255;
+    --secondary: 245 245 245;
+    --secondary-foreground: 23 23 23;
+    --background: 255 255 255;
+    --popover: 255 255 255;
+    --popover-foreground: 10 10 10;
+    --muted: 245 245 245;
+    --muted-foreground: 115 115 115;
+    --destructive: 231 0 11;
+    --foreground: 10 10 10;
+    --border: 229 229 229;
+    --input: 229 229 229;
+    --ring: 212 212 212;
+    --accent: 247 247 247;
+    --accent-foreground: 52 52 52;
+  }
 
-    @variant dark {
-      --color-background-0: rgb(12 25 46);
-      --color-background-100: rgb(21 44 76);
-      --color-background-200: rgb(26 54 93);
-      --color-background-300: rgb(45 55 72);
-      --color-background-400: rgb(51 65 85);
-      --color-background-50: rgb(17 35 61);
-      --color-background-500: rgb(74 85 104);
-      --color-background-600: rgb(113 128 150);
-      --color-background-700: rgb(160 174 192);
-      --color-background-800: rgb(226 232 240);
-      --color-background-900: rgb(245 247 250);
-      --color-background-950: rgb(255 255 255);
-      --color-background-error: rgb(74 22 22);
-      --color-background-info: rgb(17 35 61);
-      --color-background-muted: rgb(21 44 76);
-      --color-background-success: rgb(27 50 36);
-      --color-background-warning: rgb(84 42 10);
-      --color-error-0: rgb(74 22 22);
-      --color-error-100: rgb(130 38 38);
-      --color-error-200: rgb(155 44 44);
-      --color-error-300: rgb(197 48 48);
-      --color-error-400: rgb(229 62 62);
-      --color-error-50: rgb(107 32 32);
-      --color-error-500: rgb(245 101 101);
-      --color-error-600: rgb(252 129 129);
-      --color-error-700: rgb(254 178 178);
-      --color-error-800: rgb(254 215 215);
-      --color-error-900: rgb(254 235 235);
-      --color-error-950: rgb(255 245 245);
-      --color-indicator-error: rgb(254 178 178);
-      --color-indicator-info: rgb(144 205 244);
-      --color-indicator-primary: rgb(190 227 248);
-      --color-info-0: rgb(12 25 46);
-      --color-info-100: rgb(21 44 76);
-      --color-info-200: rgb(26 54 93);
-      --color-info-300: rgb(29 66 138);
-      --color-info-400: rgb(44 112 196);
-      --color-info-50: rgb(17 35 61);
-      --color-info-500: rgb(66 153 225);
-      --color-info-600: rgb(99 179 237);
-      --color-info-700: rgb(144 205 244);
-      --color-info-800: rgb(190 227 248);
-      --color-info-900: rgb(232 240 251);
-      --color-info-950: rgb(236 248 254);
-      --color-outline-0: rgb(15 23 42);
-      --color-outline-100: rgb(45 55 72);
-      --color-outline-200: rgb(51 65 85);
-      --color-outline-300: rgb(74 85 104);
-      --color-outline-400: rgb(113 128 150);
-      --color-outline-50: rgb(30 41 59);
-      --color-outline-500: rgb(160 174 192);
-      --color-outline-600: rgb(203 213 225);
-      --color-outline-700: rgb(226 232 240);
-      --color-outline-800: rgb(245 247 250);
-      --color-outline-900: rgb(248 250 252);
-      --color-outline-950: rgb(255 255 255);
-      --color-primary-0: rgb(12 25 46);
-      --color-primary-100: rgb(21 44 76);
-      --color-primary-200: rgb(26 54 93);
-      --color-primary-300: rgb(29 66 138);
-      --color-primary-400: rgb(44 112 196);
-      --color-primary-50: rgb(17 35 61);
-      --color-primary-500: rgb(66 153 225);
-      --color-primary-600: rgb(99 179 237);
-      --color-primary-700: rgb(144 205 244);
-      --color-primary-800: rgb(190 227 248);
-      --color-primary-900: rgb(232 240 251);
-      --color-primary-950: rgb(238 244 255);
-      --color-secondary-0: rgb(15 23 42);
-      --color-secondary-100: rgb(45 55 72);
-      --color-secondary-200: rgb(51 65 85);
-      --color-secondary-300: rgb(74 85 104);
-      --color-secondary-400: rgb(113 128 150);
-      --color-secondary-50: rgb(30 41 59);
-      --color-secondary-500: rgb(160 174 192);
-      --color-secondary-600: rgb(203 213 225);
-      --color-secondary-700: rgb(226 232 240);
-      --color-secondary-800: rgb(245 247 250);
-      --color-secondary-900: rgb(248 250 252);
-      --color-secondary-950: rgb(255 255 255);
-      --color-success-0: rgb(27 50 36);
-      --color-success-100: rgb(22 101 52);
-      --color-success-200: rgb(32 111 62);
-      --color-success-300: rgb(42 121 72);
-      --color-success-400: rgb(52 131 82);
-      --color-success-50: rgb(20 83 45);
-      --color-success-500: rgb(72 151 102);
-      --color-success-600: rgb(102 181 132);
-      --color-success-700: rgb(132 211 162);
-      --color-success-800: rgb(162 241 192);
-      --color-success-900: rgb(202 255 232);
-      --color-success-950: rgb(228 255 244);
-      --color-tertiary-0: rgb(84 42 10);
-      --color-tertiary-100: rgb(156 78 18);
-      --color-tertiary-200: rgb(194 98 20);
-      --color-tertiary-300: rgb(221 115 25);
-      --color-tertiary-400: rgb(245 130 32);
-      --color-tertiary-50: rgb(124 62 15);
-      --color-tertiary-500: rgb(255 107 43);
-      --color-tertiary-600: rgb(253 180 116);
-      --color-tertiary-700: rgb(254 215 170);
-      --color-tertiary-800: rgb(255 235 213);
-      --color-tertiary-900: rgb(255 245 235);
-      --color-tertiary-950: rgb(255 250 245);
-      --color-typography-0: rgb(12 25 46);
-      --color-typography-100: rgb(45 55 72);
-      --color-typography-200: rgb(74 85 104);
-      --color-typography-300: rgb(113 128 150);
-      --color-typography-400: rgb(160 174 192);
-      --color-typography-50: rgb(17 35 61);
-      --color-typography-500: rgb(203 213 225);
-      --color-typography-600: rgb(226 232 240);
-      --color-typography-700: rgb(245 247 250);
-      --color-typography-800: rgb(248 250 252);
-      --color-typography-900: rgb(255 255 255);
-      --color-typography-950: rgb(255 255 255);
-      --color-warning-0: rgb(84 42 10);
-      --color-warning-100: rgb(156 78 18);
-      --color-warning-200: rgb(194 98 20);
-      --color-warning-300: rgb(221 115 25);
-      --color-warning-400: rgb(245 130 32);
-      --color-warning-50: rgb(124 62 15);
-      --color-warning-500: rgb(255 107 43);
-      --color-warning-600: rgb(253 173 116);
-      --color-warning-700: rgb(254 205 170);
-      --color-warning-800: rgb(255 231 213);
-      --color-warning-900: rgb(255 244 236);
-      --color-warning-950: rgb(255 249 245);
+  @media (prefers-color-scheme: light) {
+    :root:not(:where(.light, .light *, .dark, .dark *)) {
+      --primary: 23 23 23;
+      --primary-foreground: 250 250 250;
+      --card: 255 255 255;
+      --secondary: 245 245 245;
+      --secondary-foreground: 23 23 23;
+      --background: 255 255 255;
+      --popover: 255 255 255;
+      --popover-foreground: 10 10 10;
+      --muted: 245 245 245;
+      --muted-foreground: 115 115 115;
+      --destructive: 231 0 11;
+      --foreground: 10 10 10;
+      --border: 229 229 229;
+      --input: 229 229 229;
+      --ring: 212 212 212;
+      --accent: 247 247 247;
+      --accent-foreground: 52 52 52;
     }
   }
+
+  :where(.dark, .dark *) {
+    --primary: 255 245 245;
+    --primary-foreground: 23 23 23;
+    --card: 23 23 23;
+    --secondary: 38 38 38;
+    --secondary-foreground: 250 250 250;
+    --background: 10 10 10;
+    --popover: 23 23 23;
+    --popover-foreground: 250 250 250;
+    --muted: 38 38 38;
+    --muted-foreground: 161 161 161;
+    --destructive: 255 100 103;
+    --foreground: 250 250 250;
+    --border: 46 46 46;
+    --input: 46 46 46;
+    --accent: 38 38 38;
+    --accent-foreground: 250 250 250;
+    --ring: 115 115 115;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not(:where(.light, .light *, .dark, .dark *)) {
+      --primary: 255 245 245;
+      --primary-foreground: 23 23 23;
+      --card: 23 23 23;
+      --secondary: 38 38 38;
+      --secondary-foreground: 250 250 250;
+      --background: 10 10 10;
+      --popover: 23 23 23;
+      --popover-foreground: 250 250 250;
+      --muted: 38 38 38;
+      --muted-foreground: 161 161 161;
+      --destructive: 255 100 103;
+      --foreground: 250 250 250;
+      --border: 46 46 46;
+      --input: 46 46 46;
+      --accent: 38 38 38;
+      --accent-foreground: 250 250 250;
+      --ring: 115 115 115;
+    }
+  }
+}
+
+/* ─── Tailwind v4 color mappings ─────────────────────────────────
+   Maps the theme CSS variables above to Tailwind color utilities.
+   bg-primary → rgb(var(--primary)), text-foreground → rgb(var(--foreground)), etc. */
+@theme inline {
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-card: rgb(var(--card));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-background: rgb(var(--background));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-foreground: rgb(var(--foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
 }
