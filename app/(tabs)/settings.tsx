@@ -6,6 +6,7 @@ import {
   Info,
   KeyRound,
   LogOut,
+  Moon,
   Pencil,
   RefreshCcw,
   ScanFace,
@@ -29,6 +30,7 @@ import { Switch } from "@/src/components/ui/switch";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useAuth } from "@/src/lib/auth-context";
+import { useTheme } from "@/src/lib/theme-context";
 
 const PROFILE_AVATAR_URI =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuABQZaAwedUgXA5VgbCkwYf_G84rE21w_hOJSspZrwsWSwJ74b0blOw41di6I6SRospLCEsde9WWJiWGJujyBdSmO6xgEb8SFI6tlHumbaacAGPYlS08iQDF1LEo14AT4vhBTm4iZauzKebPquhlW6omgL9NODXe_TodVLowJIW3DgONw5qrWlT3LkBUxOpFeVJAZzKCxygbHV8EME0TeEjJ2BPg_gOi-6JIEjynYCh9if22rHy6g1V1OVUTsko0BwwDPlwpjqJSlu2";
@@ -117,6 +119,7 @@ function SettingsRow({
 
 export default function SettingsScreen() {
   const { institution, clearInstitution } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
 
   const institutionName =
@@ -239,6 +242,18 @@ export default function SettingsScreen() {
           </SettingsSection>
 
           <SettingsSection title="App Settings">
+            <SettingsRow
+              icon={<Moon className="h-5 w-5 text-primary" />}
+              title="Dark Mode"
+              subtitle={isDarkMode ? "Dark theme enabled" : "Light theme enabled"}
+              trailing={
+                <Switch
+                  value={isDarkMode}
+                  onValueChange={toggleDarkMode}
+                />
+              }
+              showDivider
+            />
             <SettingsRow
               icon={<Bell className="h-5 w-5 text-primary" />}
               title="Push Notifications"
