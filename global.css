@@ -112,4 +112,10 @@
   --color-ring: rgb(var(--ring));
   --color-accent: rgb(var(--accent));
   --color-accent-foreground: rgb(var(--accent-foreground));
+
+  --font-regular: "Inter_400Regular";
+  --font-medium: "Inter_500Medium";
+  --font-semibold: "Inter_600SemiBold";
+  --font-bold: "Inter_700Bold";
+  --font-extrabold: "Inter_800ExtraBold";
 }

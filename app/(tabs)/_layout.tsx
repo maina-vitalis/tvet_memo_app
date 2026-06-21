@@ -54,21 +54,19 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
                 }
               }}
               className={`items-center justify-center rounded-xl px-4 py-1 active:scale-95 ${
-                isFocused ? "bg-primary" : "data-[active=true]:bg-muted"
+                isFocused ? "" : "data-[active=true]:bg-muted"
               }`}
             >
               <IconComponent
                 className={`h-4.5 w-4.5 ${
                   isFocused
-                    ? "text-primary-foreground"
+                    ? "text-primary-foreground "
                     : "text-muted-foreground"
                 }`}
               />
               <Text
                 className={`mt-1 text-xs ${
-                  isFocused
-                    ? "font-medium text-primary-foreground"
-                    : "text-muted-foreground"
+                  isFocused ? "font-bold" : "text-muted-foreground"
                 }`}
               >
                 {tab.label}

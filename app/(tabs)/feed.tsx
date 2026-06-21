@@ -19,6 +19,7 @@ import {
   Search,
 } from "lucide-react-native";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const INSTITUTION_LOGO = "./../../src/assets/images/icon.png";
 type MemoTag = {
@@ -143,7 +144,7 @@ function MemoCard({ item }: { item: MemoItem }) {
           )}
 
           <VStack className="flex-1">
-            <Text className="text-sm font-semibold text-foreground">
+            <Text className="text-sm font-bold text-foreground">
               {item.author}
             </Text>
             <Text className="text-xs text-muted-foreground">{item.meta}</Text>
@@ -155,9 +156,7 @@ function MemoCard({ item }: { item: MemoItem }) {
         </HStack>
 
         {item.titleEmphasis === "headline" ? (
-          <Heading size="md" className="mb-2 pr-6 font-semibold text-primary">
-            {item.title}
-          </Heading>
+          <Heading className="font-semibold">{item.title}</Heading>
         ) : (
           <Text className="mb-2 text-sm font-semibold text-foreground">
             {item.title}
@@ -182,64 +181,66 @@ export default function FeedScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <Box className="flex-1 bg-background">
-      <Box className="border-b border-border bg-card px-4 py-2 shadow-sm">
-        <HStack className="items-center justify-between">
-          <HStack className="items-center gap-2">
-            <Image
-              source={{ uri: INSTITUTION_LOGO }}
-              className="h-8 w-8 rounded-full"
-              accessibilityLabel="Institution logo"
-            />
-            <Heading
-              size="md"
-              className="font-bold tracking-tight text-primary"
-            >
-              TVET Connect
-            </Heading>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Box className="flex-1">
+        <Box className="border-b border-border bg-card px-4 py-2 shadow-sm">
+          <HStack className="items-center justify-between">
+            <HStack className="items-center gap-2">
+              <Image
+                source={{ uri: INSTITUTION_LOGO }}
+                className="h-8 w-8 rounded-full"
+                accessibilityLabel="Institution logo"
+              />
+              <Heading
+                size="md"
+                className=" font-regular tracking-tight text-primary"
+              >
+                TVET Connect
+              </Heading>
+            </HStack>
+
+            <Pressable className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted">
+              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
+            </Pressable>
           </HStack>
+        </Box>
 
-          <Pressable className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted">
-            <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-          </Pressable>
-        </HStack>
-      </Box>
-
-      {/* <HStack className="items-center justify-center gap-1 bg-accent px-4 py-2">
+        {/* <HStack className="items-center justify-center gap-1 bg-accent px-4 py-2">
         <CheckCircleIcon className="h-4 w-4 text-primary" />
         <Text className="text-xs text-muted-foreground">
           All synced • Just now
         </Text>
       </HStack> */}
 
-      <Box className="border-b border-border bg-background/95 px-4 py-4">
-        <Input className="h-12 rounded-lg border-border bg-card shadow-sm">
-          <InputSlot className="pl-3">
-            <Search className="h-4.5 w-4.5 text-muted-foreground" />
-          </InputSlot>
-          <InputField
-            placeholder="Search memos, courses..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            className="px-2 text-sm text-foreground"
-          />
-          <InputSlot className="pr-2">
-            <Pressable className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted">
-              <GripVertical className="h-4.5 w-4.5 text-muted-foreground" />
-            </Pressable>
-          </InputSlot>
-        </Input>
-      </Box>
+        <Box className="border-b border-border bg-background/95 px-4 py-4">
+          <Input className="h-12 rounded-lg border-border bg-card shadow-sm">
+            <InputSlot className="pl-3">
+              <Search className="h-4.5 w-4.5 text-muted-foreground" />
+            </InputSlot>
+            <InputField
+              placeholder="Search memos, courses..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              className="px-2 text-sm text-foreground"
+            />
+            <InputSlot className="pr-2">
+              <Pressable className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted">
+                <GripVertical className="h-4.5 w-4.5 text-muted-foreground" />
+              </Pressable>
+            </InputSlot>
+          </Input>
+        </Box>
 
-      <ScrollView
-        className="flex-1"
-        contentContainerClassName="gap-4 px-4 pb-6 pt-4"
-        showsVerticalScrollIndicator={false}
-      >
-        {FEED_ITEMS.map((item) => (
-          <MemoCard key={item.id} item={item} />
-        ))}
-      </ScrollView>
-    </Box>
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-4 px-4 pb-6 pt-4"
+          showsVerticalScrollIndicator={false}
+        >
+          {FEED_ITEMS.map((item) => (
+            <MemoCard key={item.id} item={item} />
+          ))}
+        </ScrollView>
+      </Box>
+    </SafeAreaView>
   );
 }
