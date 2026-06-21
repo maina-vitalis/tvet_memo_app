@@ -38,6 +38,7 @@ export default function TenantDiscoveryScreen() {
   const [mode, setMode] = useState<DiscoveryMode>("email");
   const [inputValue, setInputValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [tabTriggerWidth, setTabTriggerWidth] = useState(0);
 
   const handleTabChange = (value: string) => {
     const nextMode = value as DiscoveryMode;
@@ -85,26 +86,49 @@ export default function TenantDiscoveryScreen() {
             </VStack>
 
             <Box className="rounded-xl border border-border bg-card p-6 shadow-sm">
-              <Tabs
-                value={mode}
-                onValueChange={handleTabChange}
-                variant="filled"
+              <Box
                 className="mb-6"
+                onLayout={(event) => {
+                  const width = event.nativeEvent.layout.width - 8;
+                  setTabTriggerWidth(width / 2);
+                }}
               >
-                <TabsList className="w-full">
-                  <TabsIndicator />
-                  <TabsTrigger value="email" className="flex-1 py-2">
-                    <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
-                      Email
-                    </TabsTriggerText>
-                  </TabsTrigger>
-                  <TabsTrigger value="shortcode" className="flex-1 py-2">
-                    <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
-                      Shortcode
-                    </TabsTriggerText>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+                <Tabs
+                  value={mode}
+                  onValueChange={handleTabChange}
+                  variant="filled"
+                >
+                  <TabsList className="w-full">
+                    <TabsIndicator />
+                    <TabsTrigger
+                      value="email"
+                      className="items-center justify-center py-2"
+                      style={
+                        tabTriggerWidth > 0
+                          ? { width: tabTriggerWidth }
+                          : undefined
+                      }
+                    >
+                      <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                        Email
+                      </TabsTriggerText>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="shortcode"
+                      className="items-center justify-center py-2"
+                      style={
+                        tabTriggerWidth > 0
+                          ? { width: tabTriggerWidth }
+                          : undefined
+                      }
+                    >
+                      <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                        Shortcode
+                      </TabsTriggerText>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </Box>
 
               <VStack space="sm">
                 <Input className="rounded-lg border-border bg-background data-[focus=true]:border-primary">
@@ -129,7 +153,7 @@ export default function TenantDiscoveryScreen() {
                     }
                     value={inputValue}
                     onChangeText={setInputValue}
-                    className="px-3 py-3 text-base text-foreground"
+                    className="px-3 py-3 text-base text-foreground placeholder:text-red-500"
                   />
                 </Input>
 

@@ -156,7 +156,9 @@ function MemoCard({ item }: { item: MemoItem }) {
         </HStack>
 
         {item.titleEmphasis === "headline" ? (
-          <Heading className="font-semibold">{item.title}</Heading>
+          <Heading size="md" className="mb-2 pr-6 font-semibold text-primary">
+            {item.title}
+          </Heading>
         ) : (
           <Text className="mb-2 text-sm font-semibold text-foreground">
             {item.title}

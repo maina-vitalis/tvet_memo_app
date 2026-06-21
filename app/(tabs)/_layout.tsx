@@ -31,7 +31,7 @@ const TAB_ITEMS: TabConfig[] = [
 
 function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   return (
-    <Box className="border-t border-border bg-card shadow-lg md:hidden ">
+    <Box className="border-t border-border bg-card shadow-lg md:hidden pb-4">
       <HStack className="h-16 items-center justify-around px-1">
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;
@@ -58,6 +58,8 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
               }`}
             >
               <IconComponent
+                strokeWidth={isFocused ? "2.5" : "1.5"}
+                stroke={isFocused ? "#234698" : "black"}
                 className={`h-4.5 w-4.5 ${
                   isFocused
                     ? "text-primary-foreground "
@@ -66,7 +68,7 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
               />
               <Text
                 className={`mt-1 text-xs ${
-                  isFocused ? "font-bold" : "text-muted-foreground"
+                  isFocused ? "font-bold text-primary" : ""
                 }`}
               >
                 {tab.label}
