@@ -2,8 +2,8 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import "@/global.css";
+import { GluestackUIProvider } from "@/src/components/ui/gluestack-ui-provider";
 
 export default function RootLayout() {
   return (
