@@ -1,11 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { Mail } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Box } from "@/src/components/ui/box";
@@ -31,10 +27,10 @@ function formatCountdown(seconds: number) {
 
 export default function VerifyEmailScreen() {
   const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
-  const { institution, completeEmailVerification } = useAuth();
+  const { institution } = useAuth();
   const email = emailParam?.trim() || "student@tvet.edu.za";
 
-  const inputRefs = useRef<Array<TextInput | null>>([]);
+  const inputRefs = useRef<(TextInput | null)[]>([]);
   const [digits, setDigits] = useState<string[]>(
     Array.from({ length: OTP_LENGTH }, () => ""),
   );
@@ -128,7 +124,6 @@ export default function VerifyEmailScreen() {
         return;
       }
 
-      completeEmailVerification();
       router.replace("/(tabs)/feed");
     } finally {
       setIsSubmitting(false);
@@ -143,7 +138,7 @@ export default function VerifyEmailScreen() {
           style={{ flex: 1 }}
         >
           <Box className="flex-1 items-center justify-center px-4 py-6">
-            <Card className="w-full max-w-[420px] items-center gap-0 border border-border p-6 shadow-sm">
+            <Card className="w-full max-w-105 items-center gap-0 border border-border p-6 shadow-sm">
               <Box className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-accent">
                 <Mail className="h-8 w-8 text-primary" />
               </Box>
