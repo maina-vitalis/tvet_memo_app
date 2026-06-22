@@ -22,9 +22,9 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function ThemedStatusBar() {
-  const { isDarkMode } = useTheme();
+  // const { isDarkMode } = useTheme();
 
-  return <StatusBar style={isDarkMode ? "light" : "dark"} />;
+  return <StatusBar style={"auto"} />;
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
