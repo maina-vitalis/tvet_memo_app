@@ -18,9 +18,13 @@ type AuthContextValue = {
   signIn: (
     admissionNumber: string,
     password: string,
-  ) => Promise<{ success: true } | { success: false; error: string }>;
+  ) => Promise<
+    | { success: true; mustResetPassword: boolean }
+    | { success: false; error: string }
+  >;
   clearInstitution: () => void;
   signOut: () => void;
+  completeEmailVerification: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -57,6 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(false);
   }, []);
 
+  const completeEmailVerification = useCallback(() => {
+    setIsAuthenticated(true);
+  }, []);
+
   const value = useMemo(
     () => ({
       institution,
@@ -65,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       clearInstitution,
       signOut,
+      completeEmailVerification,
     }),
     [
       institution,
@@ -73,6 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signIn,
       clearInstitution,
       signOut,
+      completeEmailVerification,
     ],
   );
 

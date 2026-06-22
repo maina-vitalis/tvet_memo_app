@@ -55,6 +55,15 @@ export default function TenantDiscoveryScreen() {
 
     try {
       await discoverInstitution(inputValue.trim(), mode);
+
+      if (mode === "email") {
+        router.push({
+          pathname: "/(auth)/verify-email",
+          params: { email: inputValue.trim() },
+        });
+        return;
+      }
+
       router.push("/(auth)/login-registry");
     } finally {
       setIsSearching(false);

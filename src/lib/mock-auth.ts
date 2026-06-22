@@ -16,6 +16,8 @@ export const MOCK_CREDENTIALS = {
   password: "NTI/2023/1234",
 };
 
+export const MOCK_OTP_CODE = "123456";
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -31,7 +33,10 @@ export async function mockDiscoverInstitution(
 export async function mockSignIn(
   admissionNumber: string,
   password: string,
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<
+  | { success: true; mustResetPassword: boolean }
+  | { success: false; error: string }
+> {
   await delay(800);
 
   const admission = admissionNumber.trim();
@@ -41,11 +46,31 @@ export async function mockSignIn(
     admission === MOCK_CREDENTIALS.admissionNumber &&
     secret === MOCK_CREDENTIALS.password
   ) {
-    return { success: true };
+    return { success: true, mustResetPassword: true };
   }
 
   return {
     success: false,
     error: "Invalid admission number or password.",
+  };
+}
+
+export async function mockResetPassword(_newPassword: string) {
+  await delay(900);
+}
+
+export async function mockVerifyEmailOtp(
+  _email: string,
+  otp: string,
+): Promise<{ success: true } | { success: false; error: string }> {
+  await delay(900);
+
+  if (otp === MOCK_OTP_CODE) {
+    return { success: true };
+  }
+
+  return {
+    success: false,
+    error: "Invalid verification code. Please try again.",
   };
 }

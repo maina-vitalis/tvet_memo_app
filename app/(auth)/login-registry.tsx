@@ -62,6 +62,11 @@ export default function LoginRegistryScreen() {
     setIsSubmitting(false);
 
     if (result.success) {
+      if (result.mustResetPassword) {
+        router.replace("/(auth)/reset-password");
+        return;
+      }
+
       router.replace("/(tabs)/feed");
       return;
     }
@@ -137,7 +142,7 @@ export default function LoginRegistryScreen() {
                   </FormControlLabel>
                   <Input className="h-11 rounded-lg border-border bg-card data-[focus=true]:border-primary">
                     <InputSlot className="pl-3">
-                      <Lock className="h-[18px] w-[18px] text-muted-foreground" />
+                      <Lock className="h-4.5 w-4.5 text-muted-foreground" />
                     </InputSlot>
                     <InputField
                       secureTextEntry={!showPassword}
@@ -152,9 +157,9 @@ export default function LoginRegistryScreen() {
                         className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted"
                       >
                         {showPassword ? (
-                          <EyeOff className="h-[18px] w-[18px] text-muted-foreground" />
+                          <EyeOff className="h-4.5 w-4.5 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-[18px] w-[18px] text-muted-foreground" />
+                          <Eye className="h-4.5 w-4.5 text-muted-foreground" />
                         )}
                       </Pressable>
                     </InputSlot>
