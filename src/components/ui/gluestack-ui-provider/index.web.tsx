@@ -4,18 +4,14 @@ import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
 import { ToastProvider } from '@gluestack-ui/core/toast/creator';
 import { Uniwind } from 'uniwind';
 
-export type ModeType = 'light' | 'dark' | 'system';
-
 export function GluestackUIProvider({
-  mode = 'light',
   ...props
 }: {
-  mode?: ModeType;
   children?: React.ReactNode;
 }) {
   useEffect(() => {
-    Uniwind.setTheme(mode);
-  }, [mode]);
+    Uniwind.setTheme('light');
+  }, []);
 
   return (
     <OverlayProvider>
