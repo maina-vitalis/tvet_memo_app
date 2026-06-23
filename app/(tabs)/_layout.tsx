@@ -1,5 +1,6 @@
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Box } from "@/src/components/ui/box";
 import { HStack } from "@/src/components/ui/hstack";
@@ -30,8 +31,13 @@ const TAB_ITEMS: TabConfig[] = [
 ];
 
 function BottomTabBar({ state, navigation }: BottomTabBarProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <Box className="border-t border-border bg-card shadow-lg md:hidden pb-4">
+    <Box
+      className="border-t border-border bg-card shadow-lg md:hidden"
+      style={{ paddingBottom: Math.max(insets.bottom, 8) }}
+    >
       <HStack className="h-16 items-center justify-around px-1">
         {state.routes.map((route, index) => {
           const isFocused = state.index === index;

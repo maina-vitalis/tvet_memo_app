@@ -225,7 +225,7 @@ export default function AlertsScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Box className="flex-1 bg-background">
         <ScreenHeader
           title="Alerts"

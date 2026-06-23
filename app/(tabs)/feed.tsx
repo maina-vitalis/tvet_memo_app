@@ -121,7 +121,7 @@ export default function FeedScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Box className="flex-1">
         <ScreenHeader
           title="Feed"
