@@ -7,7 +7,6 @@ import {
   KeyRound,
   LogOut,
   Pencil,
-  RefreshCcw,
   ScanFace,
   School,
   Shield,
@@ -28,6 +27,7 @@ import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Switch } from "@/src/components/ui/switch";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { ScreenHeader } from "@/src/components/screen-header";
 import { useAuth } from "@/src/lib/auth-context";
 
 const PROFILE_AVATAR_URI =
@@ -130,24 +130,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Box className="flex-1 bg-background">
-        <Box className="border-b border-border bg-card px-4 py-2 shadow-sm">
-          <HStack className="items-center justify-between">
-            <HStack className="items-center gap-2">
-              <Box className="h-10 w-10 items-center justify-center rounded-full bg-muted">
-                <Text className="text-sm font-semibold text-primary">
-                  {MOCK_PROFILE.initials}
-                </Text>
-              </Box>
-              <Heading size="md" className="font-bold tracking-tight text-primary">
-                TVET Connect
-              </Heading>
-            </HStack>
-
-            <Pressable className="h-12 w-12 items-center justify-center rounded-full data-[active=true]:bg-muted">
-              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-            </Pressable>
-          </HStack>
-        </Box>
+        <ScreenHeader title="Settings" />
 
         <ScrollView
           className="flex-1"

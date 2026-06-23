@@ -79,13 +79,7 @@ function StrengthMeter({ metCount }: { metCount: number }) {
   );
 }
 
-function RequirementItem({
-  label,
-  met,
-}: {
-  label: string;
-  met: boolean;
-}) {
+function RequirementItem({ label, met }: { label: string; met: boolean }) {
   const Icon = met ? CheckCircle : Circle;
 
   return (
@@ -194,13 +188,15 @@ export default function ResetPasswordScreen() {
                     />
                     <InputSlot className="pr-2">
                       <Pressable
-                        onPress={() => setShowNewPassword((current) => !current)}
+                        onPress={() =>
+                          setShowNewPassword((current) => !current)
+                        }
                         className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted"
                       >
                         {showNewPassword ? (
-                          <EyeOff className="h-[18px] w-[18px] text-muted-foreground" />
+                          <EyeOff className="h-4.5 w-4.5 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-[18px] w-[18px] text-muted-foreground" />
+                          <Eye className="h-4.5 w-4.5 text-muted-foreground" />
                         )}
                       </Pressable>
                     </InputSlot>
@@ -253,9 +249,9 @@ export default function ResetPasswordScreen() {
                         className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted"
                       >
                         {showConfirmPassword ? (
-                          <EyeOff className="h-[18px] w-[18px] text-muted-foreground" />
+                          <EyeOff className="h-4.5 w-4.5 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-[18px] w-[18px] text-muted-foreground" />
+                          <Eye className="h-4.5 w-4.5 text-muted-foreground" />
                         )}
                       </Pressable>
                     </InputSlot>

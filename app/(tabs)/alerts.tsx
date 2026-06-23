@@ -1,12 +1,11 @@
 import { Box } from "@/src/components/ui/box";
 import { Card } from "@/src/components/ui/card";
-import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
-import { Image } from "@/src/components/ui/image";
 import { Pressable } from "@/src/components/ui/pressable";
 import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { ScreenHeader } from "@/src/components/screen-header";
 import {
   AlertTriangle,
   Calendar,
@@ -17,8 +16,6 @@ import {
 import { useMemo, useState } from "react";
 import type { LucideIcon } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const INSTITUTION_LOGO = "./../../src/assets/images/icon.png";
 
 type AlertIconTone = "error" | "primary" | "muted";
 
@@ -230,44 +227,11 @@ export default function AlertsScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Box className="flex-1 bg-background">
-        <Box className="border-b border-border bg-card px-4 py-2 shadow-sm">
-          <HStack className="items-center justify-between">
-            <HStack className="items-center gap-2">
-              <Image
-                source={{ uri: INSTITUTION_LOGO }}
-                className="h-8 w-8 rounded-full"
-                accessibilityLabel="Institution logo"
-              />
-              <Heading
-                size="md"
-                className="font-regular tracking-tight text-primary"
-              >
-                TVET Connect
-              </Heading>
-            </HStack>
-
-            <Pressable className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted">
-              <RefreshCcw className="h-5 w-5 text-muted-foreground" />
-            </Pressable>
-          </HStack>
-        </Box>
-
-        <ScrollView
-          className="flex-1"
-          contentContainerClassName="gap-6 px-4 pb-6 pt-4 md:px-6 md:pt-6"
-          showsVerticalScrollIndicator={false}
-        >
-          <HStack className="items-end justify-between border-b border-border pb-2">
-            <VStack className="flex-1 pr-4">
-              <Heading size="lg" className="text-primary">
-                Alerts
-              </Heading>
-              <Text className="mt-1 text-sm text-muted-foreground">
-                Stay updated on your courses and system notices.
-              </Text>
-            </VStack>
-
-            {hasUnread ? (
+        <ScreenHeader
+          title="Alerts"
+          subtitle="Stay updated on your courses and system notices."
+          rightAction={
+            hasUnread ? (
               <Pressable
                 onPress={handleMarkAllRead}
                 className="rounded-lg px-2 py-1 data-[active=true]:bg-accent"
@@ -276,9 +240,19 @@ export default function AlertsScreen() {
                   Mark all read
                 </Text>
               </Pressable>
-            ) : null}
-          </HStack>
+            ) : (
+              <Pressable className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted">
+                <RefreshCcw className="h-5 w-5 text-muted-foreground" />
+              </Pressable>
+            )
+          }
+        />
 
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="gap-6 px-4 pb-6 pt-4 md:px-6 md:pt-6"
+          showsVerticalScrollIndicator={false}
+        >
           {groups.map((group, index) => (
             <Box key={group.label} className={index > 0 ? "mt-1" : ""}>
               <AlertGroupSection
