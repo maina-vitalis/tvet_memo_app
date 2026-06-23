@@ -13,6 +13,8 @@ import { AuthProvider } from "@/src/lib/auth-context";
 import { ThemeProvider } from "@/src/lib/theme-context";
 import { useEffect } from "react";
 
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
   const [loaded] = useAppfonts();
 

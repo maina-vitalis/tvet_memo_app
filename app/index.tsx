@@ -1,13 +1,5 @@
-import { Redirect } from "expo-router";
-
-import { useAuth } from "@/src/lib/auth-context";
+import { BootloaderScreen } from "@/src/components/bootloader-screen";
 
 export default function HomeScreen() {
-  const { isAuthenticated } = useAuth();
-
-  if (isAuthenticated) {
-    return <Redirect href="/(tabs)/feed" />;
-  }
-
-  return <Redirect href="/(auth)/tenant-discovery" />;
+  return <BootloaderScreen />;
 }
