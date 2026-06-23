@@ -2,6 +2,7 @@ import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ScreenStatusBar } from "@/src/components/screen-status-bar";
 import { Box } from "@/src/components/ui/box";
 import { HStack } from "@/src/components/ui/hstack";
 
@@ -89,16 +90,19 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 
 export default function TabsLayout() {
   return (
-    <Tabs
-      tabBar={(props) => <BottomTabBar {...props} />}
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen name="feed" options={{ title: "Feed" }} />
-      <Tabs.Screen name="alerts" options={{ title: "Alerts" }} />
-      <Tabs.Screen name="analytics" options={{ title: "Analytics" }} />
-      <Tabs.Screen name="settings" options={{ title: "Settings" }} />
-    </Tabs>
+    <>
+      <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
+      <Tabs
+        tabBar={(props) => <BottomTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Tabs.Screen name="feed" options={{ title: "Feed" }} />
+        <Tabs.Screen name="alerts" options={{ title: "Alerts" }} />
+        <Tabs.Screen name="analytics" options={{ title: "Analytics" }} />
+        <Tabs.Screen name="settings" options={{ title: "Settings" }} />
+      </Tabs>
+    </>
   );
 }

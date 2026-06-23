@@ -11,18 +11,11 @@ import "@/global.css";
 import { useAppfonts } from "@/src/hooks/useAppfonts";
 import { AuthProvider } from "@/src/lib/auth-context";
 import { ThemeProvider } from "@/src/lib/theme-context";
-import { useEffect } from "react";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const [loaded] = useAppfonts();
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
 
   if (!loaded) return null;
 
@@ -36,10 +29,34 @@ export default function RootLayout() {
         <ThemeProvider>
           <AuthProvider>
             <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="memo/[id]" />
+              <Stack.Screen
+                name="index"
+                options={{
+                  statusBarStyle: "light",
+                  statusBarBackgroundColor: "#1a365d",
+                }}
+              />
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  statusBarStyle: "dark",
+                  statusBarBackgroundColor: "#ffffff",
+                }}
+              />
+              <Stack.Screen
+                name="(auth)"
+                options={{
+                  statusBarStyle: "dark",
+                  statusBarBackgroundColor: "#ffffff",
+                }}
+              />
+              <Stack.Screen
+                name="memo/[id]"
+                options={{
+                  statusBarStyle: "dark",
+                  statusBarBackgroundColor: "#ffffff",
+                }}
+              />
             </Stack>
           </AuthProvider>
         </ThemeProvider>

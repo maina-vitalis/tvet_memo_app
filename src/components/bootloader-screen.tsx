@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { Lock } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import type { LayoutChangeEvent } from "react-native";
@@ -6,8 +7,6 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
-  withRepeat,
-  withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,9 +14,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Box } from "@/src/components/ui/box";
 import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
+import { Image } from "@/src/components/ui/image";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { ScreenStatusBar } from "@/src/components/screen-status-bar";
 import { useAuth } from "@/src/lib/auth-context";
+
+const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 
 type BootStage = {
   progress: number;
@@ -41,18 +44,10 @@ export function BootloaderScreen() {
   );
   const trackWidth = useSharedValue(0);
   const progress = useSharedValue(BOOT_STAGES[0].progress);
-  const pulse = useSharedValue(1);
 
   useEffect(() => {
-    pulse.value = withRepeat(
-      withSequence(
-        withTiming(0.88, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-      ),
-      -1,
-      false,
-    );
-  }, [pulse]);
+    SplashScreen.hideAsync().catch(() => {});
+  }, []);
 
   useEffect(() => {
     const timers = BOOT_STAGES.slice(1).map((stage) =>
@@ -78,10 +73,6 @@ export function BootloaderScreen() {
     };
   }, [isAuthenticated, progress]);
 
-  const brandStyle = useAnimatedStyle(() => ({
-    opacity: pulse.value,
-  }));
-
   const progressFillStyle = useAnimatedStyle(() => ({
     width: (trackWidth.value * progress.value) / 100,
   }));
@@ -92,39 +83,28 @@ export function BootloaderScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <ScreenStatusBar style="light" backgroundColor="#1a365d" />
       <Box className="flex-1 justify-between bg-[#1a365d] px-6 py-12">
         <Box className="flex-1" />
 
-        <Animated.View style={[{ flex: 1, width: "100%" }, brandStyle]}>
-          <Box className="flex-1 items-center justify-center">
-            <Box
-              className="mb-6 h-20 w-20 items-center justify-center rounded-2xl bg-white"
-              style={{
-                transform: [{ rotate: "45deg" }],
-                shadowColor: "#000000",
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 4 },
-                elevation: 8,
-              }}
-            >
-              <Box
-                className="h-10 w-10 rounded bg-secondary"
-                style={{ transform: [{ rotate: "-45deg" }] }}
-              />
-            </Box>
+        <Box className="w-full flex-1 items-center justify-center">
+          <Image
+            source={APP_LOGO}
+            size="xl"
+            className="mb-6 h-24 w-24"
+            accessibilityLabel="TVET Connect logo"
+          />
 
-            <Heading
-              size="xl"
-              className="text-center font-bold tracking-tight text-white"
-            >
-              TVET Connect
-            </Heading>
-            <Text className="mt-2 text-center text-sm text-[#adc7f7] opacity-80">
-              Institutional Data Portal
-            </Text>
-          </Box>
-        </Animated.View>
+          <Heading
+            size="xl"
+            className="text-center font-bold tracking-tight text-white"
+          >
+            TVET Connect
+          </Heading>
+          <Text className="mt-2 text-center text-sm text-[#adc7f7] opacity-80">
+            Institutional Data Portal
+          </Text>
+        </Box>
 
         <VStack className="w-full max-w-sm flex-1 justify-end self-center pb-8">
           <HStack className="mb-3 w-full items-center justify-between px-1">

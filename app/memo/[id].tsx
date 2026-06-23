@@ -8,6 +8,7 @@ import { Pressable } from "@/src/components/ui/pressable";
 import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { ScreenStatusBar } from "@/src/components/screen-status-bar";
 import { getMemoDetail, type MemoBodyBlock } from "@/src/lib/memo-data";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -120,6 +121,7 @@ export default function MemoDetailScreen() {
   if (!memo) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
+        <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Box className="flex-1 items-center justify-center bg-background px-6">
           <Text className="text-center text-muted-foreground">
             Memo not found.
@@ -142,6 +144,7 @@ export default function MemoDetailScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
       <Box className="flex-1 bg-background">
         <HStack className="items-center justify-between border-b border-border bg-card px-4 py-2 shadow-sm">
           <Pressable
