@@ -1,15 +1,13 @@
 import { router } from "expo-router";
 import {
   Check,
-  CheckCircle,
-  Circle,
   Eye,
   EyeOff,
   Lock,
   RefreshCw,
 } from "lucide-react-native";
 import { useMemo, useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Box } from "@/src/components/ui/box";
@@ -24,6 +22,7 @@ import { Heading } from "@/src/components/ui/heading";
 import { HStack } from "@/src/components/ui/hstack";
 import { Input, InputField, InputSlot } from "@/src/components/ui/input";
 import { Pressable } from "@/src/components/ui/pressable";
+import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useAuth } from "@/src/lib/auth-context";
@@ -32,7 +31,6 @@ import {
   getMetRequirementCount,
   getPasswordStrength,
   isPasswordValid,
-  PASSWORD_REQUIREMENTS,
 } from "@/src/lib/password-utils";
 
 const STRENGTH_LABELS = {
@@ -79,23 +77,6 @@ function StrengthMeter({ metCount }: { metCount: number }) {
   );
 }
 
-function RequirementItem({ label, met }: { label: string; met: boolean }) {
-  const Icon = met ? CheckCircle : Circle;
-
-  return (
-    <HStack className="items-center gap-2">
-      <Icon
-        className={`h-4 w-4 ${met ? "text-secondary" : "text-muted-foreground"}`}
-      />
-      <Text
-        className={`text-sm ${met ? "text-secondary" : "text-muted-foreground"}`}
-      >
-        {label}
-      </Text>
-    </HStack>
-  );
-}
-
 export default function ResetPasswordScreen() {
   const { institution } = useAuth();
   const [newPassword, setNewPassword] = useState("");
@@ -139,12 +120,15 @@ export default function ResetPasswordScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Box className="flex-1 bg-background">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={{ flex: 1 }}
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="px-4 py-6 pb-8"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+          showsVerticalScrollIndicator={false}
         >
-          <Box className="flex-1 items-center justify-center px-4 py-6">
-            <Card className="w-full max-w-md gap-0 overflow-hidden border border-border p-0 shadow-lg">
+          <Card className="w-full max-w-md gap-0 self-center overflow-hidden border border-border p-0 shadow-lg">
               <VStack className="items-center border-b border-border px-6 pb-4 pt-6">
                 <Box className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-accent">
                   <Lock className="h-8 w-8 text-primary" />
@@ -178,12 +162,7 @@ export default function ResetPasswordScreen() {
                       secureTextEntry={!showNewPassword}
                       placeholder="Enter new password"
                       value={newPassword}
-                      onChangeText={(value) => {
-                        setNewPassword(value);
-                        if (!isPasswordValid(value)) {
-                          setConfirmPassword("");
-                        }
-                      }}
+                      onChangeText={setNewPassword}
                       className="px-3 text-base text-foreground"
                     />
                     <InputSlot className="pr-2">
@@ -204,21 +183,10 @@ export default function ResetPasswordScreen() {
                 </FormControl>
 
                 <StrengthMeter metCount={metCount} />
-
-                <Box className="rounded-lg border border-border bg-accent p-4">
-                  <Text className="mb-2 text-xs font-medium uppercase tracking-wider text-foreground">
-                    Requirements
-                  </Text>
-                  <VStack className="gap-1">
-                    {PASSWORD_REQUIREMENTS.map((requirement) => (
-                      <RequirementItem
-                        key={requirement.key}
-                        label={requirement.label}
-                        met={requirement.test(newPassword)}
-                      />
-                    ))}
-                  </VStack>
-                </Box>
+                <Text className="text-xs text-muted-foreground">
+                  Use at least 8 characters with uppercase, a number, and a
+                  special character.
+                </Text>
 
                 <FormControl>
                   <FormControlLabel>
@@ -227,7 +195,7 @@ export default function ResetPasswordScreen() {
                     </FormControlLabelText>
                   </FormControlLabel>
                   <Input
-                    isDisabled={!passwordValid}
+                    isDisabled={newPassword.length === 0}
                     className={`h-12 rounded-lg border-border bg-card data-[focus=true]:border-primary ${
                       showMismatch ? "border-destructive" : ""
                     }`}
@@ -237,7 +205,7 @@ export default function ResetPasswordScreen() {
                       placeholder="Confirm new password"
                       value={confirmPassword}
                       onChangeText={setConfirmPassword}
-                      editable={passwordValid}
+                      editable={newPassword.length > 0}
                       className="px-3 text-base text-foreground"
                     />
                     <InputSlot className="pr-2">
@@ -245,7 +213,7 @@ export default function ResetPasswordScreen() {
                         onPress={() =>
                           setShowConfirmPassword((current) => !current)
                         }
-                        disabled={!passwordValid}
+                        disabled={newPassword.length === 0}
                         className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted"
                       >
                         {showConfirmPassword ? (
@@ -290,8 +258,7 @@ export default function ResetPasswordScreen() {
                 </Button>
               </Box>
             </Card>
-          </Box>
-        </KeyboardAvoidingView>
+        </ScrollView>
       </Box>
     </SafeAreaView>
   );
