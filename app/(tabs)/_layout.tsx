@@ -10,7 +10,7 @@ import { Pressable } from "@/src/components/ui/pressable";
 import { Text } from "@/src/components/ui/text";
 import {
   BellRing,
-  ChartLine,
+  Bookmark,
   LucideProps,
   MessageSquare,
   Settings,
@@ -27,7 +27,7 @@ type TabConfig = {
 const TAB_ITEMS: TabConfig[] = [
   { name: "feed", label: "Feed", icon: MessageSquare },
   { name: "alerts", label: "Alerts", icon: BellRing },
-  { name: "analytics", label: "Analytics", icon: ChartLine },
+  { name: "bookmarks", label: "Bookmarks", icon: Bookmark },
   { name: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -100,7 +100,7 @@ export default function TabsLayout() {
       >
         <Tabs.Screen name="feed" options={{ title: "Feed" }} />
         <Tabs.Screen name="alerts" options={{ title: "Alerts" }} />
-        <Tabs.Screen name="analytics" options={{ title: "Analytics" }} />
+        <Tabs.Screen name="bookmarks" options={{ title: "Bookmarks" }} />
         <Tabs.Screen name="settings" options={{ title: "Settings" }} />
       </Tabs>
     </>

@@ -39,6 +39,7 @@ export type MemoFeedItem = {
   avatarFallbackIcon?: "campaign";
   unread?: boolean;
   acknowledged?: boolean;
+  bookmarked?: boolean;
   titleEmphasis?: "headline" | "label";
 };
 
@@ -138,6 +139,7 @@ export const FEED_ITEMS: MemoFeedItem[] = [
     avatarUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAdoao7txQO7r2sVFWtY5AazrcuOdMEuQE7OyNXuCl3WN_SOJilGil9QvdBuxWbOpXQpxDN5D98ngYUs3VMKFpH_XS-ZYojtNFcJSm4JUWu0ja86R5Cj8kY4eBULsN3hPTE96WPHNyUPT3MqiBgZZECAUpnQrBibG1DKCT6oiZZ-xOyqBMTQk5kMO1NwPIuYKrGG9IyweZzNxQUpPaLFgWB3qnQvak0G7d4Dp76YNRu63FszFZBalmBZ31E4kWGbMt0-ZhiNv922SfH",
     unread: true,
+    bookmarked: true,
     titleEmphasis: "headline",
   },
   {
@@ -162,10 +164,15 @@ export const FEED_ITEMS: MemoFeedItem[] = [
     tags: [{ label: "Course Material", tone: "muted" }],
     avatarUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuASneBC6J4_qquzep4tXr_Bt7_BmqVAQXLYFlPG0gkv_DA0mm62M_Wh2U9ghNu2On7pmhX_NUL9zLXw3DE8BrNEVGMk_OXnKA49Xb1lASYGIpXBt5KXkmLC1ULWkzgOGDDmymX6USIb4iO931N-m9EUuklhV1ozZB9xavD6MikrJTAau9N_val8HGuprEZ3jQdDG5qn7iSiAhg10KnYKB0rVglFI4Ya2w24QGJetAvSSC__BvvPhUYwJNxebhgAYsQqmjxzJyd3CpuZ",
+    bookmarked: true,
     titleEmphasis: "label",
   },
 ];
 
 export function getMemoDetail(id: string): MemoDetail | undefined {
   return MEMO_DETAILS[id];
+}
+
+export function getBookmarkedFeedItems(): MemoFeedItem[] {
+  return FEED_ITEMS.filter((item) => item.bookmarked);
 }
