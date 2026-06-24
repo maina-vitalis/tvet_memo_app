@@ -1,12 +1,10 @@
 import { router } from "expo-router";
 import {
-  Check,
   Eye,
   EyeOff,
   Lock,
-  RefreshCw,
 } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,6 +23,7 @@ import { Pressable } from "@/src/components/ui/pressable";
 import { ScrollView } from "@/src/components/ui/scroll-view";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
+import { useKeyboardHeight } from "@/src/hooks/use-keyboard-height";
 import { useAuth } from "@/src/lib/auth-context";
 import { mockResetPassword } from "@/src/lib/mock-auth";
 import {
@@ -79,6 +78,8 @@ function StrengthMeter({ metCount }: { metCount: number }) {
 
 export default function ResetPasswordScreen() {
   const { institution } = useAuth();
+  const { isKeyboardVisible } = useKeyboardHeight();
+  const scrollRef = useRef<ScrollView>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -97,6 +98,24 @@ export default function ResetPasswordScreen() {
     confirmPassword.length > 0 && newPassword !== confirmPassword;
   const canSubmit =
     passwordValid && passwordsMatch && !isSubmitting && !isSuccess;
+
+  const scrollContentStyle = useMemo(
+    () => ({
+      flexGrow: 1,
+      justifyContent: isKeyboardVisible ? ("flex-start" as const) : ("center" as const),
+      paddingTop: isKeyboardVisible ? 16 : undefined,
+      paddingBottom: 32,
+    }),
+    [isKeyboardVisible],
+  );
+
+  const scrollConfirmIntoView = useCallback(() => {
+    const delay = Platform.OS === "ios" ? 300 : 100;
+
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, delay);
+  }, []);
 
   const handleSubmit = async () => {
     if (!canSubmit) {
@@ -121,14 +140,16 @@ export default function ResetPasswordScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <Box className="flex-1 bg-background">
         <ScrollView
+          ref={scrollRef}
           className="flex-1"
-          contentContainerClassName="px-4 py-6 pb-8"
+          contentContainerClassName="items-center px-4 py-6"
+          contentContainerStyle={scrollContentStyle}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
-          automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
+          automaticallyAdjustKeyboardInsets
           showsVerticalScrollIndicator={false}
         >
-          <Card className="w-full max-w-md gap-0 self-center overflow-hidden border border-border p-0 shadow-lg">
+          <Card className="w-full max-w-md gap-0 overflow-hidden border border-border p-0 shadow-lg">
               <VStack className="items-center border-b border-border px-6 pb-4 pt-6">
                 <Box className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-accent">
                   <Lock className="h-8 w-8 text-primary" />
@@ -182,12 +203,6 @@ export default function ResetPasswordScreen() {
                   </Input>
                 </FormControl>
 
-                <StrengthMeter metCount={metCount} />
-                <Text className="text-xs text-muted-foreground">
-                  Use at least 8 characters with uppercase, a number, and a
-                  special character.
-                </Text>
-
                 <FormControl>
                   <FormControlLabel>
                     <FormControlLabelText className="text-sm font-semibold">
@@ -205,6 +220,7 @@ export default function ResetPasswordScreen() {
                       placeholder="Confirm new password"
                       value={confirmPassword}
                       onChangeText={setConfirmPassword}
+                      onFocus={scrollConfirmIntoView}
                       editable={newPassword.length > 0}
                       className="px-3 text-base text-foreground"
                     />
@@ -233,29 +249,34 @@ export default function ResetPasswordScreen() {
               </VStack>
 
               <Box className="border-t border-border bg-background px-6 pb-6 pt-4">
-                <Button
-                  variant={isSuccess ? "secondary" : "default"}
-                  size="lg"
-                  isDisabled={!canSubmit}
-                  onPress={handleSubmit}
-                  className={`w-full rounded-lg shadow-sm ${
-                    isSuccess ? "bg-emerald-500" : ""
-                  }`}
-                >
-                  {isSubmitting ? <ButtonSpinner /> : null}
-                  {isSuccess ? (
-                    <Check className="h-5 w-5 text-white" />
-                  ) : (
-                    <RefreshCw className="h-5 w-5 text-primary-foreground" />
-                  )}
-                  <ButtonText
-                    className={`text-sm font-semibold ${
-                      isSuccess ? "text-white" : ""
+                <VStack className="gap-4">
+                  <VStack className="gap-1.5">
+                    <StrengthMeter metCount={metCount} />
+                    <Text className="text-xs text-muted-foreground">
+                      Use at least 8 characters with uppercase, a number, and a
+                      special character.
+                    </Text>
+                  </VStack>
+
+                  <Button
+                    variant={isSuccess ? "secondary" : "default"}
+                    size="lg"
+                    isDisabled={!canSubmit}
+                    onPress={handleSubmit}
+                    className={`w-full rounded-lg shadow-sm ${
+                      isSuccess ? "bg-emerald-500" : ""
                     }`}
                   >
-                    {isSuccess ? "Password Updated" : "Update Password"}
-                  </ButtonText>
-                </Button>
+                    {isSubmitting ? <ButtonSpinner /> : null}
+                    <ButtonText
+                      className={`text-sm font-semibold ${
+                        isSuccess ? "text-white" : ""
+                      }`}
+                    >
+                      {isSuccess ? "Password Updated" : "Update Password"}
+                    </ButtonText>
+                  </Button>
+                </VStack>
               </Box>
             </Card>
         </ScrollView>
