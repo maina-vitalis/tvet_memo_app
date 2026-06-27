@@ -25,7 +25,6 @@ import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useKeyboardHeight } from "@/src/hooks/use-keyboard-height";
 import { useAuth } from "@/src/lib/auth-context";
-import { mockResetPassword } from "@/src/lib/mock-auth";
 import {
   getMetRequirementCount,
   getPasswordStrength,
@@ -77,7 +76,7 @@ function StrengthMeter({ metCount }: { metCount: number }) {
 }
 
 export default function ResetPasswordScreen() {
-  const { institution } = useAuth();
+  const { institution, changePassword } = useAuth();
   const { isKeyboardVisible } = useKeyboardHeight();
   const scrollRef = useRef<ScrollView>(null);
   const [newPassword, setNewPassword] = useState("");
@@ -86,6 +85,7 @@ export default function ResetPasswordScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const metCount = useMemo(
     () => getMetRequirementCount(newPassword),
@@ -123,9 +123,16 @@ export default function ResetPasswordScreen() {
     }
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      await mockResetPassword(newPassword);
+      const result = await changePassword(newPassword);
+
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+
       setIsSuccess(true);
 
       setTimeout(() => {
@@ -250,13 +257,17 @@ export default function ResetPasswordScreen() {
 
               <Box className="border-t border-border bg-background px-6 pb-6 pt-4">
                 <VStack className="gap-4">
-                  <VStack className="gap-1.5">
+                  <VStack className="gap-4">
                     <StrengthMeter metCount={metCount} />
                     <Text className="text-xs text-muted-foreground">
                       Use at least 8 characters with uppercase, a number, and a
                       special character.
                     </Text>
                   </VStack>
+
+                  {error ? (
+                    <Text className="text-sm text-destructive">{error}</Text>
+                  ) : null}
 
                   <Button
                     variant={isSuccess ? "secondary" : "default"}

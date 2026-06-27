@@ -38,6 +38,7 @@ export default function TenantDiscoveryScreen() {
   const [mode, setMode] = useState<DiscoveryMode>("email");
   const [inputValue, setInputValue] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [tabTriggerWidth, setTabTriggerWidth] = useState(0);
 
   const handleTabChange = (value: string) => {
@@ -52,6 +53,7 @@ export default function TenantDiscoveryScreen() {
     }
 
     setIsSearching(true);
+    setError(null);
 
     try {
       await discoverInstitution(inputValue.trim(), mode);
@@ -65,6 +67,8 @@ export default function TenantDiscoveryScreen() {
       }
 
       router.push("/(auth)/login-registry");
+    } catch {
+      setError("Institution not found. Check your email domain or shortcode.");
     } finally {
       setIsSearching(false);
     }
@@ -169,6 +173,10 @@ export default function TenantDiscoveryScreen() {
                 <Text className="px-1 text-sm text-muted-foreground">
                   We&apos;ll detect your institution automatically.
                 </Text>
+
+                {error ? (
+                  <Text className="px-1 text-sm text-destructive">{error}</Text>
+                ) : null}
 
                 <Button
                   variant="default"

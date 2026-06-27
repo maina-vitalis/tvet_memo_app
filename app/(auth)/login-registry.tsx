@@ -27,7 +27,6 @@ import { Pressable } from "@/src/components/ui/pressable";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useAuth } from "@/src/lib/auth-context";
-import { MOCK_CREDENTIALS } from "@/src/lib/mock-auth";
 
 export default function LoginRegistryScreen() {
   const { institution, signIn, clearInstitution } = useAuth();
@@ -185,11 +184,6 @@ export default function LoginRegistryScreen() {
                     Sign In
                   </ButtonText>
                 </Button>
-
-                <Text className="text-center text-xs text-muted-foreground">
-                  Mock login: {MOCK_CREDENTIALS.admissionNumber} /{" "}
-                  {MOCK_CREDENTIALS.password}
-                </Text>
               </VStack>
 
               <Box className="mt-6 border-t border-border pt-4">

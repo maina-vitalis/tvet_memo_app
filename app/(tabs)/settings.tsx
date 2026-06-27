@@ -116,14 +116,14 @@ function SettingsRow({
 }
 
 export default function SettingsScreen() {
-  const { institution, clearInstitution } = useAuth();
+  const { institution, signOut } = useAuth();
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
 
   const institutionName =
     institution?.name ?? "Metro Technical Institute";
 
-  const handleLogout = () => {
-    clearInstitution();
+  const handleLogout = async () => {
+    await signOut();
     router.replace("/(auth)/tenant-discovery");
   };
 

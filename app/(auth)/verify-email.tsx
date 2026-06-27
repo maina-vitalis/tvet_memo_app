@@ -14,7 +14,6 @@ import { Pressable } from "@/src/components/ui/pressable";
 import { Text } from "@/src/components/ui/text";
 import { VStack } from "@/src/components/ui/vstack";
 import { useAuth } from "@/src/lib/auth-context";
-import { MOCK_OTP_CODE, mockVerifyEmailOtp } from "@/src/lib/mock-auth";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 45;
@@ -27,8 +26,8 @@ function formatCountdown(seconds: number) {
 
 export default function VerifyEmailScreen() {
   const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
-  const { institution } = useAuth();
-  const email = emailParam?.trim() || "student@tvet.edu.za";
+  const { institution, sendEmailVerification, verifyEmailOtp } = useAuth();
+  const email = emailParam?.trim() ?? "";
 
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const [digits, setDigits] = useState<string[]>(
@@ -36,10 +35,49 @@ export default function VerifyEmailScreen() {
   );
   const [countdown, setCountdown] = useState(RESEND_SECONDS);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const otpValue = useMemo(() => digits.join(""), [digits]);
-  const canSubmit = otpValue.length === OTP_LENGTH && !isSubmitting;
+  const canSubmit =
+    otpValue.length === OTP_LENGTH && !isSubmitting && email.length > 0;
+
+  useEffect(() => {
+    if (!institution) {
+      router.replace("/(auth)/tenant-discovery");
+    }
+  }, [institution]);
+
+  useEffect(() => {
+    if (!institution || !email) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const sendCode = async () => {
+      setIsSendingCode(true);
+      setError(null);
+
+      try {
+        await sendEmailVerification(email);
+      } catch {
+        if (!cancelled) {
+          setError("Could not send verification code. Please try again.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSendingCode(false);
+        }
+      }
+    };
+
+    void sendCode();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [email, institution, sendEmailVerification]);
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -97,8 +135,8 @@ export default function VerifyEmailScreen() {
     inputRefs.current[focusIndex]?.focus();
   }, []);
 
-  const handleResend = () => {
-    if (countdown > 0) {
+  const handleResend = async () => {
+    if (countdown > 0 || !email) {
       return;
     }
 
@@ -106,6 +144,12 @@ export default function VerifyEmailScreen() {
     setCountdown(RESEND_SECONDS);
     setError(null);
     inputRefs.current[0]?.focus();
+
+    try {
+      await sendEmailVerification(email);
+    } catch {
+      setError("Could not resend verification code. Please try again.");
+    }
   };
 
   const handleVerify = async () => {
@@ -117,7 +161,7 @@ export default function VerifyEmailScreen() {
     setError(null);
 
     try {
-      const result = await mockVerifyEmailOtp(email, otpValue);
+      const result = await verifyEmailOtp(email, otpValue);
 
       if (!result.success) {
         setError(result.error);
@@ -150,12 +194,15 @@ export default function VerifyEmailScreen() {
                 Verify your email
               </Heading>
 
-              <Text className="mb-8 text-center text-base text-muted-foreground">
-                We sent a 6-digit code to{"\n"}
-                <Text className="text-sm font-semibold text-foreground">
-                  {email}
+                <Text className="mb-8 text-center text-base text-muted-foreground">
+                  {isSendingCode
+                    ? "Sending a 6-digit code to"
+                    : "We sent a 6-digit code to"}
+                  {"\n"}
+                  <Text className="text-sm font-semibold text-foreground">
+                    {email || "your email"}
+                  </Text>
                 </Text>
-              </Text>
 
               {institution ? (
                 <Text className="-mt-6 mb-6 text-center text-xs font-medium text-primary">
@@ -225,10 +272,6 @@ export default function VerifyEmailScreen() {
                     Verify & Continue
                   </ButtonText>
                 </Button>
-
-                <Text className="mt-4 text-center text-xs text-muted-foreground">
-                  Mock code: {MOCK_OTP_CODE}
-                </Text>
               </VStack>
 
               <Link href="#" className="mt-4">
