@@ -54,19 +54,18 @@ export async function checkEmail(
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
 
-  const { data } = await apiClient.post<{ isFirstSetup?: boolean }>(
-    "/auth/login/email/check",
-    {
-      institutionId,
-      email: normalizedEmail,
-    },
-  );
+  const { data } = await apiClient.post<{
+    exists: boolean;
+    isFirstSetup: boolean;
+  }>("/auth/login/email/check", {
+    institutionId,
+    email: normalizedEmail,
+  });
 
-  if (typeof data.isFirstSetup !== "boolean") {
-    return { exists: false, isFirstSetup: false };
-  }
-
-  return { exists: true, isFirstSetup: data.isFirstSetup };
+  return {
+    exists: Boolean(data.exists),
+    isFirstSetup: Boolean(data.isFirstSetup),
+  };
 }
 
 export async function sendOtp(email: string): Promise<{ sentAt: number }> {
@@ -106,11 +105,13 @@ export async function verifyOtp(
 export async function setPassword(
   email: string,
   password: string,
+  otp?: string,
 ): Promise<AuthSession> {
   const { institutionId, verifiedOtp } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
+  const otpCode = otp ?? verifiedOtp;
 
-  if (!verifiedOtp) {
+  if (!otpCode) {
     throw new Error("Session expired. Please verify your email again.");
   }
 
@@ -119,7 +120,7 @@ export async function setPassword(
     {
       institutionId,
       email: normalizedEmail,
-      otp: verifiedOtp,
+      otp: otpCode,
       password,
       deviceType: "mobile",
     },

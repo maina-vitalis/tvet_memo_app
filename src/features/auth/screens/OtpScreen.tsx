@@ -8,7 +8,7 @@ import {
   useSendOtp,
   useVerifyOtp,
 } from "@/src/features/auth/hooks/useAuthMutations";
-import { AUTH_ROUTES } from "@/src/features/auth/navigation";
+import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   selectInstitution,
   selectOtpSentAt,
@@ -68,7 +68,7 @@ export default function OtpScreen() {
     }
 
     if (!email) {
-      router.replace(AUTH_ROUTES.login);
+      router.replace(AUTH_ROUTES.tenantDiscovery);
     }
   }, [institution, email]);
 
@@ -177,7 +177,10 @@ export default function OtpScreen() {
       return;
     }
 
-    router.replace(AUTH_ROUTES.login);
+    router.push({
+      pathname: AUTH_ROUTE_PATHS.password,
+      params: { mode: "setup" },
+    });
   };
 
   if (!institution || !email) {

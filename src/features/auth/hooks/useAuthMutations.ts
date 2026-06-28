@@ -17,9 +17,11 @@ import {
   setFirstSetup,
   setOtpSentAt,
   setPendingEmail,
+  setPendingPassword,
   setVerifiedOtp,
 } from "@/src/features/auth/store/authSlice";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
+import { getStore } from "@/src/shared/store/storeRef";
 import { useAppDispatch } from "@/src/shared/store/hooks";
 
 export function useCheckEmail() {
@@ -42,17 +44,9 @@ export function useCheckEmail() {
       dispatch(setFirstSetup(result.isFirstSetup));
       dispatch(setPendingEmail(normalizedEmail));
 
-      if (result.isFirstSetup) {
-        router.push({
-          pathname: AUTH_ROUTE_PATHS.verifyEmail,
-          params: { email: normalizedEmail },
-        });
-        return;
-      }
-
       router.push({
         pathname: AUTH_ROUTE_PATHS.password,
-        params: { mode: "login" },
+        params: { mode: result.isFirstSetup ? "setup" : "login" },
       });
     },
     onError: (mutationError) => {
@@ -108,8 +102,22 @@ export function useVerifyOtp() {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: ({ email, otp }: { email: string; otp: string }) =>
-      verifyOtp(email, otp),
+    mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
+      const result = await verifyOtp(email, otp);
+
+      if (!result.valid) {
+        return { ...result, session: null };
+      }
+
+      const pendingPassword = getStore().getState().auth.pendingPassword;
+
+      if (pendingPassword) {
+        const session = await setPassword(email, pendingPassword, otp);
+        return { ...result, session };
+      }
+
+      return { ...result, session: null };
+    },
     onMutate: () => setError(null),
     onSuccess: (result, variables) => {
       if (!result.valid) {
@@ -120,10 +128,21 @@ export function useVerifyOtp() {
       dispatch(setFirstSetup(result.isFirstSetup));
       dispatch(setVerifiedOtp(variables.otp));
 
-      const mode = result.isFirstSetup ? "setup" : "login";
+      if (result.session) {
+        dispatch(
+          setCredentials({
+            user: result.session.user,
+            token: result.session.token,
+            refreshToken: result.session.refreshToken,
+          }),
+        );
+        router.replace(AUTH_ROUTES.home);
+        return;
+      }
+
       router.push({
         pathname: AUTH_ROUTE_PATHS.password,
-        params: { mode },
+        params: { mode: "login" },
       });
     },
     onError: (mutationError) => {

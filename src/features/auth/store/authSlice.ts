@@ -59,6 +59,9 @@ const authSlice = createSlice({
     setPendingEmail: (state, action: PayloadAction<string | null>) => {
       state.pendingEmail = action.payload;
     },
+    setPendingPassword: (state, action: PayloadAction<string | null>) => {
+      state.pendingPassword = action.payload;
+    },
     setVerifiedOtp: (state, action: PayloadAction<string | null>) => {
       state.verifiedOtp = action.payload;
     },
@@ -124,6 +127,7 @@ export const {
   setFirstSetup,
   setOtpSentAt,
   setPendingEmail,
+  setPendingPassword,
   setVerifiedOtp,
   clearInstitution,
   logout,

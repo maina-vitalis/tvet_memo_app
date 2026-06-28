@@ -1,31 +1,34 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronLeft, Mail } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PasswordInput } from "@/src/features/auth/components/PasswordInput";
-import {
-  useLogin,
-  useSetPassword,
-} from "@/src/features/auth/hooks/useAuthMutations";
+import { useLogin } from "@/src/features/auth/hooks/useAuthMutations";
+import { setPendingPassword } from "@/src/features/auth/store/authSlice";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   selectInstitution,
   selectIsFirstSetup,
   selectPendingEmail,
-  selectVerifiedOtp,
 } from "@/src/features/auth/store/authSelectors";
 import { isPasswordValid } from "@/src/features/auth/hooks/usePasswordStrength";
 import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+} from "@/src/shared/components/ui/form-control";
 import { Heading } from "@/src/shared/components/ui/heading";
+import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Image } from "@/src/shared/components/ui/image";
 import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
-import { useAppSelector } from "@/src/shared/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
 
 const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 
@@ -35,17 +38,11 @@ export default function PasswordScreen() {
   const { mode: modeParam } = useLocalSearchParams<{ mode?: string }>();
   const mode: PasswordMode = modeParam === "login" ? "login" : "setup";
 
+  const dispatch = useAppDispatch();
   const institution = useAppSelector(selectInstitution);
   const isFirstSetup = useAppSelector(selectIsFirstSetup);
   const pendingEmail = useAppSelector(selectPendingEmail);
-  const verifiedOtp = useAppSelector(selectVerifiedOtp);
 
-  const {
-    setPassword,
-    isPending: isSettingPassword,
-    error: setupError,
-    resetError: resetSetupError,
-  } = useSetPassword();
   const {
     login,
     isPending: isLoggingIn,
@@ -58,8 +55,8 @@ export default function PasswordScreen() {
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isSetupMode = mode === "setup";
-  const isSubmitting = isSettingPassword || isLoggingIn;
-  const error = setupError ?? loginError ?? confirmError;
+  const isSubmitting = isLoggingIn;
+  const error = loginError ?? confirmError;
 
   useEffect(() => {
     if (!institution) {
@@ -68,17 +65,11 @@ export default function PasswordScreen() {
     }
 
     if (!pendingEmail) {
-      router.replace(AUTH_ROUTES.login);
-      return;
+      router.replace(
+        isSetupMode ? AUTH_ROUTES.tenantDiscovery : AUTH_ROUTES.login,
+      );
     }
-
-    if (isSetupMode && !verifiedOtp) {
-      router.replace({
-        pathname: AUTH_ROUTE_PATHS.verifyEmail,
-        params: { email: pendingEmail },
-      });
-    }
-  }, [institution, pendingEmail, verifiedOtp, isSetupMode]);
+  }, [institution, pendingEmail, isSetupMode]);
 
   const passwordError =
     password.length > 0 && !isPasswordValid(password)
@@ -97,7 +88,9 @@ export default function PasswordScreen() {
       return;
     }
 
-    router.replace(AUTH_ROUTES.login);
+    router.replace(
+      isSetupMode ? AUTH_ROUTES.tenantDiscovery : AUTH_ROUTES.login,
+    );
   };
 
   const handleSubmit = () => {
@@ -105,7 +98,6 @@ export default function PasswordScreen() {
       return;
     }
 
-    resetSetupError();
     resetLoginError();
     setConfirmError(null);
 
@@ -115,7 +107,11 @@ export default function PasswordScreen() {
         return;
       }
 
-      setPassword({ email: pendingEmail, password });
+      dispatch(setPendingPassword(password));
+      router.push({
+        pathname: AUTH_ROUTE_PATHS.verifyEmail,
+        params: { email: pendingEmail },
+      });
       return;
     }
 
@@ -173,11 +169,34 @@ export default function PasswordScreen() {
             </VStack>
 
             <VStack className="mt-8 gap-5">
+              {isSetupMode ? (
+                <FormControl>
+                  <FormControlLabel>
+                    <FormControlLabelText className="text-sm font-semibold">
+                      Email address
+                    </FormControlLabelText>
+                  </FormControlLabel>
+                  <Input
+                    isReadOnly
+                    className="h-12 rounded-xl border-border bg-muted/40"
+                  >
+                    <InputSlot className="pl-3">
+                      <Mail className="h-5 w-5 text-primary" />
+                    </InputSlot>
+                    <InputField
+                      value={pendingEmail}
+                      editable={false}
+                      accessibilityLabel="Email address"
+                      className="px-3 text-base text-foreground"
+                    />
+                  </Input>
+                </FormControl>
+              ) : null}
+
               <PasswordInput
                 value={password}
                 onChangeText={(value) => {
                   setPasswordValue(value);
-                  resetSetupError();
                   resetLoginError();
                 }}
                 placeholder="Password"
