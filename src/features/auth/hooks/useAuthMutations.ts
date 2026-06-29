@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 
 import {
   checkEmail,
+  completeAccountSetup,
   login,
   logout,
   sendOtp,
@@ -231,6 +232,42 @@ export function useLogin() {
   return {
     login: mutation.mutate,
     loginAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error,
+    resetError,
+  };
+}
+
+export function useAccountSetup() {
+  const dispatch = useAppDispatch();
+  const { showError } = useMutationToast();
+  const [error, setError] = useState<string | null>(null);
+
+  const mutation = useMutation({
+    mutationFn: ({ token, password }: { token: string; password: string }) =>
+      completeAccountSetup(token, password),
+    onMutate: () => setError(null),
+    onSuccess: (session) => {
+      dispatch(
+        setCredentials({
+          user: session.user,
+          token: session.token,
+          refreshToken: session.refreshToken,
+        }),
+      );
+      router.replace(AUTH_ROUTES.home);
+    },
+    onError: (mutationError) => {
+      const message = "Invalid or expired setup link. Please contact your administrator.";
+      setError(message);
+      showError(mutationError, message);
+    },
+  });
+
+  const resetError = useCallback(() => setError(null), []);
+
+  return {
+    completeAccountSetup: mutation.mutate,
     isPending: mutation.isPending,
     error,
     resetError,

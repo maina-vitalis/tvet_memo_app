@@ -188,6 +188,22 @@ export async function registryLogin(input: {
   return mapSession(data);
 }
 
+export async function completeAccountSetup(
+  token: string,
+  password: string,
+): Promise<AuthSession> {
+  const { data } = await apiClient.post<BackendLoginResponse>(
+    "/auth/setup/complete",
+    {
+      token,
+      password,
+      deviceType: "mobile",
+    },
+  );
+
+  return mapSession(data);
+}
+
 export async function changePassword(input: {
   currentPassword: string;
   newPassword: string;

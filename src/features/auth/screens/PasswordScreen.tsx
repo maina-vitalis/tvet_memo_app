@@ -5,7 +5,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PasswordInput } from "@/src/features/auth/components/PasswordInput";
-import { useLogin } from "@/src/features/auth/hooks/useAuthMutations";
+import { useAccountSetup, useLogin } from "@/src/features/auth/hooks/useAuthMutations";
 import { setPendingPassword } from "@/src/features/auth/store/authSlice";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
@@ -35,13 +35,21 @@ const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 type PasswordMode = "setup" | "login";
 
 export default function PasswordScreen() {
-  const { mode: modeParam } = useLocalSearchParams<{ mode?: string }>();
+  const { mode: modeParam, token, email: emailParam } = useLocalSearchParams<{ 
+    mode?: string; 
+    token?: string;
+    email?: string;
+  }>();
   const mode: PasswordMode = modeParam === "login" ? "login" : "setup";
 
   const dispatch = useAppDispatch();
   const institution = useAppSelector(selectInstitution);
   const isFirstSetup = useAppSelector(selectIsFirstSetup);
   const pendingEmail = useAppSelector(selectPendingEmail);
+
+  const emailFromParams = emailParam ? decodeURIComponent(emailParam) : null;
+  const setupToken = token || null;
+  const displayEmail = emailFromParams || pendingEmail;
 
   const {
     login,
@@ -50,15 +58,30 @@ export default function PasswordScreen() {
     resetError: resetLoginError,
   } = useLogin();
 
+  const {
+    completeAccountSetup,
+    isPending: isSettingUp,
+    error: setupError,
+    resetError: resetSetupError,
+  } = useAccountSetup();
+
   const [password, setPasswordValue] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isSetupMode = mode === "setup";
-  const isSubmitting = isLoggingIn;
-  const error = loginError ?? confirmError;
+  const isSubmitting = isLoggingIn || isSettingUp;
+  const error = loginError ?? setupError ?? confirmError;
+  const resetError = () => {
+    resetLoginError();
+    resetSetupError();
+  };
 
   useEffect(() => {
+    if (setupToken && emailFromParams) {
+      return;
+    }
+
     if (!institution) {
       router.replace(AUTH_ROUTES.tenantDiscovery);
       return;
@@ -69,7 +92,7 @@ export default function PasswordScreen() {
         isSetupMode ? AUTH_ROUTES.tenantDiscovery : AUTH_ROUTES.login,
       );
     }
-  }, [institution, pendingEmail, isSetupMode]);
+  }, [institution, pendingEmail, isSetupMode, setupToken, emailFromParams]);
 
   const passwordError =
     password.length > 0 && !isPasswordValid(password)
@@ -93,12 +116,12 @@ export default function PasswordScreen() {
     );
   };
 
-  const handleSubmit = () => {
-    if (!canSubmit || !pendingEmail) {
+  const handleSubmit = async () => {
+    if (!canSubmit || !displayEmail) {
       return;
     }
 
-    resetLoginError();
+    resetError();
     setConfirmError(null);
 
     if (isSetupMode) {
@@ -107,18 +130,23 @@ export default function PasswordScreen() {
         return;
       }
 
+      if (setupToken) {
+        await completeAccountSetup({ token: setupToken, password });
+        return;
+      }
+
       dispatch(setPendingPassword(password));
       router.push({
         pathname: AUTH_ROUTE_PATHS.verifyEmail,
-        params: { email: pendingEmail },
+        params: { email: displayEmail },
       });
       return;
     }
 
-    login({ email: pendingEmail, password });
+    login({ email: displayEmail, password });
   };
 
-  if (!institution || !pendingEmail) {
+  if (!displayEmail && !setupToken) {
     return null;
   }
 
@@ -184,7 +212,7 @@ export default function PasswordScreen() {
                       <Mail className="h-5 w-5 text-primary" />
                     </InputSlot>
                     <InputField
-                      value={pendingEmail}
+                      value={displayEmail}
                       editable={false}
                       accessibilityLabel="Email address"
                       className="px-3 text-base text-foreground"
