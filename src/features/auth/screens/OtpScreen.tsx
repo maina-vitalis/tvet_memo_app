@@ -15,7 +15,11 @@ import {
   selectPendingEmail,
 } from "@/src/features/auth/store/authSelectors";
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  Button,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/shared/components/ui/button";
 import { Heading } from "@/src/shared/components/ui/heading";
 import { HStack } from "@/src/shared/components/ui/hstack";
 import { Image } from "@/src/shared/components/ui/image";
@@ -38,8 +42,12 @@ export default function OtpScreen() {
   const institution = useAppSelector(selectInstitution);
   const pendingEmail = useAppSelector(selectPendingEmail);
   const otpSentAt = useAppSelector(selectOtpSentAt);
-  const { sendOtp, sendOtpAsync, isPending: isSendingCode, error: sendError } =
-    useSendOtp();
+  const {
+    sendOtp,
+    sendOtpAsync,
+    isPending: isSendingCode,
+    error: sendError,
+  } = useSendOtp();
   const {
     verifyOtp,
     isPending: isVerifying,
@@ -73,7 +81,12 @@ export default function OtpScreen() {
   }, [institution, email]);
 
   useEffect(() => {
-    if (!institution || !email || otpSentAt !== null || hasAttemptedInitialSend.current) {
+    if (
+      !institution ||
+      !email ||
+      otpSentAt !== null ||
+      hasAttemptedInitialSend.current
+    ) {
       return;
     }
 
@@ -103,20 +116,23 @@ export default function OtpScreen() {
     return () => clearInterval(timer);
   }, [countdown]);
 
-  const updateDigit = useCallback((index: number, value: string) => {
-    const sanitized = value.replace(/\D/g, "").slice(-1);
+  const updateDigit = useCallback(
+    (index: number, value: string) => {
+      const sanitized = value.replace(/\D/g, "").slice(-1);
 
-    setDigits((current) => {
-      const next = [...current];
-      next[index] = sanitized;
-      return next;
-    });
-    resetVerifyError();
+      setDigits((current) => {
+        const next = [...current];
+        next[index] = sanitized;
+        return next;
+      });
+      resetVerifyError();
 
-    if (sanitized && index < OTP_LENGTH - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  }, [resetVerifyError]);
+      if (sanitized && index < OTP_LENGTH - 1) {
+        inputRefs.current[index + 1]?.focus();
+      }
+    },
+    [resetVerifyError],
+  );
 
   const handleKeyPress = useCallback(
     (index: number, key: string) => {
@@ -127,25 +143,28 @@ export default function OtpScreen() {
     [digits],
   );
 
-  const handlePaste = useCallback((value: string) => {
-    const pasted = value.replace(/\D/g, "").slice(0, OTP_LENGTH);
+  const handlePaste = useCallback(
+    (value: string) => {
+      const pasted = value.replace(/\D/g, "").slice(0, OTP_LENGTH);
 
-    if (!pasted) {
-      return;
-    }
+      if (!pasted) {
+        return;
+      }
 
-    setDigits((current) => {
-      const next = [...current];
-      pasted.split("").forEach((char, index) => {
-        next[index] = char;
+      setDigits((current) => {
+        const next = [...current];
+        pasted.split("").forEach((char, index) => {
+          next[index] = char;
+        });
+        return next;
       });
-      return next;
-    });
-    resetVerifyError();
+      resetVerifyError();
 
-    const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1);
-    inputRefs.current[focusIndex]?.focus();
-  }, [resetVerifyError]);
+      const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+      inputRefs.current[focusIndex]?.focus();
+    },
+    [resetVerifyError],
+  );
 
   const handleResend = async () => {
     if (countdown > 0 || !email) {
@@ -211,7 +230,9 @@ export default function OtpScreen() {
                 className="mb-3 h-16 w-16"
                 accessibilityLabel="TVET Connect logo"
               />
-              <Text className="text-lg font-bold text-primary">TVET Connect</Text>
+              <Text className="text-lg font-bold text-primary">
+                TVET Connect
+              </Text>
             </VStack>
 
             <VStack className="mt-8 items-center gap-2">
@@ -219,7 +240,10 @@ export default function OtpScreen() {
                 <Mail className="h-7 w-7 text-primary" />
               </Box>
 
-              <Heading size="xl" className="text-center font-bold text-foreground">
+              <Heading
+                size="xl"
+                className="text-center font-bold text-foreground"
+              >
                 Verify your email
               </Heading>
 
