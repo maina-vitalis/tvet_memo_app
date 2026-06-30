@@ -1,4 +1,5 @@
-import axios, {
+import {
+  create,
   type AxiosError,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
@@ -10,6 +11,7 @@ import { logout } from "@/src/features/auth/store/authSlice";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { ApiError } from "@/src/shared/types";
 import { API_BASE_URL } from "@/src/shared/utils/config";
+import { isAxiosError } from "axios";
 
 type ApiEnvelope<T> = {
   success: boolean;
@@ -17,10 +19,7 @@ type ApiEnvelope<T> = {
   message?: string | string[];
 };
 
-function extractErrorMessage(
-  payload: unknown,
-  fallback: string,
-): string {
+function extractErrorMessage(payload: unknown, fallback: string): string {
   if (!payload || typeof payload !== "object") {
     return fallback;
   }
@@ -39,7 +38,7 @@ function extractErrorMessage(
 }
 
 export function toApiError(error: unknown, fallback: string): ApiError {
-  if (axios.isAxiosError(error)) {
+  if (isAxiosError(error)) {
     const axiosError = error as AxiosError<ApiEnvelope<unknown>>;
     const statusCode = axiosError.response?.status ?? 500;
 
@@ -59,7 +58,7 @@ export function toApiError(error: unknown, fallback: string): ApiError {
   return { message: fallback, statusCode: 500 };
 }
 
-const apiClient = axios.create({
+const apiClient = create({
   baseURL: API_BASE_URL,
   headers: {
     Accept: "application/json",

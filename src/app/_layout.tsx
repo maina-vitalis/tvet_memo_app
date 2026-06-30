@@ -37,31 +37,19 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen
                     name="index"
-                    options={{
-                      statusBarStyle: "light",
-                      statusBarBackgroundColor: "#1a365d",
-                    }}
+                    options={{ statusBarStyle: "light" }}
                   />
                   <Stack.Screen
                     name="(tabs)"
-                    options={{
-                      statusBarStyle: "dark",
-                      statusBarBackgroundColor: "#ffffff",
-                    }}
+                    options={{ statusBarStyle: "dark" }}
                   />
                   <Stack.Screen
                     name="(auth)"
-                    options={{
-                      statusBarStyle: "dark",
-                      statusBarBackgroundColor: "#ffffff",
-                    }}
+                    options={{ statusBarStyle: "dark" }}
                   />
                   <Stack.Screen
                     name="memo/[id]"
-                    options={{
-                      statusBarStyle: "dark",
-                      statusBarBackgroundColor: "#ffffff",
-                    }}
+                    options={{ statusBarStyle: "dark" }}
                   />
                 </Stack>
               </ThemeProvider>
