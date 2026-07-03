@@ -20,6 +20,7 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return toApiError(error, fallback).message;
 }
 
+//api call to discover the institution based on the email domain or shortcode
 export const discoverInstitution = createAsyncThunk<
   Institution,
   { query: string; mode: DiscoveryMode },
@@ -39,11 +40,13 @@ export const discoverInstitution = createAsyncThunk<
 
 type RegistryLoginResult = {
   accessToken: string;
+  refreshToken?: string; // [REFRESH TOKENS]
   user: User;
   mustChangePassword: boolean;
   pendingPassword: string | null;
 };
 
+//sign in using the registry (admission number and password)
 export const signInWithRegistry = createAsyncThunk<
   RegistryLoginResult,
   { admissionNumber: string; password: string },
@@ -60,8 +63,10 @@ export const signInWithRegistry = createAsyncThunk<
     try {
       const session = await registryLogin({ admissionNumber, password });
 
+      // [REFRESH TOKENS] session now contains refreshToken too (stored securely by api layer)
       return {
         accessToken: session.token,
+        refreshToken: session.refreshToken,
         user: session.user,
         mustChangePassword: session.user.mustChangePassword,
         pendingPassword: session.user.mustChangePassword ? password : null,
@@ -78,22 +83,27 @@ export const changePassword = createAsyncThunk<
   void,
   { newPassword: string },
   { state: AuthRootState; rejectValue: string }
->("auth/changePassword", async ({ newPassword }, { getState, rejectWithValue }) => {
-  const { token, pendingPassword } = getState().auth;
+>(
+  "auth/changePassword",
+  async ({ newPassword }, { getState, rejectWithValue }) => {
+    const { token, pendingPassword } = getState().auth;
 
-  if (!token || !pendingPassword) {
-    return rejectWithValue("Session expired. Please sign in again.");
-  }
+    if (!token || !pendingPassword) {
+      return rejectWithValue("Session expired. Please sign in again.");
+    }
 
-  try {
-    await changePasswordRequest({
-      currentPassword: pendingPassword,
-      newPassword,
-    });
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error, "Could not update password."));
-  }
-});
+    try {
+      await changePasswordRequest({
+        currentPassword: pendingPassword,
+        newPassword,
+      });
+    } catch (error) {
+      return rejectWithValue(
+        getErrorMessage(error, "Could not update password."),
+      );
+    }
+  },
+);
 
 export const signOut = createAsyncThunk<void, void, { state: AuthRootState }>(
   "auth/signOut",

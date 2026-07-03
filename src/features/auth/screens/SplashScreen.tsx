@@ -22,6 +22,8 @@ import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
 import { selectIsFirstSetup } from "@/src/features/auth/store/authSelectors";
 import { useAppSelector } from "@/src/shared/store/hooks";
+import { loadTokensFromSecureStorage } from "@/src/features/auth/store/authBoot"; // [REFRESH TOKENS] load secrets from secure store on boot
+import { getStore } from "@/src/shared/store/storeRef";
 
 const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 
@@ -54,6 +56,10 @@ export function SplashScreen() {
   }, []);
 
   useEffect(() => {
+    // [REFRESH TOKENS] On boot, restore tokens from secure storage into redux before deciding navigation.
+    // This runs in parallel with the boot animation.
+    loadTokensFromSecureStorage().catch(() => {});
+
     const timers = BOOT_STAGES.slice(1).map((stage) =>
       setTimeout(() => {
         setStatus(stage.status);
@@ -66,9 +72,13 @@ export function SplashScreen() {
     );
 
     const navigateTimer = setTimeout(() => {
-      if (isAuthenticated) {
+      // After animation, re-read latest auth state (the boot loader may have updated it)
+      const currentIsAuthed = getStore().getState().auth.isAuthenticated; // direct read to avoid stale closure
+      const currentFirstSetup = getStore().getState().auth.isFirstSetup || (getStore().getState().auth.user?.mustChangePassword ?? false);
+
+      if (currentIsAuthed) {
         router.replace(
-          isFirstSetup ? AUTH_ROUTES.resetPassword : AUTH_ROUTES.home,
+          currentFirstSetup ? AUTH_ROUTES.resetPassword : AUTH_ROUTES.home,
         );
         return;
       }

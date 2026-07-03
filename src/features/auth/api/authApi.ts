@@ -1,6 +1,8 @@
 import apiClient from "@/src/shared/utils/apiClient";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { AuthSession, User } from "@/src/shared/types";
+import tokenStorage from "@/src/features/auth/api/tokenStorage"; // [REFRESH TOKENS] secure store
+import { getOrCreateDeviceId } from "./device"; // [REFRESH TOKENS] stable device id
 
 export type Institution = {
   id: string;
@@ -12,16 +14,20 @@ export type DiscoveryMode = "email" | "shortcode";
 
 type BackendLoginResponse = {
   accessToken: string;
+  refreshToken: string; // [REFRESH TOKENS]
   tokenType: "Bearer";
-  expiresIn: string;
+  expiresIn: number; // seconds
   mustChangePassword: boolean;
   user: User;
 };
 
 function mapSession(response: BackendLoginResponse): AuthSession {
+  // [REFRESH TOKENS] Immediately persist both tokens to secure storage
+  // The caller (thunk) will also dispatch to redux.
+  tokenStorage.setTokens(response.accessToken, response.refreshToken).catch(() => {});
   return {
     token: response.accessToken,
-    refreshToken: null,
+    refreshToken: response.refreshToken,
     user: response.user,
   };
 }
@@ -110,6 +116,7 @@ export async function setPassword(
   const { institutionId, verifiedOtp } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
   const otpCode = otp ?? verifiedOtp;
+  const deviceId = await getOrCreateDeviceId();
 
   if (!otpCode) {
     throw new Error("Session expired. Please verify your email again.");
@@ -123,6 +130,7 @@ export async function setPassword(
       otp: otpCode,
       password,
       deviceType: "mobile",
+      deviceId,
     },
   );
 
@@ -135,6 +143,7 @@ export async function login(
 ): Promise<AuthSession> {
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
+  const deviceId = await getOrCreateDeviceId();
 
   const { data } = await apiClient.post<BackendLoginResponse>(
     "/auth/login/email/password",
@@ -143,6 +152,7 @@ export async function login(
       email: normalizedEmail,
       password,
       deviceType: "mobile",
+      deviceId,
     },
   );
 
@@ -156,16 +166,14 @@ export async function refreshToken(
 }
 
 export async function logout(): Promise<void> {
-  const token = getStore().getState().auth.token;
-
-  if (!token) {
-    return;
-  }
+  const refresh = await tokenStorage.getRefreshToken(); // [REFRESH TOKENS] prefer sending the revocable one
 
   try {
-    await apiClient.post("/auth/logout");
+    await apiClient.post("/auth/logout", refresh ? { refreshToken: refresh } : undefined);
   } catch {
     // Local session is cleared by the caller either way.
+  } finally {
+    await tokenStorage.clear();
   }
 }
 
@@ -174,6 +182,7 @@ export async function registryLogin(input: {
   password: string;
 }): Promise<AuthSession> {
   const { institutionId } = getAuthContext();
+  const deviceId = await getOrCreateDeviceId();
 
   const { data } = await apiClient.post<BackendLoginResponse>(
     "/auth/login/registry",
@@ -182,6 +191,7 @@ export async function registryLogin(input: {
       admissionNumber: input.admissionNumber.trim(),
       password: input.password,
       deviceType: "mobile",
+      deviceId, // [REFRESH TOKENS] send stable device identifier
     },
   );
 
@@ -217,4 +227,23 @@ export async function changePassword(input: {
   );
 
   return data;
+}
+
+/**
+ * [REFRESH TOKENS]
+ * Explicit refresh call. The axios interceptor will normally handle this automatically on 401.
+ * Exposed for proactive refresh (before expiry) or manual use.
+ */
+export async function refreshAccessToken(): Promise<AuthSession> {
+  const refreshToken = await tokenStorage.getRefreshToken();
+  if (!refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  const { data } = await apiClient.post<BackendLoginResponse>("/auth/refresh", {
+    refreshToken,
+  });
+
+  // apiClient interceptor already updated storage + redux on success, but return for caller
+  return mapSession(data);
 }

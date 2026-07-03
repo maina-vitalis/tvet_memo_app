@@ -9,7 +9,10 @@ import {
 import type { AuthState } from "@/src/features/auth/types/AuthTypes";
 import type { User } from "@/src/shared/types";
 
-export type { AuthState, AuthStatus } from "@/src/features/auth/types/AuthTypes";
+export type {
+  AuthState,
+  AuthStatus,
+} from "@/src/features/auth/types/AuthTypes";
 
 const initialState: AuthState = {
   user: null,
@@ -46,19 +49,26 @@ const authSlice = createSlice({
       state.error = null;
       state.verifiedOtp = null;
       state.pendingPassword = null;
+
+      // Note: actual secure storage is handled in api layer / tokenStorage
+      // to avoid storing secrets in persisted redux state if possible.
     },
+
     setFirstSetup: (state, action: PayloadAction<boolean>) => {
       state.isFirstSetup = action.payload;
       if (state.user) {
         state.user.mustChangePassword = action.payload;
       }
     },
+
     setOtpSentAt: (state, action: PayloadAction<number>) => {
       state.otpSentAt = action.payload;
     },
+
     setPendingEmail: (state, action: PayloadAction<string | null>) => {
       state.pendingEmail = action.payload;
     },
+
     setPendingPassword: (state, action: PayloadAction<string | null>) => {
       state.pendingPassword = action.payload;
     },
@@ -68,6 +78,7 @@ const authSlice = createSlice({
     clearInstitution: () => initialState,
     logout: () => initialState,
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(discoverInstitution.pending, (state) => {
@@ -134,9 +145,11 @@ export const {
 } = authSlice.actions;
 
 export const selectAuthState = (state: { auth: AuthState }) => state.auth;
-export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
+export const selectCurrentUser = (state: { auth: AuthState }) =>
+  state.auth.user;
 export const selectAuthToken = (state: { auth: AuthState }) => state.auth.token;
-export const selectAccessToken = (state: { auth: AuthState }) => state.auth.token;
+export const selectAccessToken = (state: { auth: AuthState }) =>
+  state.auth.token;
 export const selectRefreshToken = (state: { auth: AuthState }) =>
   state.auth.refreshToken;
 export const selectIsAuthenticated = (state: { auth: AuthState }) =>
@@ -145,7 +158,8 @@ export const selectIsFirstSetup = (state: { auth: AuthState }) =>
   state.auth.isFirstSetup || (state.auth.user?.mustChangePassword ?? false);
 export const selectOtpSentAt = (state: { auth: AuthState }) =>
   state.auth.otpSentAt;
-export const selectAuthStatus = (state: { auth: AuthState }) => state.auth.status;
+export const selectAuthStatus = (state: { auth: AuthState }) =>
+  state.auth.status;
 export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
 export const selectInstitution = (state: { auth: AuthState }) =>
   state.auth.institution;
