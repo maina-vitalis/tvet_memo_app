@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import * as ExpoSplashScreen from "expo-splash-screen";
 import { Lock } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import type { LayoutChangeEvent } from "react-native";
+import { Platform, View, type LayoutChangeEvent } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -40,6 +40,18 @@ const BOOT_STAGES: BootStage[] = [
 ];
 
 const NAVIGATE_DELAY_MS = 3800;
+
+const PROGRESS_GLOW_STYLE = Platform.select({
+  web: {
+    boxShadow: "0 0 10px rgba(234, 88, 12, 0.5)",
+  },
+  default: {
+    shadowColor: "#ea580c",
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 0 },
+  },
+});
 
 export function SplashScreen() {
   const { isAuthenticated } = useAuth();
@@ -133,7 +145,7 @@ export function SplashScreen() {
             </Text>
           </HStack>
 
-          <Box
+          <View
             className="mb-6 h-1 w-full overflow-hidden rounded-full bg-[#2c3645]"
             onLayout={handleTrackLayout}
           >
@@ -144,14 +156,11 @@ export function SplashScreen() {
                   height: "100%",
                   borderRadius: 9999,
                   backgroundColor: "rgb(243, 111, 18)",
-                  shadowColor: "#ea580c",
-                  shadowOpacity: 0.5,
-                  shadowRadius: 10,
-                  shadowOffset: { width: 0, height: 0 },
                 },
+                PROGRESS_GLOW_STYLE,
               ]}
             />
-          </Box>
+          </View>
 
           <HStack className="items-center justify-center gap-2">
             <Lock size={14} color="#d3daea" style={{ opacity: 0.6 }} />
