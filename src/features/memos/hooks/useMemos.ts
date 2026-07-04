@@ -10,6 +10,7 @@ import {
   acknowledgeMemo,
   getMemoById,
   getMemos,
+  isValidMemoId,
 } from "@/src/features/memos/api/memosApi";
 import type { Memo } from "@/src/features/memos/types";
 import { setMemos } from "@/src/features/memos/store/memosSlice";
@@ -69,7 +70,7 @@ export function useMemoDetail(id: string) {
   const query = useQuery({
     queryKey: memosKeys.detail(id),
     queryFn: () => getMemoById(id),
-    enabled: isAuthenticated && id.length > 0,
+    enabled: isAuthenticated && isValidMemoId(id),
   });
 
   useEffect(() => {

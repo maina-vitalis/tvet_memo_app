@@ -2,6 +2,19 @@ import type { Memo } from "@/src/features/memos/types";
 import type { PaginatedResponse } from "@/src/shared/types";
 import apiClient from "@/src/shared/utils/apiClient";
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function isValidMemoId(id: string): boolean {
+  return UUID_RE.test(id);
+}
+
+function assertMemoId(id: string): void {
+  if (!isValidMemoId(id)) {
+    throw new Error("Invalid memo id");
+  }
+}
+
 type BackendMemo = {
   id: string;
   subject: string;
@@ -66,6 +79,13 @@ export async function getMemos(
 }
 
 export async function getMemoById(id: string): Promise<Memo> {
+  assertMemoId(id);
+
+  const cached = inboxCache?.find((memo) => memo.id === id);
+  if (cached) {
+    return cached;
+  }
+
   const { data } = await apiClient.get<BackendMemo>(`/memos/${id}`);
 
   return {
@@ -80,6 +100,8 @@ export async function getMemoById(id: string): Promise<Memo> {
 export async function acknowledgeMemo(
   id: string,
 ): Promise<{ acknowledgedAt: string }> {
+  assertMemoId(id);
+
   const { data } = await apiClient.post<InboxRecipient>(
     `/memos/${id}/acknowledge`,
     { ackType: "simple" },
