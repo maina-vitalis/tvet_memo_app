@@ -111,7 +111,7 @@ const TableFooter = React.forwardRef<
 });
 
 const TableHead = React.forwardRef<
-  React.ComponentRef<typeof View | typeof Text>,
+  any,
   ITableHeadProps
 >(function TableHead({ useRNView = false, className, ...props }, ref) {
   if (useRNView) {
@@ -119,7 +119,7 @@ const TableHead = React.forwardRef<
       <View
         ref={ref}
         className={tableHeadStyle({ class: className })}
-        {...props}
+        {...props as any}
       />
     );
   } else {
@@ -127,14 +127,14 @@ const TableHead = React.forwardRef<
       <Text
         ref={ref}
         className={tableHeadStyle({ class: className })}
-        {...props}
+        {...props as any}
       />
     );
   }
 });
 
 const TableRow = React.forwardRef<
-  React.ComponentRef<typeof ExpoTR>,
+  any,
   ITableRowProps
 >(function TableRow({ className, ...props }, ref) {
   const { isHeaderRow } = useContext(TableHeaderContext);
@@ -148,13 +148,13 @@ const TableRow = React.forwardRef<
         isFooterRow,
         class: className,
       })}
-      {...props}
+      {...props as any}
     />
   );
 });
 
 const TableData = React.forwardRef<
-  React.ComponentRef<typeof View | typeof Text>,
+  any,
   ITableDataProps
 >(function TableData({ useRNView = false, className, ...props }, ref) {
   if (useRNView) {
@@ -162,7 +162,7 @@ const TableData = React.forwardRef<
       <View
         ref={ref}
         className={tableDataStyle({ class: className })}
-        {...props}
+        {...props as any}
       />
     );
   } else {
@@ -170,21 +170,21 @@ const TableData = React.forwardRef<
       <Text
         ref={ref}
         className={tableDataStyle({ class: className })}
-        {...props}
+        {...props as any}
       />
     );
   }
 });
 
 const TableCaption = React.forwardRef<
-  React.ComponentRef<typeof ExpoTCaption>,
+  any,
   ITableCaptionProps
 >(({ className, ...props }, ref) => {
   return (
     <ExpoTCaption
       ref={ref}
       className={tableCaptionStyle({ class: className })}
-      {...props}
+      {...props as any}
     />
   );
 });

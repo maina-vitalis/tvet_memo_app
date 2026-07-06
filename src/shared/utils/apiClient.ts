@@ -142,7 +142,7 @@ apiClient.interceptors.request.use(
           // but we replicate the minimal update here for proactive case)
           const newRefresh = data.refreshToken;
           if (token) await tokenStorage.setAccessToken(token);
-          if (newRefresh) await tokenStorage.setTokens(token, newRefresh);
+          if (token && newRefresh) await tokenStorage.setTokens(token, newRefresh);
 
           const currentUser = getStore().getState().auth.user;
           if (currentUser && token) {

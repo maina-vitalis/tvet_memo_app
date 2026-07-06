@@ -19,11 +19,6 @@ import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
-import {
-  setFirstSetup,
-  setPendingEmail,
-} from "@/src/features/auth/store/authSlice";
-import { useAppDispatch } from "@/src/shared/store/hooks";
 
 type DiscoveryMode = "email" | "shortcode";
 
@@ -40,7 +35,6 @@ function isInputValid(mode: DiscoveryMode, value: string) {
 }
 
 export default function TenantDiscoveryScreen() {
-  const dispatch = useAppDispatch();
   const { discoverInstitution } = useAuth();
   const [mode, setMode] = useState<DiscoveryMode>("email");
   const [inputValue, setInputValue] = useState("");
@@ -67,11 +61,9 @@ export default function TenantDiscoveryScreen() {
 
       if (mode === "email") {
         const normalizedEmail = inputValue.trim().toLowerCase();
-        dispatch(setPendingEmail(normalizedEmail));
-        dispatch(setFirstSetup(true));
         router.push({
-          pathname: AUTH_ROUTE_PATHS.password,
-          params: { mode: "setup" },
+          pathname: AUTH_ROUTE_PATHS.login,
+          params: { email: normalizedEmail },
         });
         return;
       }
