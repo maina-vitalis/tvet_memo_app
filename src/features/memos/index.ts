@@ -9,7 +9,7 @@ export {
 export { getDepartments } from "./api/departmentsApi";
 export { getTargetableUsers } from "./api/targetableUsersApi";
 export { useMemoComposer } from "./hooks/useMemoComposer";
-export { useCanCreateMemo } from "./hooks/useMemoPermissions";
+export { useCanBroadcastMemo, useCanCreateMemo } from "./hooks/useMemoPermissions";
 export {
   memoTargetingKeys,
   useActorRole,

@@ -18,6 +18,7 @@ export {
   clearInstitution,
   logout,
   setCredentials,
+  setUser,
   setFirstSetup,
   setOtpSentAt,
   setPendingEmail,

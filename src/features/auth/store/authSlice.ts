@@ -54,6 +54,11 @@ const authSlice = createSlice({
       // to avoid storing secrets in persisted redux state if possible.
     },
 
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+      state.isFirstSetup = action.payload.mustChangePassword;
+    },
+
     setFirstSetup: (state, action: PayloadAction<boolean>) => {
       state.isFirstSetup = action.payload;
       if (state.user) {
@@ -135,6 +140,7 @@ const authSlice = createSlice({
 
 export const {
   setCredentials,
+  setUser,
   setFirstSetup,
   setOtpSentAt,
   setPendingEmail,

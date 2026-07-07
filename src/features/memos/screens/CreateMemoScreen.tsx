@@ -9,7 +9,7 @@ import {
 
 import { MemoAudienceFields } from "@/src/features/memos/components/MemoAudienceFields";
 import { useMemoComposer } from "@/src/features/memos/hooks/useMemoComposer";
-import { useCanCreateMemo } from "@/src/features/memos/hooks/useMemoPermissions";
+import { useCanBroadcastMemo } from "@/src/features/memos/hooks/useMemoPermissions";
 import { useActorRole } from "@/src/features/memos/hooks/useMemoTargeting";
 import type {
   MemoCategory,
@@ -91,7 +91,7 @@ const DEFAULT_AUDIENCE: MemoAudienceSelection = {
 
 export default function CreateMemoScreen() {
   const insets = useSafeAreaInsets();
-  const canCreateMemo = useCanCreateMemo();
+  const canBroadcastMemo = useCanBroadcastMemo();
   const actorRole = useActorRole();
   const composer = useMemoComposer();
 
@@ -134,7 +134,7 @@ export default function CreateMemoScreen() {
 
   const isScheduledForFuture = scheduleEnabled && scheduledAt !== undefined;
 
-  if (!canCreateMemo) {
+  if (!canBroadcastMemo) {
     return (
       <SafeAreaView style={{ flex: 1 }}>
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
