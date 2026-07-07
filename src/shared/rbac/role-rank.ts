@@ -3,22 +3,22 @@ import type { Role } from "@/src/shared/types";
 /** Mirrors backend ROLE_RANK — higher number = higher authority. */
 export const ROLE_RANK: Record<Role, number> = {
   SUPER_ADMIN: 100,
-  CHAIRPERSON: 90,
-  BOARD_MEMBER: 85,
+  INSTITUTION_ADMIN: 90,
   PRINCIPAL: 80,
+  CHAIRPERSON: 75,
+  BOARD_MEMBER: 72,
   DEPUTY_PRINCIPAL_ACADEMICS: 70,
   DEPUTY_PRINCIPAL_ADMIN: 70,
-  INSTITUTION_ADMIN: 65,
   HOD: 50,
   TRAINER: 30,
   TRAINEE: 10,
 };
 
 const INSTITUTION_TARGET_ROLES: Role[] = [
+  "INSTITUTION_ADMIN",
   "PRINCIPAL",
   "DEPUTY_PRINCIPAL_ACADEMICS",
   "DEPUTY_PRINCIPAL_ADMIN",
-  "INSTITUTION_ADMIN",
   "HOD",
   "TRAINER",
   "TRAINEE",
@@ -26,12 +26,12 @@ const INSTITUTION_TARGET_ROLES: Role[] = [
 
 export const ROLE_LABELS: Record<Role, string> = {
   SUPER_ADMIN: "Super Admin",
+  INSTITUTION_ADMIN: "Institution Admin",
+  PRINCIPAL: "Principal",
   CHAIRPERSON: "Chairperson",
   BOARD_MEMBER: "Board Member",
-  PRINCIPAL: "Principal",
   DEPUTY_PRINCIPAL_ACADEMICS: "Deputy Principal (Academics)",
   DEPUTY_PRINCIPAL_ADMIN: "Deputy Principal (Admin)",
-  INSTITUTION_ADMIN: "Institution Admin",
   HOD: "Head of Department",
   TRAINER: "Trainer",
   TRAINEE: "Trainee",
