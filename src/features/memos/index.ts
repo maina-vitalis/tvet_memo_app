@@ -6,8 +6,17 @@ export {
   getMemos,
   sendMemo,
 } from "./api/memosApi";
-export { useCreateMemo } from "./hooks/useCreateMemo";
+export { getDepartments } from "./api/departmentsApi";
+export { getTargetableUsers } from "./api/targetableUsersApi";
+export { useMemoComposer } from "./hooks/useMemoComposer";
 export { useCanCreateMemo } from "./hooks/useMemoPermissions";
+export {
+  memoTargetingKeys,
+  useActorRole,
+  useDepartmentsQuery,
+  useTargetableRoles,
+  useTargetableUsersQuery,
+} from "./hooks/useMemoTargeting";
 export {
   memosKeys,
   useAcknowledgeMemo,
