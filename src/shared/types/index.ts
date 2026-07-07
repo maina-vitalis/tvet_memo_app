@@ -1,9 +1,14 @@
 export type Role =
-  | "student"
-  | "staff"
-  | "principal"
-  | "dean"
-  | "super_admin";
+  | "SUPER_ADMIN"
+  | "CHAIRPERSON"
+  | "BOARD_MEMBER"
+  | "PRINCIPAL"
+  | "DEPUTY_PRINCIPAL_ACADEMICS"
+  | "DEPUTY_PRINCIPAL_ADMIN"
+  | "INSTITUTION_ADMIN"
+  | "HOD"
+  | "TRAINER"
+  | "TRAINEE";
 
 export interface ApiError {
   message: string;
@@ -20,7 +25,7 @@ export interface PaginatedResponse<T> {
 export interface User {
   id: string;
   institutionId: string;
-  roleId: string;
+  role: Role;
   departmentId: string | null;
   firstName: string;
   lastName: string;

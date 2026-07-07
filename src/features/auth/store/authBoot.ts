@@ -40,7 +40,7 @@ export async function loadTokensFromSecureStorage(): Promise<boolean> {
       const placeholderUser = {
         id: "boot",
         institutionId: "",
-        roleId: "",
+        role: "TRAINEE",
         departmentId: null,
         firstName: "",
         lastName: "",

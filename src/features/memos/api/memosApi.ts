@@ -1,4 +1,8 @@
 import type { Memo } from "@/src/features/memos/types";
+import type {
+  CreateMemoPayload,
+  CreatedMemo,
+} from "@/src/features/memos/types/CreateMemoTypes";
 import type { PaginatedResponse } from "@/src/shared/types";
 import apiClient from "@/src/shared/utils/apiClient";
 
@@ -116,4 +120,20 @@ export async function acknowledgeMemo(
   return {
     acknowledgedAt: data.acknowledgedAt ?? new Date().toISOString(),
   };
+}
+
+export async function createMemo(payload: CreateMemoPayload): Promise<CreatedMemo> {
+  const { data } = await apiClient.post<CreatedMemo>("/memos", payload);
+
+  return data;
+}
+
+export async function sendMemo(id: string): Promise<CreatedMemo> {
+  assertMemoId(id);
+
+  const { data } = await apiClient.post<CreatedMemo>(`/memos/${id}/send`);
+
+  clearMemosCache();
+
+  return data;
 }

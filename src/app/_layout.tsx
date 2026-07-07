@@ -51,6 +51,10 @@ export default function RootLayout() {
                     name="memo/[id]"
                     options={{ statusBarStyle: "dark" }}
                   />
+                  <Stack.Screen
+                    name="memo/create"
+                    options={{ statusBarStyle: "dark" }}
+                  />
                 </Stack>
               </ThemeProvider>
             </SafeAreaListener>
