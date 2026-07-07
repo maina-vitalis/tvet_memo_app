@@ -21,10 +21,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     Permission.VIEW_AUDIT_LOGS,
     Permission.ACKNOWLEDGE_MEMO,
   ],
-  BOARD_MEMBER: [
-    Permission.VIEW_BOARD_REPORTS,
-    Permission.ACKNOWLEDGE_MEMO,
-  ],
+  BOARD_MEMBER: [Permission.VIEW_BOARD_REPORTS, Permission.ACKNOWLEDGE_MEMO],
   PRINCIPAL: [
     Permission.MANAGE_TENANT_USERS,
     Permission.MANAGE_ROLES,

@@ -1,10 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 
-import {
-  createMemo,
-  sendMemo,
-} from "@/src/features/memos/api/memosApi";
+import { createMemo, sendMemo } from "@/src/features/memos/api/memosApi";
 import { memosKeys } from "@/src/features/memos/hooks/useMemos";
 import type { CreateMemoPayload } from "@/src/features/memos/types/CreateMemoTypes";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
@@ -24,7 +21,9 @@ function shouldSendImmediately(payload: MemoComposerInput): boolean {
 
   const scheduledAt = new Date(payload.scheduledAt);
 
-  return !Number.isNaN(scheduledAt.getTime()) && scheduledAt.getTime() <= Date.now();
+  return (
+    !Number.isNaN(scheduledAt.getTime()) && scheduledAt.getTime() <= Date.now()
+  );
 }
 
 export function useMemoComposer() {
@@ -47,11 +46,12 @@ export function useMemoComposer() {
       router.back();
     },
     onError: (error, variables) => {
-      const fallback = variables.publishNow === false
-        ? "Could not save this draft. Please try again."
-        : variables.scheduledAt
-          ? "Could not schedule this memo. Please try again."
-          : "Could not publish this memo. Please try again.";
+      const fallback =
+        variables.publishNow === false
+          ? "Could not save this draft. Please try again."
+          : variables.scheduledAt
+            ? "Could not schedule this memo. Please try again."
+            : "Could not publish this memo. Please try again.";
 
       showError(error, fallback);
     },
