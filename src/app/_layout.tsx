@@ -10,6 +10,7 @@ import {
 } from "react-native-safe-area-context";
 import { Uniwind } from "uniwind";
 
+import { PushNotificationBootstrap } from "@/src/features/notifications/components/PushNotificationBootstrap";
 import "@/global.css";
 import { useAppfonts } from "@/src/shared/hooks/useAppfonts";
 import { ThemeProvider } from "@/src/shared/hooks/theme-context";
@@ -34,6 +35,7 @@ export default function RootLayout() {
               }}
             >
               <ThemeProvider>
+                <PushNotificationBootstrap />
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen
                     name="index"

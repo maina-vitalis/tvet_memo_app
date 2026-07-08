@@ -34,7 +34,6 @@ export interface User {
   staffNumber: string | null;
   phoneNumber: string | null;
   totpEnabled: boolean;
-  fcmToken: string | null;
   preferredLang: string;
   avatarUrl: string | null;
   isActive: boolean;

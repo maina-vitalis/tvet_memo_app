@@ -49,7 +49,6 @@ export async function loadTokensFromSecureStorage(): Promise<boolean> {
         staffNumber: null,
         phoneNumber: null,
         totpEnabled: false,
-        fcmToken: null,
         preferredLang: "en",
         avatarUrl: null,
         isActive: true,

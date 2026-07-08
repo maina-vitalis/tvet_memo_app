@@ -28,6 +28,7 @@ export function useNotificationsQuery() {
     queryKey: notificationsKeys.list(),
     queryFn: getNotifications,
     enabled: isAuthenticated,
+    refetchInterval: 60_000,
   });
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import {
   type DiscoveryMode,
   type Institution,
 } from "@/src/features/auth/api/authApi";
+import { unregisterPushTokenOnLogout } from "@/src/features/notifications/hooks/usePushNotifications";
 import type { AuthState } from "@/src/features/auth/types/AuthTypes";
 import type { User } from "@/src/shared/types";
 import { toApiError } from "@/src/shared/utils/apiClient";
@@ -115,6 +116,7 @@ export const signOut = createAsyncThunk<void, void, { state: AuthRootState }>(
     }
 
     try {
+      await unregisterPushTokenOnLogout();
       await logoutRequest();
     } catch {
       // Clear local session even when the server logout fails.

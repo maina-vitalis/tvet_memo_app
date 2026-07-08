@@ -1,4 +1,4 @@
-export type NotificationChannel = "push" | "email" | "sms";
+export type NotificationChannel = "push" | "email";
 
 export type NotificationDeliveryStatus =
   | "pending"
