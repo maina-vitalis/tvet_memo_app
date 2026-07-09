@@ -6,14 +6,12 @@ export {
   deactivatePushToken,
   registerPushToken,
 } from "./api/pushTokenApi";
+export { unregisterPushTokenOnLogout } from "./api/pushTokenLifecycle";
+export { notificationsKeys } from "./queryKeys";
 export { PushNotificationBootstrap } from "./components/PushNotificationBootstrap";
 export {
-  notificationsKeys,
   useMarkRead,
   useNotificationsQuery,
 } from "./hooks/useNotifications";
-export {
-  unregisterPushTokenOnLogout,
-  usePushNotifications,
-} from "./hooks/usePushNotifications";
+export { usePushNotifications } from "./hooks/usePushNotifications";
 export type { Notification } from "./types";

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "495673758956",
+    "project_id": "tvet-memo",
+    "storage_bucket": "tvet-memo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495673758956:android:d95b831147cd98723941c9",
+        "android_client_info": {
+          "package_name": "com.vitalis058.tvetmemo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMY9sISq93mODcwJ4SAXUGINGQ2INnU3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -5,13 +5,9 @@ import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
-import {
-  deactivatePushToken,
-  registerPushToken,
-} from "@/src/features/notifications/api/pushTokenApi";
-import { notificationsKeys } from "@/src/features/notifications/hooks/useNotifications";
+import { registerPushToken } from "@/src/features/notifications/api/pushTokenApi";
+import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import { incrementUnread } from "@/src/features/notifications/store/notificationsSlice";
-import { selectIsAuthenticated } from "@/src/features/auth/store/authSelectors";
 import { queryClient } from "@/src/shared/store/queryClient";
 import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
 
@@ -81,7 +77,7 @@ function resolveDeviceId(): string {
 
 export function usePushNotifications(): void {
   const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isAuthenticated = useAppSelector((state) => Boolean(state.auth.token));
   const registeredTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -139,28 +135,4 @@ export function usePushNotifications(): void {
       responseSubscription.remove();
     };
   }, [dispatch, isAuthenticated]);
-}
-
-export async function unregisterPushTokenOnLogout(): Promise<void> {
-  try {
-    if (!Device.isDevice) {
-      return;
-    }
-
-    const projectId =
-      Constants.expoConfig?.extra?.eas?.projectId ??
-      Constants.easConfig?.projectId;
-
-    if (!projectId) {
-      return;
-    }
-
-    const tokenResponse = await Notifications.getExpoPushTokenAsync({
-      projectId,
-    });
-
-    await deactivatePushToken(tokenResponse.data);
-  } catch (error) {
-    console.warn("[Push] Failed to deactivate push token on logout", error);
-  }
 }

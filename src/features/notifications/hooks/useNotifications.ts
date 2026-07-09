@@ -9,15 +9,11 @@ import {
   markNotificationRead as markNotificationReadAction,
   setNotifications,
 } from "@/src/features/notifications/store/notificationsSlice";
+import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import type { Notification } from "@/src/features/notifications/types";
 import { selectIsAuthenticated } from "@/src/features/auth/store/authSelectors";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
 import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
-
-export const notificationsKeys = {
-  all: ["notifications"] as const,
-  list: () => [...notificationsKeys.all, "list"] as const,
-};
 
 export function useNotificationsQuery() {
   const dispatch = useAppDispatch();

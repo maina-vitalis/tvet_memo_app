@@ -8,7 +8,6 @@ import {
   type DiscoveryMode,
   type Institution,
 } from "@/src/features/auth/api/authApi";
-import { unregisterPushTokenOnLogout } from "@/src/features/notifications/hooks/usePushNotifications";
 import type { AuthState } from "@/src/features/auth/types/AuthTypes";
 import type { User } from "@/src/shared/types";
 import { toApiError } from "@/src/shared/utils/apiClient";
@@ -116,6 +115,9 @@ export const signOut = createAsyncThunk<void, void, { state: AuthRootState }>(
     }
 
     try {
+      const { unregisterPushTokenOnLogout } = await import(
+        "@/src/features/notifications/api/pushTokenLifecycle"
+      );
       await unregisterPushTokenOnLogout();
       await logoutRequest();
     } catch {
