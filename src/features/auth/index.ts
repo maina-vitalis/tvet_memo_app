@@ -4,7 +4,6 @@ export {
   useLogin,
   useLogout,
   useSendOtp,
-  useSetPassword,
   useVerifyOtp,
 } from "./hooks/useAuthMutations";
 export type { Institution } from "./api/authApi";

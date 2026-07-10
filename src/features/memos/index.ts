@@ -4,6 +4,7 @@ export {
   createMemo,
   getMemoById,
   getMemos,
+  publishMemo,
   sendMemo,
 } from "./api/memosApi";
 export { getDepartments } from "./api/departmentsApi";

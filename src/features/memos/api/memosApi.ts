@@ -128,10 +128,30 @@ export async function createMemo(payload: CreateMemoPayload): Promise<CreatedMem
   return data;
 }
 
-export async function sendMemo(id: string): Promise<CreatedMemo> {
+export type PublishMemoResponse = {
+  memo: CreatedMemo;
+  recipientCount: number;
+  scheduled?: boolean;
+};
+
+/** Create and send in one request — avoids duplicate memos when the send step times out. */
+export async function publishMemo(
+  payload: CreateMemoPayload,
+): Promise<PublishMemoResponse> {
+  const { data } = await apiClient.post<PublishMemoResponse>(
+    "/memos/publish",
+    payload,
+  );
+
+  clearMemosCache();
+
+  return data;
+}
+
+export async function sendMemo(id: string): Promise<PublishMemoResponse> {
   assertMemoId(id);
 
-  const { data } = await apiClient.post<CreatedMemo>(`/memos/${id}/send`);
+  const { data } = await apiClient.post<PublishMemoResponse>(`/memos/${id}/send`);
 
   clearMemosCache();
 

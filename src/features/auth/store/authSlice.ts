@@ -78,7 +78,10 @@ const authSlice = createSlice({
     setPendingPassword: (state, action: PayloadAction<string | null>) => {
       state.pendingPassword = action.payload;
     },
-    setPendingAdmissionNumber: (state, action: PayloadAction<string | null>) => {
+    setPendingAdmissionNumber: (
+      state,
+      action: PayloadAction<string | null>,
+    ) => {
       state.pendingAdmissionNumber = action.payload;
     },
     setVerifiedOtp: (state, action: PayloadAction<string | null>) => {
@@ -101,7 +104,10 @@ const authSlice = createSlice({
       })
       .addCase(discoverInstitution.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload ?? "Institution not found.";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Institution not found.";
       })
       .addCase(signInWithRegistry.pending, (state) => {
         state.status = "loading";
@@ -110,6 +116,7 @@ const authSlice = createSlice({
       .addCase(signInWithRegistry.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken ?? null;
         state.isAuthenticated = true;
         state.isFirstSetup = action.payload.mustChangePassword;
         state.pendingPassword = action.payload.pendingPassword;
@@ -118,7 +125,10 @@ const authSlice = createSlice({
       })
       .addCase(signInWithRegistry.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload ?? "Sign in failed.";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Sign in failed.";
       })
       .addCase(changePassword.pending, (state) => {
         state.status = "loading";
@@ -135,7 +145,10 @@ const authSlice = createSlice({
       })
       .addCase(changePassword.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload ?? "Could not update password.";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Could not update password.";
       })
       .addCase(signOut.fulfilled, () => initialState)
       .addCase(signOut.rejected, () => initialState);
@@ -154,33 +167,5 @@ export const {
   clearInstitution,
   logout,
 } = authSlice.actions;
-
-export const selectAuthState = (state: { auth: AuthState }) => state.auth;
-export const selectCurrentUser = (state: { auth: AuthState }) =>
-  state.auth.user;
-export const selectAuthToken = (state: { auth: AuthState }) => state.auth.token;
-export const selectAccessToken = (state: { auth: AuthState }) =>
-  state.auth.token;
-export const selectRefreshToken = (state: { auth: AuthState }) =>
-  state.auth.refreshToken;
-export const selectIsAuthenticated = (state: { auth: AuthState }) =>
-  state.auth.isAuthenticated;
-export const selectIsFirstSetup = (state: { auth: AuthState }) =>
-  state.auth.isFirstSetup || (state.auth.user?.mustChangePassword ?? false);
-export const selectOtpSentAt = (state: { auth: AuthState }) =>
-  state.auth.otpSentAt;
-export const selectAuthStatus = (state: { auth: AuthState }) =>
-  state.auth.status;
-export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
-export const selectInstitution = (state: { auth: AuthState }) =>
-  state.auth.institution;
-export const selectPendingPassword = (state: { auth: AuthState }) =>
-  state.auth.pendingPassword;
-export const selectPendingEmail = (state: { auth: AuthState }) =>
-  state.auth.pendingEmail;
-export const selectPendingAdmissionNumber = (state: { auth: AuthState }) =>
-  state.auth.pendingAdmissionNumber;
-export const selectVerifiedOtp = (state: { auth: AuthState }) =>
-  state.auth.verifiedOtp;
 
 export default authSlice.reducer;
