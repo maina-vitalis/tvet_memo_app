@@ -12,17 +12,19 @@ import { useAppSelector } from "@/src/shared/store/hooks";
 
 export const profileKeys = {
   all: ["profile"] as const,
-  detail: () => [...profileKeys.all, "detail"] as const,
+  detail: (userId?: string | null) =>
+    [...profileKeys.all, userId ?? "anonymous"] as const,
 };
 
 export function useProfileQuery() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const userId = useAppSelector((state) => state.auth.user?.id);
   const { showError } = useMutationToast();
 
   const query = useQuery({
-    queryKey: profileKeys.detail(),
+    queryKey: profileKeys.detail(userId),
     queryFn: getProfile,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && Boolean(userId),
   });
 
   useEffect(() => {
@@ -41,8 +43,11 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: (data: Partial<User>) => updateProfile(data),
     onSuccess: (updatedUser) => {
-      queryClient.setQueryData(profileKeys.detail(), updatedUser);
-      queryClient.invalidateQueries({ queryKey: profileKeys.detail() });
+      queryClient.setQueryData(
+        profileKeys.detail(updatedUser.id),
+        updatedUser,
+      );
+      queryClient.invalidateQueries({ queryKey: profileKeys.all });
     },
     onError: (error) => {
       showError(error, "Could not update your profile. Please try again.");

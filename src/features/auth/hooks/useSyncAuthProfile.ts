@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 
 import { setUser } from "@/src/features/auth/store/authSlice";
-import { selectIsAuthenticated } from "@/src/features/auth/store/authSelectors";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "@/src/features/auth/store/authSelectors";
 import { useProfileQuery } from "@/src/features/profile/hooks/useProfile";
 import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
 
@@ -9,13 +12,18 @@ import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
 export function useSyncAuthProfile() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const authUser = useAppSelector(selectCurrentUser);
   const { data: profile } = useProfileQuery();
 
   useEffect(() => {
-    if (!isAuthenticated || !profile) {
+    if (!isAuthenticated || !profile || !authUser) {
+      return;
+    }
+
+    if (profile.id !== authUser.id) {
       return;
     }
 
     dispatch(setUser(profile));
-  }, [dispatch, isAuthenticated, profile]);
+  }, [dispatch, isAuthenticated, authUser, profile]);
 }

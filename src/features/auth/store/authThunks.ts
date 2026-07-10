@@ -8,6 +8,8 @@ import {
   type DiscoveryMode,
   type Institution,
 } from "@/src/features/auth/api/authApi";
+import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
+import { tokenStorage } from "@/src/features/auth/api/tokenStorage";
 import type { AuthState } from "@/src/features/auth/types/AuthTypes";
 import type { User } from "@/src/shared/types";
 import { toApiError } from "@/src/shared/utils/apiClient";
@@ -20,7 +22,6 @@ function getErrorMessage(error: unknown, fallback: string): string {
   return toApiError(error, fallback).message;
 }
 
-//api call to discover the institution based on the email domain or shortcode
 export const discoverInstitution = createAsyncThunk<
   Institution,
   { query: string; mode: DiscoveryMode },
@@ -40,13 +41,12 @@ export const discoverInstitution = createAsyncThunk<
 
 type RegistryLoginResult = {
   accessToken: string;
-  refreshToken?: string; // [REFRESH TOKENS]
+  refreshToken?: string;
   user: User;
   mustChangePassword: boolean;
   pendingPassword: string | null;
 };
 
-//sign in using the registry (admission number and password)
 export const signInWithRegistry = createAsyncThunk<
   RegistryLoginResult,
   { admissionNumber: string; password: string },
@@ -63,10 +63,9 @@ export const signInWithRegistry = createAsyncThunk<
     try {
       const session = await registryLogin({ admissionNumber, password });
 
-      // [REFRESH TOKENS] session now contains refreshToken too (stored securely by api layer)
       return {
         accessToken: session.token,
-        refreshToken: session.refreshToken,
+        refreshToken: session.refreshToken ?? undefined,
         user: session.user,
         mustChangePassword: session.user.mustChangePassword,
         pendingPassword: session.user.mustChangePassword ? password : null,
@@ -105,23 +104,22 @@ export const changePassword = createAsyncThunk<
   },
 );
 
-export const signOut = createAsyncThunk<void, void, { state: AuthRootState }>(
+export const signOut = createAsyncThunk<void, void>(
   "auth/signOut",
-  async (_, { getState }) => {
-    const token = getState().auth.token;
+  async () => {
+    const refreshToken = await tokenStorage.getRefreshToken();
 
-    if (!token) {
-      return;
+    if (refreshToken) {
+      try {
+        const { unregisterPushTokenOnLogout } =
+          await import("@/src/features/notifications/api/pushTokenLifecycle");
+        await unregisterPushTokenOnLogout();
+        await logoutRequest();
+      } catch {
+        // Fall through to local cleanup even when the server logout fails.
+      }
     }
 
-    try {
-      const { unregisterPushTokenOnLogout } = await import(
-        "@/src/features/notifications/api/pushTokenLifecycle"
-      );
-      await unregisterPushTokenOnLogout();
-      await logoutRequest();
-    } catch {
-      // Clear local session even when the server logout fails.
-    }
+    await clearAuthSession();
   },
 );

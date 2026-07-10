@@ -11,9 +11,9 @@ import {
   signupRegister,
   verifyOtp,
 } from "@/src/features/auth/api/authApi";
+import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
-  logout as logoutAction,
   setCredentials,
   setOtpSentAt,
   setPendingEmail,
@@ -246,17 +246,20 @@ export function useAccountSetup() {
 }
 
 export function useLogout() {
-  const dispatch = useAppDispatch();
   const { showError } = useMutationToast();
 
   return useMutation({
-    mutationFn: logout,
+    mutationFn: async () => {
+      try {
+        await logout();
+      } finally {
+        await clearAuthSession();
+      }
+    },
     onSuccess: () => {
-      dispatch(logoutAction());
       router.replace(AUTH_ROUTES.login);
     },
     onError: (mutationError) => {
-      dispatch(logoutAction());
       router.replace(AUTH_ROUTES.login);
       showError(mutationError, "Could not sign out cleanly.");
     },

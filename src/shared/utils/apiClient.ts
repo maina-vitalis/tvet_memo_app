@@ -7,7 +7,8 @@ import {
 import { router } from "expo-router";
 
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
-import { logout, setCredentials } from "@/src/features/auth/store/authSlice";
+import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
+import { setCredentials } from "@/src/features/auth/store/authSlice";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { ApiError } from "@/src/shared/types";
 import { API_BASE_URL } from "@/src/shared/utils/config";
@@ -205,9 +206,7 @@ apiClient.interceptors.response.use(
     if (status === 401 && !originalRequest._retry) {
       // Do not try to refresh on the refresh endpoint itself
       if (originalRequest.url?.includes("/auth/refresh")) {
-        const store = getStore();
-        store.dispatch(logout());
-        await tokenStorage.clear();
+        await clearAuthSession();
         router.replace(AUTH_ROUTES.login);
         return Promise.reject(error);
       }
@@ -254,9 +253,7 @@ apiClient.interceptors.response.use(
           return apiClient(originalRequest);
         } catch (refreshError) {
           onRefreshFailed();
-          const store = getStore();
-          store.dispatch(logout());
-          await tokenStorage.clear();
+          await clearAuthSession();
           router.replace(AUTH_ROUTES.login);
           return Promise.reject(refreshError);
         } finally {
@@ -278,9 +275,7 @@ apiClient.interceptors.response.use(
 
     // For other 401s or non-retryable, force logout
     if (status === 401) {
-      const store = getStore();
-      store.dispatch(logout());
-      await tokenStorage.clear();
+      await clearAuthSession();
       router.replace(AUTH_ROUTES.login);
     }
 
