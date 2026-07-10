@@ -5,12 +5,10 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PasswordInput } from "@/src/features/auth/components/PasswordInput";
-import { useAccountSetup, useLogin } from "@/src/features/auth/hooks/useAuthMutations";
-import { setPendingPassword } from "@/src/features/auth/store/authSlice";
+import { useAccountSetup, useLogin, useSignupRegister } from "@/src/features/auth/hooks/useAuthMutations";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   selectInstitution,
-  selectIsFirstSetup,
   selectPendingEmail,
 } from "@/src/features/auth/store/authSelectors";
 import { isPasswordValid } from "@/src/features/auth/hooks/usePasswordStrength";
@@ -28,28 +26,33 @@ import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
-import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
+import { useAppSelector } from "@/src/shared/store/hooks";
 
 const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 
 type PasswordMode = "setup" | "login";
 
 export default function PasswordScreen() {
-  const { mode: modeParam, token, email: emailParam } = useLocalSearchParams<{ 
+  const { mode: modeParam, token, email: emailParam } = useLocalSearchParams<{
     mode?: string; 
     token?: string;
     email?: string;
   }>();
   const mode: PasswordMode = modeParam === "login" ? "login" : "setup";
 
-  const dispatch = useAppDispatch();
   const institution = useAppSelector(selectInstitution);
-  const isFirstSetup = useAppSelector(selectIsFirstSetup);
   const pendingEmail = useAppSelector(selectPendingEmail);
 
   const emailFromParams = emailParam ? decodeURIComponent(emailParam) : null;
   const setupToken = token || null;
   const displayEmail = emailFromParams || pendingEmail;
+
+  const {
+    signupRegister,
+    isPending: isSigningUp,
+    error: signupError,
+    resetError: resetSignupError,
+  } = useSignupRegister();
 
   const {
     login,
@@ -70,11 +73,12 @@ export default function PasswordScreen() {
   const [confirmError, setConfirmError] = useState<string | null>(null);
 
   const isSetupMode = mode === "setup";
-  const isSubmitting = isLoggingIn || isSettingUp;
-  const error = loginError ?? setupError ?? confirmError;
+  const isSubmitting = isLoggingIn || isSettingUp || isSigningUp;
+  const error = loginError ?? setupError ?? signupError ?? confirmError;
   const resetError = () => {
     resetLoginError();
     resetSetupError();
+    resetSignupError();
   };
 
   useEffect(() => {
@@ -135,11 +139,7 @@ export default function PasswordScreen() {
         return;
       }
 
-      dispatch(setPendingPassword(password));
-      router.push({
-        pathname: AUTH_ROUTE_PATHS.verifyEmail,
-        params: { email: displayEmail },
-      });
+      signupRegister({ email: displayEmail, password });
       return;
     }
 
@@ -184,9 +184,7 @@ export default function PasswordScreen() {
 
             <VStack className="mt-8 gap-2">
               <Heading size="xl" className="font-bold text-foreground">
-                {isSetupMode || isFirstSetup
-                  ? "Set your password"
-                  : "Enter your password"}
+                {isSetupMode ? "Set your password" : "Enter your password"}
               </Heading>
 
               {isSetupMode ? (

@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import {
+  ChevronLeft,
   Eye,
   EyeOff,
   HelpCircle,
-  IdCard,
   Landmark,
   Lock,
 } from "lucide-react-native";
@@ -28,10 +28,16 @@ import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
+import {
+  selectInstitution,
+  selectPendingAdmissionNumber,
+} from "@/src/features/auth/store/authSelectors";
+import { useAppSelector } from "@/src/shared/store/hooks";
 
 export default function RegistryLoginScreen() {
-  const { institution, signIn, clearInstitution } = useAuth();
-  const [admissionNumber, setAdmissionNumber] = useState("");
+  const { signIn, clearInstitution } = useAuth();
+  const institution = useAppSelector(selectInstitution);
+  const pendingAdmissionNumber = useAppSelector(selectPendingAdmissionNumber);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,15 +46,19 @@ export default function RegistryLoginScreen() {
   useEffect(() => {
     if (!institution) {
       router.replace(AUTH_ROUTES.tenantDiscovery);
+      return;
     }
-  }, [institution]);
 
-  if (!institution) {
+    if (!pendingAdmissionNumber) {
+      router.replace(AUTH_ROUTES.admissionNumber);
+    }
+  }, [institution, pendingAdmissionNumber]);
+
+  if (!institution || !pendingAdmissionNumber) {
     return null;
   }
 
-  const canSubmit =
-    admissionNumber.trim().length > 0 && password.length > 0 && !isSubmitting;
+  const canSubmit = password.length > 0 && !isSubmitting;
 
   const handleSignIn = async () => {
     if (!canSubmit) {
@@ -58,7 +68,7 @@ export default function RegistryLoginScreen() {
     setError(null);
     setIsSubmitting(true);
 
-    const result = await signIn(admissionNumber, password);
+    const result = await signIn(pendingAdmissionNumber, password);
     setIsSubmitting(false);
 
     if (result.success) {
@@ -76,7 +86,7 @@ export default function RegistryLoginScreen() {
 
   const handleChangeInstitution = () => {
     clearInstitution();
-    router.replace("/(auth)/tenant-discovery");
+    router.replace(AUTH_ROUTES.tenantDiscovery);
   };
 
   return (
@@ -87,6 +97,15 @@ export default function RegistryLoginScreen() {
           style={{ flex: 1 }}
         >
           <Box className="flex-1 items-center justify-center px-4">
+            <Pressable
+              onPress={() => router.replace(AUTH_ROUTES.admissionNumber)}
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+              className="absolute left-4 top-4 h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted"
+            >
+              <ChevronLeft className="h-6 w-6 text-primary" />
+            </Pressable>
+
             <Card className="w-full max-w-md gap-0 border-0 p-6 shadow-sm">
               <VStack className="mb-8 items-center">
                 <Box className="mb-4 h-16 w-16 items-center justify-center rounded-full border border-border bg-muted">
@@ -100,7 +119,11 @@ export default function RegistryLoginScreen() {
                   {institution.name}
                 </Heading>
 
-                <HStack className="items-center gap-1">
+                <Text className="text-center text-sm text-muted-foreground">
+                  Admission number: {pendingAdmissionNumber}
+                </Text>
+
+                <HStack className="mt-2 items-center gap-1">
                   <Text className="text-sm text-muted-foreground">
                     Not your institution?
                   </Text>
@@ -113,28 +136,6 @@ export default function RegistryLoginScreen() {
               </VStack>
 
               <VStack className="gap-4">
-                <FormControl>
-                  <FormControlLabel>
-                    <FormControlLabelText className="text-sm font-semibold">
-                      Admission Number
-                    </FormControlLabelText>
-                  </FormControlLabel>
-                  <Input className="h-11 rounded-lg border-border bg-card data-[focus=true]:border-primary">
-                    <InputSlot className="pl-3">
-                      <IdCard className="h-4.5 w-4.5 text-muted-foreground" />
-                    </InputSlot>
-                    <InputField
-                      autoCapitalize="characters"
-                      autoCorrect={false}
-                      placeholder="e.g. NTI/2023/1234"
-                      value={admissionNumber}
-                      onChangeText={setAdmissionNumber}
-                      accessibilityLabel="Admission number"
-                      className="px-2 text-sm text-foreground"
-                    />
-                  </Input>
-                </FormControl>
-
                 <FormControl>
                   <FormControlLabel>
                     <FormControlLabelText className="text-sm font-semibold">
@@ -167,7 +168,7 @@ export default function RegistryLoginScreen() {
                     </InputSlot>
                   </Input>
                   <Text className="mt-2 text-xs italic text-muted-foreground">
-                    Default: your ID number
+                    Default: your admission number
                   </Text>
                 </FormControl>
 

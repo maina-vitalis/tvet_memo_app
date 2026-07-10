@@ -105,7 +105,7 @@ export default function ResetPasswordScreen() {
 
   useEffect(() => {
     if (isFirstSetup && !pendingPassword) {
-      router.replace(AUTH_ROUTES.loginRegistry);
+      router.replace(AUTH_ROUTES.admissionNumber);
     }
   }, [isFirstSetup, pendingPassword]);
 

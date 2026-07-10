@@ -10,6 +10,7 @@ export {
   selectIsFirstSetup,
   selectOtpSentAt,
   selectPendingEmail,
+  selectPendingAdmissionNumber,
   selectPendingPassword,
   selectRefreshToken,
   selectVerifiedOtp,

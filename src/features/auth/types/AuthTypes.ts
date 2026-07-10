@@ -16,6 +16,7 @@ export interface AuthState {
   error: string | null;
   institution: Institution | null;
   pendingPassword: string | null;
+  pendingAdmissionNumber: string | null;
   pendingEmail: string | null;
   verifiedOtp: string | null;
 }

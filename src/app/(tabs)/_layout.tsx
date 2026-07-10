@@ -76,7 +76,7 @@ function TabButton({
           ? `w-full items-center rounded-2xl px-2 py-3 active:scale-95 ${
               isFocused ? "bg-primary/10" : "data-[active=true]:bg-muted"
             }`
-          : `min-w-[64px] flex-1 items-center justify-center rounded-xl px-2 py-1 active:scale-95 ${
+          : `min-w-16 flex-1 items-center justify-center rounded-xl px-2 py-1 active:scale-95 ${
               isFocused ? "" : "data-[active=true]:bg-muted"
             }`
       }
@@ -135,7 +135,9 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
   const canBroadcastMemo = useCanBroadcastMemo();
 
   const renderTab = (tab: TabConfig) => {
-    const routeIndex = state.routes.findIndex((route) => route.name === tab.name);
+    const routeIndex = state.routes.findIndex(
+      (route) => route.name === tab.name,
+    );
 
     if (routeIndex === -1) {
       return null;

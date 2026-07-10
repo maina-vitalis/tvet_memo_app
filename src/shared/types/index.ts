@@ -29,9 +29,9 @@ export interface User {
   departmentId: string | null;
   firstName: string;
   lastName: string;
-  email: string;
+  email: string | null;
   admissionNumber: string | null;
-  staffNumber: string | null;
+  emailVerified: boolean;
   phoneNumber: string | null;
   totpEnabled: boolean;
   preferredLang: string;

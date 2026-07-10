@@ -25,6 +25,7 @@ const initialState: AuthState = {
   error: null,
   institution: null,
   pendingPassword: null,
+  pendingAdmissionNumber: null,
   pendingEmail: null,
   verifiedOtp: null,
 };
@@ -76,6 +77,9 @@ const authSlice = createSlice({
 
     setPendingPassword: (state, action: PayloadAction<string | null>) => {
       state.pendingPassword = action.payload;
+    },
+    setPendingAdmissionNumber: (state, action: PayloadAction<string | null>) => {
+      state.pendingAdmissionNumber = action.payload;
     },
     setVerifiedOtp: (state, action: PayloadAction<string | null>) => {
       state.verifiedOtp = action.payload;
@@ -145,6 +149,7 @@ export const {
   setOtpSentAt,
   setPendingEmail,
   setPendingPassword,
+  setPendingAdmissionNumber,
   setVerifiedOtp,
   clearInstitution,
   logout,
@@ -173,6 +178,8 @@ export const selectPendingPassword = (state: { auth: AuthState }) =>
   state.auth.pendingPassword;
 export const selectPendingEmail = (state: { auth: AuthState }) =>
   state.auth.pendingEmail;
+export const selectPendingAdmissionNumber = (state: { auth: AuthState }) =>
+  state.auth.pendingAdmissionNumber;
 export const selectVerifiedOtp = (state: { auth: AuthState }) =>
   state.auth.verifiedOtp;
 

@@ -1,8 +1,8 @@
 import apiClient from "@/src/shared/utils/apiClient";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { AuthSession, User } from "@/src/shared/types";
-import tokenStorage from "@/src/features/auth/api/tokenStorage"; // [REFRESH TOKENS] secure store
-import { getOrCreateDeviceId } from "./device"; // [REFRESH TOKENS] stable device id
+import tokenStorage from "@/src/features/auth/api/tokenStorage";
+import { getOrCreateDeviceId } from "./device";
 
 export type Institution = {
   id: string;
@@ -14,16 +14,14 @@ export type DiscoveryMode = "email" | "shortcode";
 
 type BackendLoginResponse = {
   accessToken: string;
-  refreshToken: string; // [REFRESH TOKENS]
+  refreshToken: string;
   tokenType: "Bearer";
-  expiresIn: number; // seconds
+  expiresIn: number;
   mustChangePassword: boolean;
   user: User;
 };
 
 function mapSession(response: BackendLoginResponse): AuthSession {
-  // [REFRESH TOKENS] Immediately persist both tokens to secure storage
-  // The caller (thunk) will also dispatch to redux.
   tokenStorage.setTokens(response.accessToken, response.refreshToken).catch(() => {});
   return {
     token: response.accessToken,
@@ -33,13 +31,13 @@ function mapSession(response: BackendLoginResponse): AuthSession {
 }
 
 function getAuthContext() {
-  const { institution, verifiedOtp } = getStore().getState().auth;
+  const { institution } = getStore().getState().auth;
 
   if (!institution?.id) {
     throw new Error("Institution not found. Please start again.");
   }
 
-  return { institutionId: institution.id, verifiedOtp };
+  return { institutionId: institution.id };
 }
 
 export async function discoverInstitution(
@@ -56,13 +54,18 @@ export async function discoverInstitution(
 
 export async function checkEmail(
   email: string,
-): Promise<{ exists: boolean; isFirstSetup: boolean }> {
+): Promise<{
+  exists: boolean;
+  emailVerified: boolean;
+  pendingVerification: boolean;
+}> {
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
 
   const { data } = await apiClient.post<{
     exists: boolean;
-    isFirstSetup: boolean;
+    emailVerified: boolean;
+    pendingVerification: boolean;
   }>("/auth/login/email/check", {
     institutionId,
     email: normalizedEmail,
@@ -70,15 +73,35 @@ export async function checkEmail(
 
   return {
     exists: Boolean(data.exists),
-    isFirstSetup: Boolean(data.isFirstSetup),
+    emailVerified: Boolean(data.emailVerified),
+    pendingVerification: Boolean(data.pendingVerification),
   };
+}
+
+export async function signupRegister(
+  email: string,
+  password: string,
+): Promise<{ message: string }> {
+  const { institutionId } = getAuthContext();
+  const normalizedEmail = email.trim().toLowerCase();
+
+  const { data } = await apiClient.post<{ message: string }>(
+    "/auth/signup/register",
+    {
+      institutionId,
+      email: normalizedEmail,
+      password,
+    },
+  );
+
+  return data;
 }
 
 export async function sendOtp(email: string): Promise<{ sentAt: number }> {
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
 
-  await apiClient.post("/auth/login/email/initiate", {
+  await apiClient.post("/auth/signup/resend-otp", {
     institutionId,
     email: normalizedEmail,
   });
@@ -89,46 +112,17 @@ export async function sendOtp(email: string): Promise<{ sentAt: number }> {
 export async function verifyOtp(
   email: string,
   otp: string,
-): Promise<{ valid: boolean; isFirstSetup: boolean }> {
+): Promise<AuthSession> {
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
-
-  const { data } = await apiClient.post<{
-    verified: boolean;
-    isFirstSetup: boolean;
-  }>("/auth/login/email/validate-otp", {
-    institutionId,
-    email: normalizedEmail,
-    otp,
-  });
-
-  return {
-    valid: data.verified,
-    isFirstSetup: data.isFirstSetup,
-  };
-}
-
-export async function setPassword(
-  email: string,
-  password: string,
-  otp?: string,
-): Promise<AuthSession> {
-  const { institutionId, verifiedOtp } = getAuthContext();
-  const normalizedEmail = email.trim().toLowerCase();
-  const otpCode = otp ?? verifiedOtp;
   const deviceId = await getOrCreateDeviceId();
 
-  if (!otpCode) {
-    throw new Error("Session expired. Please verify your email again.");
-  }
-
   const { data } = await apiClient.post<BackendLoginResponse>(
-    "/auth/login/email/complete-setup",
+    "/auth/signup/verify",
     {
       institutionId,
       email: normalizedEmail,
-      otp: otpCode,
-      password,
+      otp,
       deviceType: "mobile",
       deviceId,
     },
@@ -166,7 +160,7 @@ export async function refreshToken(
 }
 
 export async function logout(): Promise<void> {
-  const refresh = await tokenStorage.getRefreshToken(); // [REFRESH TOKENS] prefer sending the revocable one
+  const refresh = await tokenStorage.getRefreshToken();
 
   try {
     await apiClient.post("/auth/logout", refresh ? { refreshToken: refresh } : undefined);
@@ -191,7 +185,7 @@ export async function registryLogin(input: {
       admissionNumber: input.admissionNumber.trim(),
       password: input.password,
       deviceType: "mobile",
-      deviceId, // [REFRESH TOKENS] send stable device identifier
+      deviceId,
     },
   );
 
@@ -229,11 +223,6 @@ export async function changePassword(input: {
   return data;
 }
 
-/**
- * [REFRESH TOKENS]
- * Explicit refresh call. The axios interceptor will normally handle this automatically on 401.
- * Exposed for proactive refresh (before expiry) or manual use.
- */
 export async function refreshAccessToken(): Promise<AuthSession> {
   const refreshToken = await tokenStorage.getRefreshToken();
   if (!refreshToken) {
@@ -244,6 +233,5 @@ export async function refreshAccessToken(): Promise<AuthSession> {
     refreshToken,
   });
 
-  // apiClient interceptor already updated storage + redux on success, but return for caller
   return mapSession(data);
 }

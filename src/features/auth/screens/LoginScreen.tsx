@@ -97,10 +97,10 @@ export default function LoginScreen() {
 
             <VStack className="mt-8 gap-2">
               <Heading size="xl" className="font-bold text-foreground">
-                Sign in with email
+                Sign in or create an account
               </Heading>
               <Text className="text-base text-muted-foreground">
-                Enter your institutional email to continue
+                Enter your institutional email to sign in or register
               </Text>
               <Text className="text-sm font-medium text-primary">
                 {institution.name}

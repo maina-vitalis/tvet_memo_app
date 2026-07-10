@@ -68,9 +68,13 @@ export default function TenantDiscoveryScreen() {
         return;
       }
 
-      router.push(AUTH_ROUTES.loginRegistry);
+      router.push(AUTH_ROUTES.admissionNumber);
     } catch {
-      setError("Institution not found. Check your email domain or shortcode.");
+      setError(
+        mode === "email"
+          ? "No institution found for this email domain. Use your official institutional email address."
+          : "Institution not found. Check your school code and try again.",
+      );
     } finally {
       setIsSearching(false);
     }

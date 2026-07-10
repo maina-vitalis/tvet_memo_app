@@ -8,21 +8,17 @@ import {
   login,
   logout,
   sendOtp,
-  setPassword,
+  signupRegister,
   verifyOtp,
 } from "@/src/features/auth/api/authApi";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   logout as logoutAction,
   setCredentials,
-  setFirstSetup,
   setOtpSentAt,
   setPendingEmail,
-  setPendingPassword,
-  setVerifiedOtp,
 } from "@/src/features/auth/store/authSlice";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
-import { getStore } from "@/src/shared/store/storeRef";
 import { useAppDispatch } from "@/src/shared/store/hooks";
 
 export function useCheckEmail() {
@@ -34,20 +30,28 @@ export function useCheckEmail() {
     mutationFn: checkEmail,
     onMutate: () => setError(null),
     onSuccess: (result, email) => {
+      const normalizedEmail = email.trim().toLowerCase();
+      dispatch(setPendingEmail(normalizedEmail));
+
       if (!result.exists) {
-        const message =
-          "We could not find an account for this email at your institution.";
-        setError(message);
+        router.push({
+          pathname: AUTH_ROUTE_PATHS.password,
+          params: { mode: "setup" },
+        });
         return;
       }
 
-      const normalizedEmail = email.trim().toLowerCase();
-      dispatch(setFirstSetup(result.isFirstSetup));
-      dispatch(setPendingEmail(normalizedEmail));
+      if (result.pendingVerification) {
+        router.push({
+          pathname: AUTH_ROUTE_PATHS.verifyEmail,
+          params: { email: normalizedEmail },
+        });
+        return;
+      }
 
       router.push({
         pathname: AUTH_ROUTE_PATHS.password,
-        params: { mode: result.isFirstSetup ? "setup" : "login" },
+        params: { mode: "login" },
       });
     },
     onError: (mutationError) => {
@@ -62,6 +66,40 @@ export function useCheckEmail() {
   return {
     checkEmail: mutation.mutate,
     checkEmailAsync: mutation.mutateAsync,
+    isPending: mutation.isPending,
+    error,
+    resetError,
+  };
+}
+
+export function useSignupRegister() {
+  const dispatch = useAppDispatch();
+  const { showError } = useMutationToast();
+  const [error, setError] = useState<string | null>(null);
+
+  const mutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      signupRegister(email, password),
+    onMutate: () => setError(null),
+    onSuccess: (_result, variables) => {
+      dispatch(setPendingEmail(variables.email.trim().toLowerCase()));
+      router.push({
+        pathname: AUTH_ROUTE_PATHS.verifyEmail,
+        params: { email: variables.email.trim().toLowerCase() },
+      });
+    },
+    onError: (mutationError) => {
+      const message = "Could not create your account. Please try again.";
+      setError(message);
+      showError(mutationError, message);
+    },
+  });
+
+  const resetError = useCallback(() => setError(null), []);
+
+  return {
+    signupRegister: mutation.mutate,
+    signupRegisterAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     error,
     resetError,
@@ -103,48 +141,18 @@ export function useVerifyOtp() {
   const [error, setError] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
-      const result = await verifyOtp(email, otp);
-
-      if (!result.valid) {
-        return { ...result, session: null };
-      }
-
-      const pendingPassword = getStore().getState().auth.pendingPassword;
-
-      if (pendingPassword) {
-        const session = await setPassword(email, pendingPassword, otp);
-        return { ...result, session };
-      }
-
-      return { ...result, session: null };
-    },
+    mutationFn: ({ email, otp }: { email: string; otp: string }) =>
+      verifyOtp(email, otp),
     onMutate: () => setError(null),
-    onSuccess: (result, variables) => {
-      if (!result.valid) {
-        setError("Invalid verification code. Please try again.");
-        return;
-      }
-
-      dispatch(setFirstSetup(result.isFirstSetup));
-      dispatch(setVerifiedOtp(variables.otp));
-
-      if (result.session) {
-        dispatch(
-          setCredentials({
-            user: result.session.user,
-            token: result.session.token,
-            refreshToken: result.session.refreshToken,
-          }),
-        );
-        router.replace(AUTH_ROUTES.home);
-        return;
-      }
-
-      router.push({
-        pathname: AUTH_ROUTE_PATHS.password,
-        params: { mode: "login" },
-      });
+    onSuccess: (session) => {
+      dispatch(
+        setCredentials({
+          user: session.user,
+          token: session.token,
+          refreshToken: session.refreshToken,
+        }),
+      );
+      router.replace(AUTH_ROUTES.home);
     },
     onError: (mutationError) => {
       const message = "Invalid verification code. Please try again.";
@@ -158,43 +166,6 @@ export function useVerifyOtp() {
   return {
     verifyOtp: mutation.mutate,
     verifyOtpAsync: mutation.mutateAsync,
-    isPending: mutation.isPending,
-    error,
-    resetError,
-  };
-}
-
-export function useSetPassword() {
-  const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
-
-  const mutation = useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      setPassword(email, password),
-    onMutate: () => setError(null),
-    onSuccess: (session) => {
-      dispatch(
-        setCredentials({
-          user: session.user,
-          token: session.token,
-          refreshToken: session.refreshToken,
-        }),
-      );
-      router.replace(AUTH_ROUTES.home);
-    },
-    onError: (mutationError) => {
-      const message = "Could not set your password. Please try again.";
-      setError(message);
-      showError(mutationError, message);
-    },
-  });
-
-  const resetError = useCallback(() => setError(null), []);
-
-  return {
-    setPassword: mutation.mutate,
-    setPasswordAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     error,
     resetError,
