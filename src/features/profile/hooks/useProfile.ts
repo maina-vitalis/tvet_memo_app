@@ -3,12 +3,12 @@ import { useEffect } from "react";
 
 import {
   getProfile,
-  updateProfile,
+  updateMyProfile,
 } from "@/src/features/profile/api/profileApi";
-import type { User } from "@/src/shared/types";
 import { selectIsAuthenticated } from "@/src/features/auth/store/authSelectors";
+import { setUser } from "@/src/features/auth/store/authSlice";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
-import { useAppSelector } from "@/src/shared/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
 
 export const profileKeys = {
   all: ["profile"] as const,
@@ -36,18 +36,21 @@ export function useProfileQuery() {
   return query;
 }
 
-export function useUpdateProfile() {
+/** Edits name/phone/avatar together as a single PATCH — see updateMyProfile(). */
+export function useUpdateMyProfile() {
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
   const { showError } = useMutationToast();
 
   return useMutation({
-    mutationFn: (data: Partial<User>) => updateProfile(data),
+    mutationFn: updateMyProfile,
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(
         profileKeys.detail(updatedUser.id),
         updatedUser,
       );
       queryClient.invalidateQueries({ queryKey: profileKeys.all });
+      dispatch(setUser(updatedUser));
     },
     onError: (error) => {
       showError(error, "Could not update your profile. Please try again.");

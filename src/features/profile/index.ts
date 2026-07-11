@@ -1,3 +1,3 @@
-export { getProfile, updateProfile } from "./api/profileApi";
-export { profileKeys, useProfileQuery, useUpdateProfile } from "./hooks/useProfile";
+export { getProfile, updateMyProfile } from "./api/profileApi";
+export { profileKeys, useProfileQuery, useUpdateMyProfile } from "./hooks/useProfile";
 export type { User, Role, ApiError, PaginatedResponse } from "./types";
