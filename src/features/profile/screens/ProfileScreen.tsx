@@ -125,6 +125,7 @@ export default function ProfileScreen() {
     ? `${user.firstName} ${user.lastName}`
     : "Your profile";
   const displayRole = user?.email ?? "Signed in user";
+  const avatarUri = user?.avatarUrl ?? PROFILE_AVATAR_URI;
 
   const institutionName =
     institution?.name ?? "Metro Technical Institute";
@@ -147,9 +148,13 @@ export default function ProfileScreen() {
           <VStack className="items-center gap-4">
             <Box className="relative">
               <Avatar className="h-24 w-24 border-4 border-card shadow-sm">
-                <AvatarImage source={{ uri: PROFILE_AVATAR_URI }} />
+                <AvatarImage source={{ uri: avatarUri }} />
               </Avatar>
-              <Pressable className="absolute right-0 bottom-0 h-8 w-8 items-center justify-center rounded-full bg-primary data-[active=true]:opacity-90">
+              <Pressable
+                onPress={() => router.push("/edit-profile")}
+                accessibilityLabel="Edit profile"
+                className="absolute right-0 bottom-0 h-8 w-8 items-center justify-center rounded-full bg-primary data-[active=true]:opacity-90"
+              >
                 <Pencil className="h-4 w-4 text-primary-foreground" />
               </Pressable>
             </Box>
