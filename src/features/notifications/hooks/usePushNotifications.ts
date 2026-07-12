@@ -8,8 +8,8 @@ import { Platform } from "react-native";
 import { registerPushToken } from "@/src/features/notifications/api/pushTokenApi";
 import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import { incrementUnread } from "@/src/features/notifications/store/notificationsSlice";
-import { queryClient } from "@/src/shared/store/queryClient";
 import { useAppDispatch, useAppSelector } from "@/src/shared/store/hooks";
+import { queryClient } from "@/src/shared/store/queryClient";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -38,10 +38,12 @@ async function resolveExpoPushToken(): Promise<string | null> {
     return null;
   }
 
+  //checks the existing permission status
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
 
   let finalStatus = existingStatus;
 
+  //if not granted request for permission again
   if (existingStatus !== "granted") {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
@@ -89,9 +91,9 @@ export function usePushNotifications(): void {
 
     const registerCurrentDevice = async () => {
       try {
-        await ensureAndroidChannel();
+        await ensureAndroidChannel(); //for adroid a channel is required to send the memos
 
-        const token = await resolveExpoPushToken();
+        const token = await resolveExpoPushToken(); //generates  the expo push token needed to push the notifications
 
         if (!isMounted || !token || token === registeredTokenRef.current) {
           return;

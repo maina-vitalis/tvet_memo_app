@@ -178,15 +178,15 @@ export default function CreateMemoScreen() {
     };
   };
 
-  const handleSaveDraft = () => {
-    const payload = buildPayload(false);
+  // const handleSaveDraft = () => {
+  //   const payload = buildPayload(false);
 
-    if (!payload) {
-      return;
-    }
+  //   if (!payload) {
+  //     return;
+  //   }
 
-    composer.mutate(payload);
-  };
+  //   composer.mutate(payload);
+  // };
 
   const handlePublish = () => {
     const payload = buildPayload(!isScheduledForFuture);
@@ -416,7 +416,7 @@ export default function CreateMemoScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
           <VStack className="mx-auto w-full max-w-3xl gap-3 px-4 pt-4">
-            <Button
+            {/*<Button
               variant="outline"
               size="lg"
               isDisabled={!isFormValid || composer.isPending}
@@ -425,7 +425,7 @@ export default function CreateMemoScreen() {
             >
               {composer.isPending ? <ButtonSpinner /> : null}
               <ButtonText className="font-semibold">Save Draft</ButtonText>
-            </Button>
+            </Button>*/}
             <Button
               size="lg"
               isDisabled={!isFormValid || composer.isPending}

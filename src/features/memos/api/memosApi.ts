@@ -122,7 +122,9 @@ export async function acknowledgeMemo(
   };
 }
 
-export async function createMemo(payload: CreateMemoPayload): Promise<CreatedMemo> {
+export async function createMemo(
+  payload: CreateMemoPayload,
+): Promise<CreatedMemo> {
   const { data } = await apiClient.post<CreatedMemo>("/memos", payload);
 
   return data;
@@ -151,7 +153,9 @@ export async function publishMemo(
 export async function sendMemo(id: string): Promise<PublishMemoResponse> {
   assertMemoId(id);
 
-  const { data } = await apiClient.post<PublishMemoResponse>(`/memos/${id}/send`);
+  const { data } = await apiClient.post<PublishMemoResponse>(
+    `/memos/${id}/send`,
+  );
 
   clearMemosCache();
 

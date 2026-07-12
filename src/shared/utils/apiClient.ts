@@ -6,14 +6,19 @@ import {
 } from "axios";
 import { router } from "expo-router";
 
-import { AUTH_ROUTES } from "@/src/features/auth/navigation";
 import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
+import { tokenStorage } from "@/src/features/auth/api/tokenStorage";
+import { AUTH_ROUTES } from "@/src/features/auth/navigation";
 import { setCredentials } from "@/src/features/auth/store/authSlice";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { ApiError } from "@/src/shared/types";
 import { API_BASE_URL } from "@/src/shared/utils/config";
 import { isAxiosError } from "axios";
-import tokenStorage from "@/src/features/auth/api/tokenStorage";
+
+// ---------------------------------------------------------------------------
+// REQUEST INTERCEPTOR - attach latest access token + proactive refresh
+// ---------------------------------------------------------------------------
+import { getSecondsUntilExpiry } from "@/src/shared/utils/jwt";
 
 /**
  * [REFRESH TOKENS + CENTRALIZED CLIENT]
@@ -92,7 +97,7 @@ const apiClient = create({
 // [REFRESH TOKENS] Refresh queue variables (module scoped = singleton)
 // ---------------------------------------------------------------------------
 let isRefreshing = false;
-let refreshSubscribers: Array<(newAccessToken: string) => void> = [];
+let refreshSubscribers: ((newAccessToken: string) => void)[] = [];
 
 function subscribeTokenRefresh(cb: (token: string) => void) {
   refreshSubscribers.push(cb);
@@ -105,12 +110,7 @@ function onRefreshed(newAccessToken: string) {
 
 function onRefreshFailed() {
   refreshSubscribers = [];
-}
-
-// ---------------------------------------------------------------------------
-// REQUEST INTERCEPTOR - attach latest access token + proactive refresh
-// ---------------------------------------------------------------------------
-import { getSecondsUntilExpiry } from "@/src/shared/utils/jwt"; // [REFRESH TOKENS]
+} // [REFRESH TOKENS]
 
 // Dedicated instance without interceptors to avoid recursion when refreshing
 const refreshAxios = create({
@@ -129,28 +129,38 @@ apiClient.interceptors.request.use(
     // [REFRESH TOKENS] Proactive refresh if expiring soon.
     const secondsLeft = getSecondsUntilExpiry(token);
     const shouldRefreshProactively =
-      secondsLeft !== null && secondsLeft < 90 && !config.url?.includes("/auth/refresh");
+      secondsLeft !== null &&
+      secondsLeft < 90 &&
+      !config.url?.includes("/auth/refresh");
 
     if (shouldRefreshProactively) {
       const refreshToken = await tokenStorage.getRefreshToken();
       if (refreshToken) {
         try {
           // Use the raw instance to avoid triggering our own auth/401 interceptors recursively
-          const { data } = await refreshAxios.post("/auth/refresh", { refreshToken });
+          const { data } = await refreshAxios.post("/auth/refresh", {
+            refreshToken,
+          });
           token = data.accessToken;
 
           // Update storage + redux (the main interceptor logic for success is in the 401 path,
           // but we replicate the minimal update here for proactive case)
           const newRefresh = data.refreshToken;
           if (token) await tokenStorage.setAccessToken(token);
-          if (token && newRefresh) await tokenStorage.setTokens(token, newRefresh);
+          if (token && newRefresh)
+            await tokenStorage.setTokens(token, newRefresh);
 
           const currentUser = getStore().getState().auth.user;
           if (currentUser && token) {
             // dispatch is safe here
-            const { setCredentials } = await import("@/src/features/auth/store/authSlice");
+            const { setCredentials } =
+              await import("@/src/features/auth/store/authSlice");
             getStore().dispatch(
-              setCredentials({ user: currentUser, token, refreshToken: newRefresh ?? undefined }),
+              setCredentials({
+                user: currentUser,
+                token,
+                refreshToken: newRefresh ?? undefined,
+              }),
             );
           }
         } catch {

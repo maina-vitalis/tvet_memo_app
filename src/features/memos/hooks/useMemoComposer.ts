@@ -1,14 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
 import { isAxiosError } from "axios";
+import { router } from "expo-router";
 
-import {
-  createMemo,
-  publishMemo,
-} from "@/src/features/memos/api/memosApi";
+import { createMemo, publishMemo } from "@/src/features/memos/api/memosApi";
 import { memosKeys } from "@/src/features/memos/hooks/useMemos";
-import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import type { CreateMemoPayload } from "@/src/features/memos/types/CreateMemoTypes";
+import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
 
 export type MemoComposerInput = CreateMemoPayload & {
@@ -41,11 +38,14 @@ export function useMemoComposer() {
       queryClient.invalidateQueries({ queryKey: notificationsKeys.list() });
       router.back();
     },
+
     onError: (error, variables) => {
       // Refresh feeds even on failure — the server may have committed the send
       // while the client timed out waiting for the response.
       void queryClient.invalidateQueries({ queryKey: memosKeys.lists() });
-      void queryClient.invalidateQueries({ queryKey: notificationsKeys.list() });
+      void queryClient.invalidateQueries({
+        queryKey: notificationsKeys.list(),
+      });
 
       const timeoutHint = isTimeoutError(error)
         ? " The request timed out — check your feed before trying again to avoid sending duplicates."

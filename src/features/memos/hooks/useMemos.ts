@@ -97,11 +97,18 @@ export function useAcknowledgeMemo() {
       queryClient.invalidateQueries({ queryKey: memosKeys.lists() });
 
       const cachedPages = queryClient.getQueryData<{
-        pages: Array<{ data: Memo[]; total: number; page: number; limit: number }>;
+        pages: {
+          data: Memo[];
+          total: number;
+          page: number;
+          limit: number;
+        }[];
       }>(memosKeys.lists());
 
       if (cachedPages) {
-        const merged = cachedPages.pages.flatMap((pageResult) => pageResult.data);
+        const merged = cachedPages.pages.flatMap(
+          (pageResult) => pageResult.data,
+        );
         dispatch(setMemos(merged));
       }
     },
