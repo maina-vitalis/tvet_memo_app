@@ -53,10 +53,6 @@ function mapInboxRow(row: InboxRow): Memo {
 let inboxCache: Memo[] | null = null;
 
 async function fetchInboxMemos(): Promise<Memo[]> {
-  if (inboxCache) {
-    return inboxCache;
-  }
-
   const { data } = await apiClient.get<InboxRow[]>("/memos/inbox");
   inboxCache = data.map(mapInboxRow);
   return inboxCache;

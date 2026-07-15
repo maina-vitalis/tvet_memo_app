@@ -5,6 +5,8 @@ import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
+import { clearMemosCache } from "@/src/features/memos/api/memosApi";
+import { memosKeys } from "@/src/features/memos/hooks/useMemos";
 import { registerPushToken } from "@/src/features/notifications/api/pushTokenApi";
 import { notificationsKeys } from "@/src/features/notifications/queryKeys";
 import { incrementUnread } from "@/src/features/notifications/store/notificationsSlice";
@@ -116,6 +118,10 @@ export function usePushNotifications(): void {
     const receivedSubscription = Notifications.addNotificationReceivedListener(
       () => {
         dispatch(incrementUnread());
+        clearMemosCache();
+        void queryClient.invalidateQueries({
+          queryKey: memosKeys.lists(),
+        });
         void queryClient.invalidateQueries({
           queryKey: notificationsKeys.list(),
         });
