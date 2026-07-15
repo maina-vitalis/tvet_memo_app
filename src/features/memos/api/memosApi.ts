@@ -52,9 +52,16 @@ function mapInboxRow(row: InboxRow): Memo {
 
 let inboxCache: Memo[] | null = null;
 
+function sortMemosNewestFirst(memos: Memo[]): Memo[] {
+  return [...memos].sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+}
+
 async function fetchInboxMemos(): Promise<Memo[]> {
   const { data } = await apiClient.get<InboxRow[]>("/memos/inbox");
-  inboxCache = data.map(mapInboxRow);
+  inboxCache = sortMemosNewestFirst(data.map(mapInboxRow));
   return inboxCache;
 }
 
