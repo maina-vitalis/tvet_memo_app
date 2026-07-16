@@ -54,9 +54,7 @@ export function useMemoComposer() {
       const fallback =
         variables.publishNow === false
           ? "Could not save this draft. Please try again."
-          : variables.scheduledAt
-            ? "Could not schedule this memo. Please try again."
-            : `Could not publish this memo. Please try again.${timeoutHint}`;
+          : `Could not publish this memo. Please try again.${timeoutHint}`;
 
       showError(error, fallback);
     },

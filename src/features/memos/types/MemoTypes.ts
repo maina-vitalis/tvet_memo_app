@@ -4,7 +4,7 @@ export interface Memo {
   body: string;
   attachmentUrl?: string;
   publishedAt: string;
-  isAcknowledged: boolean;
+  isRead: boolean;
 }
 
 export type MemoTag = {
@@ -34,7 +34,6 @@ export type MemoDetail = {
   priority?: "urgent" | "normal";
   body: MemoBodyBlock[];
   attachments: MemoAttachment[];
-  requiresAcknowledgement?: boolean;
 };
 
 export type MemoFeedItem = {
@@ -47,7 +46,6 @@ export type MemoFeedItem = {
   avatarUri?: string;
   avatarFallbackIcon?: "campaign";
   unread?: boolean;
-  acknowledged?: boolean;
   bookmarked?: boolean;
   titleEmphasis?: "headline" | "label";
 };

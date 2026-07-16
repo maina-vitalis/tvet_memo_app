@@ -9,7 +9,6 @@ export const Permission = {
   APPROVE_MEMO: "approve_memo",
   VIEW_AUDIT_LOGS: "view_audit_logs",
   VIEW_BOARD_REPORTS: "view_board_reports",
-  ACKNOWLEDGE_MEMO: "acknowledge_memo",
 } as const;
 
 export type Permission = (typeof Permission)[keyof typeof Permission];
@@ -19,26 +18,22 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   CHAIRPERSON: [
     Permission.VIEW_BOARD_REPORTS,
     Permission.VIEW_AUDIT_LOGS,
-    Permission.ACKNOWLEDGE_MEMO,
   ],
-  BOARD_MEMBER: [Permission.VIEW_BOARD_REPORTS, Permission.ACKNOWLEDGE_MEMO],
+  BOARD_MEMBER: [Permission.VIEW_BOARD_REPORTS],
   PRINCIPAL: [
     Permission.MANAGE_TENANT_USERS,
     Permission.MANAGE_ROLES,
     Permission.BROADCAST_MEMO,
     Permission.APPROVE_MEMO,
     Permission.VIEW_AUDIT_LOGS,
-    Permission.ACKNOWLEDGE_MEMO,
   ],
   DEPUTY_PRINCIPAL_ACADEMICS: [
     Permission.BROADCAST_MEMO,
     Permission.APPROVE_MEMO,
-    Permission.ACKNOWLEDGE_MEMO,
   ],
   DEPUTY_PRINCIPAL_ADMIN: [
     Permission.MANAGE_TENANT_USERS,
     Permission.BROADCAST_MEMO,
-    Permission.ACKNOWLEDGE_MEMO,
   ],
   INSTITUTION_ADMIN: [
     Permission.MANAGE_TENANT_USERS,
@@ -46,9 +41,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     Permission.MANAGE_ROLES,
     Permission.VIEW_AUDIT_LOGS,
   ],
-  HOD: [Permission.BROADCAST_MEMO, Permission.ACKNOWLEDGE_MEMO],
-  TRAINER: [Permission.ACKNOWLEDGE_MEMO],
-  TRAINEE: [Permission.ACKNOWLEDGE_MEMO],
+  HOD: [Permission.BROADCAST_MEMO],
+  TRAINER: [],
+  TRAINEE: [],
 };
 
 export function hasPermission(

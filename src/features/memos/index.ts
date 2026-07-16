@@ -1,5 +1,4 @@
 export {
-  acknowledgeMemo,
   clearMemosCache,
   createMemo,
   getMemoById,
@@ -20,7 +19,6 @@ export {
 } from "./hooks/useMemoTargeting";
 export {
   memosKeys,
-  useAcknowledgeMemo,
   useMemoDetail,
   useMemosQuery,
 } from "./hooks/useMemos";

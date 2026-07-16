@@ -1,18 +1,14 @@
 import {
   useInfiniteQuery,
-  useMutation,
   useQuery,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 import {
-  acknowledgeMemo,
   getMemoById,
   getMemos,
   isValidMemoId,
 } from "@/src/features/memos/api/memosApi";
-import type { Memo } from "@/src/features/memos/types";
 import { setMemos } from "@/src/features/memos/store/memosSlice";
 import { selectIsAuthenticated } from "@/src/features/auth/store/authSelectors";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
@@ -80,40 +76,4 @@ export function useMemoDetail(id: string) {
   }, [query.error, showError]);
 
   return query;
-}
-
-export function useAcknowledgeMemo() {
-  const queryClient = useQueryClient();
-  const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-
-  return useMutation({
-    mutationFn: acknowledgeMemo,
-    onSuccess: (_result, memoId) => {
-      queryClient.setQueryData<Memo>(memosKeys.detail(memoId), (current) =>
-        current ? { ...current, isAcknowledged: true } : current,
-      );
-
-      queryClient.invalidateQueries({ queryKey: memosKeys.lists() });
-
-      const cachedPages = queryClient.getQueryData<{
-        pages: {
-          data: Memo[];
-          total: number;
-          page: number;
-          limit: number;
-        }[];
-      }>(memosKeys.lists());
-
-      if (cachedPages) {
-        const merged = cachedPages.pages.flatMap(
-          (pageResult) => pageResult.data,
-        );
-        dispatch(setMemos(merged));
-      }
-    },
-    onError: (error) => {
-      showError(error, "Could not acknowledge this memo. Please try again.");
-    },
-  });
 }

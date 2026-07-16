@@ -25,11 +25,9 @@ type BackendMemo = {
   body: string;
   sentAt: string | null;
   createdAt: string;
-  requiresAck: boolean;
 };
 
 type InboxRecipient = {
-  acknowledgedAt: string | null;
   readAt: string | null;
 };
 
@@ -46,7 +44,7 @@ function mapInboxRow(row: InboxRow): Memo {
     title: row.memo.subject,
     body: row.memo.body,
     publishedAt,
-    isAcknowledged: Boolean(row.recipient.acknowledgedAt),
+    isRead: Boolean(row.recipient.readAt),
   };
 }
 
@@ -100,28 +98,7 @@ export async function getMemoById(id: string): Promise<Memo> {
     title: data.subject,
     body: data.body,
     publishedAt: data.sentAt ?? data.createdAt,
-    isAcknowledged: false,
-  };
-}
-
-export async function acknowledgeMemo(
-  id: string,
-): Promise<{ acknowledgedAt: string }> {
-  assertMemoId(id);
-
-  const { data } = await apiClient.post<InboxRecipient>(
-    `/memos/${id}/acknowledge`,
-    { ackType: "simple" },
-  );
-
-  if (inboxCache) {
-    inboxCache = inboxCache.map((memo) =>
-      memo.id === id ? { ...memo, isAcknowledged: true } : memo,
-    );
-  }
-
-  return {
-    acknowledgedAt: data.acknowledgedAt ?? new Date().toISOString(),
+    isRead: false,
   };
 }
 
@@ -136,7 +113,6 @@ export async function createMemo(
 export type PublishMemoResponse = {
   memo: CreatedMemo;
   recipientCount: number;
-  scheduled?: boolean;
 };
 
 /** Create and send in one request — avoids duplicate memos when the send step times out. */

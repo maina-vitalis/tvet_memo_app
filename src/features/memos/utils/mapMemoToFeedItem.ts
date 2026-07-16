@@ -13,11 +13,8 @@ export function mapMemoToFeedItem(memo: Memo): MemoFeedItem {
     title: memo.title,
     excerpt:
       memo.body.length > 140 ? `${memo.body.slice(0, 140)}…` : memo.body,
-    tags: memo.isAcknowledged
-      ? [{ label: "Acknowledged", tone: "muted" }]
-      : [{ label: "New", tone: "primary" }],
-    acknowledged: memo.isAcknowledged,
-    unread: !memo.isAcknowledged,
+    tags: memo.isRead ? [] : [{ label: "New", tone: "primary" }],
+    unread: !memo.isRead,
     titleEmphasis: "label",
   };
 }

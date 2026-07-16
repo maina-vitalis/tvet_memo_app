@@ -1,23 +1,12 @@
 import { router, useLocalSearchParams } from "expo-router";
-import {
-  ArrowLeft,
-  CheckCircle,
-  Clock,
-} from "lucide-react-native";
+import { ArrowLeft, Clock } from "lucide-react-native";
 import { ActivityIndicator } from "react-native";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { MemoDetail } from "@/src/features/memos/components/MemoDetail";
-import {
-  useAcknowledgeMemo,
-  useMemoDetail,
-} from "@/src/features/memos/hooks/useMemos";
-import { Badge, BadgeIcon, BadgeText } from "@/src/shared/components/ui/badge";
+import { useMemoDetail } from "@/src/features/memos/hooks/useMemos";
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonIcon, ButtonText } from "@/src/shared/components/ui/button";
+import { Button, ButtonText } from "@/src/shared/components/ui/button";
 import { Card } from "@/src/shared/components/ui/card";
 import { Heading } from "@/src/shared/components/ui/heading";
 import { HStack } from "@/src/shared/components/ui/hstack";
@@ -25,18 +14,12 @@ import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
 import { ScreenStatusBar } from "@/src/shared/components/screen-status-bar";
 import { Text } from "@/src/shared/components/ui/text";
-import { VStack } from "@/src/shared/components/ui/vstack";
 
 export default function MemoDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const insets = useSafeAreaInsets();
   const memoId = id ?? "";
 
   const { data: memo, isLoading, isError } = useMemoDetail(memoId);
-  const acknowledgeMemo = useAcknowledgeMemo();
-
-  const acknowledged =
-    memo?.isAcknowledged ?? acknowledgeMemo.isSuccess;
 
   if (isLoading) {
     return (
@@ -99,7 +82,7 @@ export default function MemoDetailScreen() {
 
         <ScrollView
           className="flex-1"
-          contentContainerClassName="mx-auto w-full max-w-3xl gap-6 px-4 pb-32 pt-4 md:px-6"
+          contentContainerClassName="mx-auto w-full max-w-3xl gap-6 px-4 pb-8 pt-4 md:px-6"
           showsVerticalScrollIndicator={false}
         >
           <Card
@@ -118,51 +101,11 @@ export default function MemoDetailScreen() {
               <Text className="text-xs text-muted-foreground">
                 {publishedLabel}
               </Text>
-
-              {memo.isAcknowledged ? (
-                <Badge className="ml-auto rounded-full bg-success/10 px-2 py-1">
-                  <BadgeIcon
-                    as={CheckCircle}
-                    size={14}
-                    className="mr-1 text-success"
-                  />
-                  <BadgeText className="normal-case text-success">
-                    Acknowledged
-                  </BadgeText>
-                </Badge>
-              ) : null}
             </HStack>
 
-            <MemoDetail
-              blocks={[{ type: "paragraph", text: memo.body }]}
-            />
+            <MemoDetail blocks={[{ type: "paragraph", text: memo.body }]} />
           </Card>
         </ScrollView>
-
-        {!memo.isAcknowledged ? (
-          <Box
-            className="absolute bottom-0 left-0 right-0 border-t border-border/20 bg-card shadow-sm"
-            style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-          >
-            <VStack className="mx-auto w-full max-w-3xl items-center justify-between gap-4 px-4 pt-4">
-              <Button
-                variant="secondary"
-                size="lg"
-                disabled={acknowledged || acknowledgeMemo.isPending}
-                onPress={() => acknowledgeMemo.mutate(memo.id)}
-                className="min-h-11 w-full rounded-lg shadow-md"
-              >
-                <ButtonIcon
-                  as={CheckCircle}
-                  className="fill-secondary-foreground"
-                />
-                <ButtonText className="font-semibold">
-                  {acknowledged ? "Acknowledged" : "Acknowledge Receipt"}
-                </ButtonText>
-              </Button>
-            </VStack>
-          </Box>
-        ) : null}
       </Box>
     </SafeAreaView>
   );

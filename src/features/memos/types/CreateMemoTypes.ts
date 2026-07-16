@@ -20,9 +20,6 @@ export type CreateMemoPayload = {
   targetType: MemoTargetType;
   priority?: MemoPriority;
   targetPayload?: Record<string, unknown>;
-  requiresAck?: boolean;
-  ackDeadlineAt?: string;
-  scheduledAt?: string;
   expiresAt?: string;
 };
 
@@ -34,12 +31,9 @@ export type CreatedMemo = {
   body: string;
   priority: MemoPriority;
   category: MemoCategory;
-  status: "draft" | "scheduled" | "sent" | "archived" | "cancelled";
+  status: "draft" | "sent" | "archived" | "cancelled";
   targetType: MemoTargetType;
   targetPayload: Record<string, unknown>;
-  requiresAck: boolean;
-  ackDeadlineAt: string | null;
-  scheduledAt: string | null;
   expiresAt: string | null;
   sentAt: string | null;
   createdAt: string;

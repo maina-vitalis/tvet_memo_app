@@ -12,7 +12,6 @@ type InboxRow = {
   };
   recipient: {
     readAt: string | null;
-    acknowledgedAt: string | null;
   };
 };
 

@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { ArrowLeft, Calendar, ChevronDown } from "lucide-react-native";
+import { ArrowLeft, ChevronDown } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import {
@@ -28,12 +28,6 @@ import {
   ButtonText,
 } from "@/src/shared/components/ui/button";
 import {
-  DateTimePicker,
-  DateTimePickerIcon,
-  DateTimePickerInput,
-  DateTimePickerTrigger,
-} from "@/src/shared/components/ui/date-time-picker";
-import {
   FormControl,
   FormControlLabel,
   FormControlLabelText,
@@ -55,7 +49,6 @@ import {
   SelectPortal,
   SelectTrigger,
 } from "@/src/shared/components/ui/select";
-import { Switch } from "@/src/shared/components/ui/switch";
 import { Text } from "@/src/shared/components/ui/text";
 import { Textarea, TextareaInput } from "@/src/shared/components/ui/textarea";
 import { VStack } from "@/src/shared/components/ui/vstack";
@@ -101,9 +94,6 @@ export default function CreateMemoScreen() {
   const [priority, setPriority] = useState<MemoPriority>("normal");
   const [audience, setAudience] =
     useState<MemoAudienceSelection>(DEFAULT_AUDIENCE);
-  const [requiresAck, setRequiresAck] = useState(false);
-  const [scheduleEnabled, setScheduleEnabled] = useState(false);
-  const [scheduledAt, setScheduledAt] = useState<Date | undefined>();
   const [userSearch, setUserSearch] = useState("");
 
   const trimmedSubject = subject.trim();
@@ -114,25 +104,8 @@ export default function CreateMemoScreen() {
       return false;
     }
 
-    if (!isAudienceSelectionValid(actorRole, audience)) {
-      return false;
-    }
-
-    if (scheduleEnabled && !scheduledAt) {
-      return false;
-    }
-
-    return true;
-  }, [
-    actorRole,
-    audience,
-    scheduleEnabled,
-    scheduledAt,
-    trimmedBody.length,
-    trimmedSubject.length,
-  ]);
-
-  const isScheduledForFuture = scheduleEnabled && scheduledAt !== undefined;
+    return isAudienceSelectionValid(actorRole, audience);
+  }, [actorRole, audience, trimmedBody.length, trimmedSubject.length]);
 
   if (!canBroadcastMemo) {
     return (
@@ -154,7 +127,7 @@ export default function CreateMemoScreen() {
     );
   }
 
-  const buildPayload = (publishNow: boolean) => {
+  const buildPayload = () => {
     if (!actorRole) {
       return null;
     }
@@ -171,25 +144,12 @@ export default function CreateMemoScreen() {
       priority,
       targetType,
       targetPayload,
-      requiresAck,
-      scheduledAt:
-        scheduleEnabled && scheduledAt ? scheduledAt.toISOString() : undefined,
-      publishNow,
+      publishNow: true,
     };
   };
 
-  // const handleSaveDraft = () => {
-  //   const payload = buildPayload(false);
-
-  //   if (!payload) {
-  //     return;
-  //   }
-
-  //   composer.mutate(payload);
-  // };
-
   const handlePublish = () => {
-    const payload = buildPayload(!isScheduledForFuture);
+    const payload = buildPayload();
 
     if (!payload) {
       return;
@@ -347,67 +307,6 @@ export default function CreateMemoScreen() {
               userSearch={userSearch}
               onUserSearchChange={setUserSearch}
             />
-
-            <HStack className="items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
-              <VStack className="flex-1 pr-4">
-                <Text className="text-sm font-semibold text-foreground">
-                  Schedule for later
-                </Text>
-                <Text className="mt-0.5 text-xs text-muted-foreground">
-                  Save as scheduled and publish automatically at the chosen
-                  time.
-                </Text>
-              </VStack>
-              <Switch
-                value={scheduleEnabled}
-                onValueChange={(enabled) => {
-                  setScheduleEnabled(enabled);
-                  if (!enabled) {
-                    setScheduledAt(undefined);
-                  }
-                }}
-                accessibilityLabel="Schedule for later"
-              />
-            </HStack>
-
-            {scheduleEnabled ? (
-              <FormControl>
-                <FormControlLabel>
-                  <FormControlLabelText className="text-sm font-semibold">
-                    Send at
-                  </FormControlLabelText>
-                </FormControlLabel>
-                <DateTimePicker
-                  mode="datetime"
-                  value={scheduledAt}
-                  minimumDate={new Date()}
-                  onChange={(date) => setScheduledAt(date)}
-                  placeholder="Pick date and time"
-                  format="YYYY-MM-DD HH:mm"
-                >
-                  <DateTimePickerTrigger className="h-12 rounded-lg border border-border bg-card px-3">
-                    <DateTimePickerInput className="flex-1 text-sm" />
-                    <DateTimePickerIcon as={Calendar} className="mr-1" />
-                  </DateTimePickerTrigger>
-                </DateTimePicker>
-              </FormControl>
-            ) : null}
-
-            <HStack className="items-center justify-between rounded-lg border border-border bg-card px-4 py-3">
-              <VStack className="flex-1 pr-4">
-                <Text className="text-sm font-semibold text-foreground">
-                  Require acknowledgement
-                </Text>
-                <Text className="mt-0.5 text-xs text-muted-foreground">
-                  Recipients must confirm they have read this memo.
-                </Text>
-              </VStack>
-              <Switch
-                value={requiresAck}
-                onValueChange={setRequiresAck}
-                accessibilityLabel="Require acknowledgement"
-              />
-            </HStack>
           </ScrollView>
         </KeyboardAvoidingView>
 
@@ -416,16 +315,6 @@ export default function CreateMemoScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
           <VStack className="mx-auto w-full max-w-3xl gap-3 px-4 pt-4">
-            {/*<Button
-              variant="outline"
-              size="lg"
-              isDisabled={!isFormValid || composer.isPending}
-              onPress={handleSaveDraft}
-              className="min-h-11 w-full rounded-lg"
-            >
-              {composer.isPending ? <ButtonSpinner /> : null}
-              <ButtonText className="font-semibold">Save Draft</ButtonText>
-            </Button>*/}
             <Button
               size="lg"
               isDisabled={!isFormValid || composer.isPending}
@@ -436,7 +325,7 @@ export default function CreateMemoScreen() {
                 <ButtonSpinner className="text-secondary-foreground" />
               ) : null}
               <ButtonText className="font-semibold text-secondary-foreground">
-                {isScheduledForFuture ? "Schedule Memo" : "Publish Memo"}
+                Publish Memo
               </ButtonText>
             </Button>
           </VStack>

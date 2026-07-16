@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { AlertCircle, CheckCircle, MessageCircle } from "lucide-react-native";
+import { AlertCircle, MessageCircle } from "lucide-react-native";
 
 import { Avatar, AvatarImage } from "@/src/shared/components/ui/avatar";
 import { Badge, BadgeIcon, BadgeText } from "@/src/shared/components/ui/badge";
@@ -53,7 +53,7 @@ export function MemoCard({ item }: { item: MemoFeedItem }) {
         size="sm"
         className={`relative gap-0 rounded-lg border-0 shadow-sm ${
           item.unread ? "border-l-4 border-l-secondary" : ""
-        } ${item.acknowledged ? "opacity-80" : ""}`}
+        }`}
       >
         {item.unread ? (
           <Box className="absolute top-4 right-4 h-2 w-2 rounded-full bg-secondary" />
@@ -76,10 +76,6 @@ export function MemoCard({ item }: { item: MemoFeedItem }) {
             </Text>
             <Text className="text-xs text-muted-foreground">{item.meta}</Text>
           </VStack>
-
-          {item.acknowledged ? (
-            <CheckCircle className="h-4.5 w-4.5 text-primary" />
-          ) : null}
         </HStack>
 
         {item.titleEmphasis === "headline" ? (
