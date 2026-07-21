@@ -1,11 +1,15 @@
 import { router } from "expo-router";
-import { Landmark, Mail, Tag } from "lucide-react-native";
+import { Mail, Tag } from "lucide-react-native";
 import { useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  Button,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/shared/components/ui/button";
 import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Link, LinkText } from "@/src/shared/components/ui/link";
 import {
@@ -96,11 +100,8 @@ export default function TenantDiscoveryScreen() {
 
           <VStack className="z-10 flex-1 justify-center px-4 pb-8 md:px-6">
             <VStack className="mb-8 items-center">
-              <Box className="mb-6 h-16 w-16 items-center justify-center rounded-xl border border-border bg-card shadow-sm">
-                <Landmark className="h-8 w-8 text-primary" />
-              </Box>
               <Text className="text-center text-2xl font-bold leading-8 text-primary md:text-[28px]">
-                Welcome — let&apos;s find your institution.
+                Welcome let&apos;s find your institution.
               </Text>
             </VStack>
 

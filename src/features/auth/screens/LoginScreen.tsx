@@ -8,7 +8,11 @@ import { useCheckEmail } from "@/src/features/auth/hooks/useAuthMutations";
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
 import { selectInstitution } from "@/src/features/auth/store/authSelectors";
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  Button,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/shared/components/ui/button";
 import {
   FormControl,
   FormControlLabel,
@@ -37,12 +41,6 @@ export default function LoginScreen() {
       router.replace(AUTH_ROUTES.tenantDiscovery);
     }
   }, [institution]);
-
-  useEffect(() => {
-    if (emailParam?.trim()) {
-      setEmail(emailParam.trim());
-    }
-  }, [emailParam]);
 
   const canSubmit = EMAIL_PATTERN.test(email.trim()) && !isPending;
 
@@ -92,7 +90,9 @@ export default function LoginScreen() {
                 className="mb-3 h-16 w-16"
                 accessibilityLabel="TVET Connect logo"
               />
-              <Text className="text-lg font-bold text-primary">TVET Connect</Text>
+              <Text className="text-lg font-bold text-primary">
+                TVET Connect
+              </Text>
             </VStack>
 
             <VStack className="mt-8 gap-2">

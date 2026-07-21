@@ -86,7 +86,9 @@ export function SplashScreen() {
     const navigateTimer = setTimeout(() => {
       // After animation, re-read latest auth state (the boot loader may have updated it)
       const currentIsAuthed = getStore().getState().auth.isAuthenticated; // direct read to avoid stale closure
-      const currentFirstSetup = getStore().getState().auth.isFirstSetup || (getStore().getState().auth.user?.mustChangePassword ?? false);
+      const currentFirstSetup =
+        getStore().getState().auth.isFirstSetup ||
+        (getStore().getState().auth.user?.mustChangePassword ?? false);
 
       if (currentIsAuthed) {
         router.replace(
@@ -114,7 +116,7 @@ export function SplashScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScreenStatusBar style="light" backgroundColor="#1a365d" />
+      <ScreenStatusBar style="auto" />
       <Box className="flex-1 justify-between bg-[#1a365d] px-6 py-12">
         <Box className="flex-1" />
 

@@ -5,7 +5,11 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { PasswordInput } from "@/src/features/auth/components/PasswordInput";
-import { useAccountSetup, useLogin, useSignupRegister } from "@/src/features/auth/hooks/useAuthMutations";
+import {
+  useAccountSetup,
+  useLogin,
+  useSignupRegister,
+} from "@/src/features/auth/hooks/useAuthMutations";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   selectInstitution,
@@ -13,7 +17,11 @@ import {
 } from "@/src/features/auth/store/authSelectors";
 import { isPasswordValid } from "@/src/features/auth/hooks/usePasswordStrength";
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  Button,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/shared/components/ui/button";
 import {
   FormControl,
   FormControlLabel,
@@ -33,8 +41,12 @@ const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 type PasswordMode = "setup" | "login";
 
 export default function PasswordScreen() {
-  const { mode: modeParam, token, email: emailParam } = useLocalSearchParams<{
-    mode?: string; 
+  const {
+    mode: modeParam,
+    token,
+    email: emailParam,
+  } = useLocalSearchParams<{
+    mode?: string;
     token?: string;
     email?: string;
   }>();
@@ -104,9 +116,7 @@ export default function PasswordScreen() {
       : null;
 
   const canSubmit = isSetupMode
-    ? isPasswordValid(password) &&
-      confirmPassword === password &&
-      !isSubmitting
+    ? isPasswordValid(password) && confirmPassword === password && !isSubmitting
     : password.length > 0 && !isSubmitting;
 
   const handleBack = () => {
@@ -179,7 +189,9 @@ export default function PasswordScreen() {
                 className="mb-3 h-16 w-16"
                 accessibilityLabel="TVET Connect logo"
               />
-              <Text className="text-lg font-bold text-primary">TVET Connect</Text>
+              <Text className="text-lg font-bold text-primary">
+                TVET Connect
+              </Text>
             </VStack>
 
             <VStack className="mt-8 gap-2">

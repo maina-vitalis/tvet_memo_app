@@ -1,7 +1,7 @@
 import apiClient from "@/src/shared/utils/apiClient";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { AuthSession, User } from "@/src/shared/types";
-import tokenStorage from "@/src/features/auth/api/tokenStorage";
+import { tokenStorage } from "@/src/features/auth/api/tokenStorage";
 import { getOrCreateDeviceId } from "./device";
 
 export type Institution = {
@@ -22,7 +22,9 @@ type BackendLoginResponse = {
 };
 
 function mapSession(response: BackendLoginResponse): AuthSession {
-  tokenStorage.setTokens(response.accessToken, response.refreshToken).catch(() => {});
+  tokenStorage
+    .setTokens(response.accessToken, response.refreshToken)
+    .catch(() => {});
   return {
     token: response.accessToken,
     refreshToken: response.refreshToken,
@@ -52,9 +54,8 @@ export async function discoverInstitution(
   return data;
 }
 
-export async function checkEmail(
-  email: string,
-): Promise<{
+//email checkup
+export async function checkEmail(email: string): Promise<{
   exists: boolean;
   emailVerified: boolean;
   pendingVerification: boolean;
@@ -163,7 +164,10 @@ export async function logout(): Promise<void> {
   const refresh = await tokenStorage.getRefreshToken();
 
   try {
-    await apiClient.post("/auth/logout", refresh ? { refreshToken: refresh } : undefined);
+    await apiClient.post(
+      "/auth/logout",
+      refresh ? { refreshToken: refresh } : undefined,
+    );
   } catch {
     // Local session is cleared by the caller either way.
   } finally {

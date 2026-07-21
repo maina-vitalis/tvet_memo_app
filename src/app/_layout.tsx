@@ -39,7 +39,7 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen
                     name="index"
-                    options={{ statusBarStyle: "light" }}
+                    options={{ statusBarStyle: "dark" }}
                   />
                   <Stack.Screen
                     name="(tabs)"

@@ -16,9 +16,11 @@
         "foregroundImage": "./src/assets/images/android-icon-foreground.png",
         "monochromeImage": "./src/assets/images/android-icon-monochrome.png"
       },
+
       "predictiveBackGestureEnabled": false,
       "softwareKeyboardLayoutMode": "resize",
-      "package": "com.vitalis058.tvetmemo"
+      "package": "com.vitalis058.tvetmemo",
+      "usesClearTextTraffic": true
     },
     "web": {
       "output": "static",
@@ -52,7 +54,6 @@
     },
     "extra": {
       "router": {},
-      "apiUrl": "http://localhost:5000/api/v1",
       "eas": {
         "projectId": "18fa5aa3-ba12-4721-93b5-5b3741b3c524"
       }
