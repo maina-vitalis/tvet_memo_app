@@ -11,18 +11,18 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { AUTH_ROUTES } from "@/src/features/auth/navigation";
+import { loadTokensFromSecureStorage } from "@/src/features/auth/store/authBoot"; // [REFRESH TOKENS] load secrets from secure store on boot
+import { selectIsFirstSetup } from "@/src/features/auth/store/authSelectors";
+import { ScreenStatusBar } from "@/src/shared/components/screen-status-bar";
 import { Box } from "@/src/shared/components/ui/box";
 import { Heading } from "@/src/shared/components/ui/heading";
 import { HStack } from "@/src/shared/components/ui/hstack";
 import { Image } from "@/src/shared/components/ui/image";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
-import { ScreenStatusBar } from "@/src/shared/components/screen-status-bar";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { AUTH_ROUTES } from "@/src/features/auth/navigation";
-import { selectIsFirstSetup } from "@/src/features/auth/store/authSelectors";
 import { useAppSelector } from "@/src/shared/store/hooks";
-import { loadTokensFromSecureStorage } from "@/src/features/auth/store/authBoot"; // [REFRESH TOKENS] load secrets from secure store on boot
 import { getStore } from "@/src/shared/store/storeRef";
 
 const APP_LOGO = require("@/src/assets/images/splash-icon.png");

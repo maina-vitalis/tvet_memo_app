@@ -1,5 +1,5 @@
-import { SplashScreen } from "@/src/features/auth/screens/SplashScreen";
+// import { SplashScreen } from "@/src/features/auth/screens/SplashScreen";
 
-export default function HomeScreen() {
-  return <SplashScreen />;
-}
+// export default function HomeScreen() {
+//   return <SplashScreen />;
+// }

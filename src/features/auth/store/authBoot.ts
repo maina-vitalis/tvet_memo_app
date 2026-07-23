@@ -7,10 +7,10 @@
  * Call this early (SplashScreen or root layout after PersistGate).
  */
 
-import { setCredentials } from "./authSlice";
-import tokenStorage from "../api/tokenStorage";
 import { getStore } from "@/src/shared/store/storeRef";
 import type { User } from "@/src/shared/types";
+import { tokenStorage } from "../api/tokenStorage";
+import { setCredentials } from "./authSlice";
 
 export async function loadTokensFromSecureStorage(): Promise<boolean> {
   try {
