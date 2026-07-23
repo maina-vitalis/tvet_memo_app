@@ -12,7 +12,11 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Box } from "@/src/shared/components/ui/box";
-import { Button, ButtonSpinner, ButtonText } from "@/src/shared/components/ui/button";
+import {
+  Button,
+  ButtonSpinner,
+  ButtonText,
+} from "@/src/shared/components/ui/button";
 import { Card } from "@/src/shared/components/ui/card";
 import {
   FormControl,

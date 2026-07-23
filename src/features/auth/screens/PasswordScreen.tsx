@@ -10,12 +10,12 @@ import {
   useLogin,
   useSignupRegister,
 } from "@/src/features/auth/hooks/useAuthMutations";
-import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
+import { isPasswordValid } from "@/src/features/auth/hooks/usePasswordStrength";
+import { AUTH_ROUTES } from "@/src/features/auth/navigation";
 import {
   selectInstitution,
   selectPendingEmail,
 } from "@/src/features/auth/store/authSelectors";
-import { isPasswordValid } from "@/src/features/auth/hooks/usePasswordStrength";
 import { Box } from "@/src/shared/components/ui/box";
 import {
   Button,
@@ -28,8 +28,8 @@ import {
   FormControlLabelText,
 } from "@/src/shared/components/ui/form-control";
 import { Heading } from "@/src/shared/components/ui/heading";
-import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Image } from "@/src/shared/components/ui/image";
+import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
 import { Text } from "@/src/shared/components/ui/text";

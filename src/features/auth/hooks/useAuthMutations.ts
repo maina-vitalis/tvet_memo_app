@@ -106,6 +106,7 @@ export function useSignupRegister() {
   };
 }
 
+//send otp
 export function useSendOtp() {
   const dispatch = useAppDispatch();
   const { showError } = useMutationToast();
@@ -165,7 +166,7 @@ export function useVerifyOtp() {
 
   return {
     verifyOtp: mutation.mutate,
-    verifyOtpAsync: mutation.mutateAsync,
+    verifyOtpAsync: mutation.mutateAsync,   
     isPending: mutation.isPending,
     error,
     resetError,
@@ -229,7 +230,8 @@ export function useAccountSetup() {
       router.replace(AUTH_ROUTES.home);
     },
     onError: (mutationError) => {
-      const message = "Invalid or expired setup link. Please contact your administrator.";
+      const message =
+        "Invalid or expired setup link. Please contact your administrator.";
       setError(message);
       showError(mutationError, message);
     },

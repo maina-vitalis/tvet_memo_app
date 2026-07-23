@@ -62,13 +62,15 @@ export default function OtpScreen() {
   const [digits, setDigits] = useState<string[]>(
     Array.from({ length: OTP_LENGTH }, () => ""),
   );
-  const [countdown, setCountdown] = useState(RESEND_SECONDS);
   const hasAttemptedInitialSend = useRef(false);
 
   const otpValue = useMemo(() => digits.join(""), [digits]);
   const canSubmit =
     otpValue.length === OTP_LENGTH && !isVerifying && email.length > 0;
 
+  const [now, setNow] = useState(() => Date.now());
+
+  //routing configuration
   useEffect(() => {
     if (!institution) {
       router.replace(AUTH_ROUTES.tenantDiscovery);
@@ -80,6 +82,7 @@ export default function OtpScreen() {
     }
   }, [institution, email]);
 
+  //effect to attempt to send the email
   useEffect(() => {
     if (
       !institution ||
@@ -95,26 +98,21 @@ export default function OtpScreen() {
   }, [email, institution, otpSentAt, sendOtp]);
 
   useEffect(() => {
-    if (otpSentAt === null) {
-      return;
-    }
-
-    const elapsedSeconds = Math.floor((Date.now() - otpSentAt) / 1000);
-    const remaining = Math.max(RESEND_SECONDS - elapsedSeconds, 0);
-    setCountdown(remaining);
-  }, [otpSentAt]);
-
-  useEffect(() => {
-    if (countdown <= 0) {
+    if (!otpSentAt) {
       return;
     }
 
     const timer = setInterval(() => {
-      setCountdown((current) => (current > 0 ? current - 1 : 0));
+      setNow(() => Date.now());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [countdown]);
+  }, [otpSentAt]);
+
+  const countdown =
+    otpSentAt === null
+      ? RESEND_SECONDS
+      : Math.max(RESEND_SECONDS - Math.floor((now - otpSentAt) / 1000), 0);
 
   const updateDigit = useCallback(
     (index: number, value: string) => {
@@ -134,6 +132,7 @@ export default function OtpScreen() {
     [resetVerifyError],
   );
 
+  //handling delete in the OTP screen
   const handleKeyPress = useCallback(
     (index: number, key: string) => {
       if (key === "Backspace" && digits[index] === "" && index > 0) {
@@ -176,7 +175,6 @@ export default function OtpScreen() {
 
     try {
       await sendOtpAsync(email);
-      setCountdown(RESEND_SECONDS);
     } catch {
       // Error toast handled by mutation hook.
     }
