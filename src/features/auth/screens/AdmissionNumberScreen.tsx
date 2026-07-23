@@ -5,8 +5,8 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
-import { setPendingAdmissionNumber } from "@/src/features/auth/store/authSlice";
 import { selectInstitution } from "@/src/features/auth/store/authSelectors";
+import { setPendingAdmissionNumber } from "@/src/features/auth/store/authSlice";
 import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonText } from "@/src/shared/components/ui/button";
 import { Card } from "@/src/shared/components/ui/card";

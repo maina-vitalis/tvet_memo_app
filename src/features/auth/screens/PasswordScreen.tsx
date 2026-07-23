@@ -50,6 +50,7 @@ export default function PasswordScreen() {
     token?: string;
     email?: string;
   }>();
+
   const mode: PasswordMode = modeParam === "login" ? "login" : "setup";
 
   const institution = useAppSelector(selectInstitution);
@@ -222,7 +223,7 @@ export default function PasswordScreen() {
                       <Mail className="h-5 w-5 text-primary" />
                     </InputSlot>
                     <InputField
-                      value={displayEmail}
+                      value={displayEmail!}
                       editable={false}
                       accessibilityLabel="Email address"
                       className="px-3 text-base text-foreground"

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 import { Box } from "@/src/shared/components/ui/box";
 import {
   Button,
@@ -21,8 +23,6 @@ import {
 } from "@/src/shared/components/ui/tabs";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
-import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
 
 type DiscoveryMode = "email" | "shortcode";
 
@@ -190,7 +190,7 @@ export default function TenantDiscoveryScreen() {
                   size="lg"
                   isDisabled={!canContinue}
                   onPress={handleContinue}
-                  className="mt-2 rounded-lg shadow-sm"
+                  className="mt-2 rounded-lg shadow-sm bg-[#ea580c]"
                 >
                   {isSearching ? <ButtonSpinner /> : null}
                   <ButtonText className="text-sm font-semibold">
