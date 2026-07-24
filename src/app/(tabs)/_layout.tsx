@@ -186,7 +186,7 @@ export default function TabsLayout() {
   return (
     <Box className="flex-1 flex-row bg-background">
       <DesktopSideNav />
-      <Box className="flex-1">
+      <Box className="flex-1 bg-red-500">
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Tabs
           tabBar={(props) => (

@@ -16,13 +16,17 @@ export default function NotFoundScreen() {
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Box className="flex-1 items-center justify-center bg-background px-6">
           <VStack className="max-w-sm items-center gap-4">
-            <Heading size="2xl" className="text-center font-bold text-foreground">
+            <Heading
+              size="2xl"
+              className="text-center font-bold text-foreground"
+            >
               Page not found
             </Heading>
             <Text className="text-center text-base text-muted-foreground">
-              The page you are looking for does not exist or may have been moved.
+              The page you are looking for does not exist or may have been
+              moved.
             </Text>
-            <Link href="/" asChild>
+            <Link href="/(tabs)/home" asChild>
               <Button className="mt-2">
                 <ButtonText>Go to home</ButtonText>
               </Button>
