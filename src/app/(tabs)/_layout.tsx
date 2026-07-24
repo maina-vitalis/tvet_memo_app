@@ -196,7 +196,6 @@ export default function TabsLayout() {
             headerShown: false,
           }}
         >
-          <Tabs.Screen name="home" options={{ href: null }} />
           <Tabs.Screen name="feed" options={{ title: "Feed" }} />
           <Tabs.Screen name="alerts" options={{ title: "Alerts" }} />
           <Tabs.Screen name="bookmarks" options={{ title: "Bookmarks" }} />

@@ -15,7 +15,9 @@ const AppBootstrap = () => {
   useEffect(() => {
     // [REFRESH TOKENS] On boot, restore tokens from secure storage into redux before deciding navigation.
     // This runs in parallel with the boot animation.
-    loadTokensFromSecureStorage().catch(() => {});
+    (async () => {
+      loadTokensFromSecureStorage().catch(() => {});
+    })();
 
     //checking if the current user is authenticated
     const currentIsAuthed = getStore().getState().auth.isAuthenticated;
@@ -36,6 +38,7 @@ const AppBootstrap = () => {
     <ThemeProvider>
       <PushNotificationBootstrap />
       <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" options={{ statusBarStyle: "dark" }} />
         <Stack.Screen name="(auth)" options={{ statusBarStyle: "dark" }} />
         <Stack.Screen name="memo/[id]" options={{ statusBarStyle: "dark" }} />

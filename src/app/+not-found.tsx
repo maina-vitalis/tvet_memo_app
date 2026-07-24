@@ -26,7 +26,7 @@ export default function NotFoundScreen() {
               The page you are looking for does not exist or may have been
               moved.
             </Text>
-            <Link href="/(tabs)/home" asChild>
+            <Link href="/(tabs)/feed" asChild>
               <Button className="mt-2">
                 <ButtonText>Go to home</ButtonText>
               </Button>

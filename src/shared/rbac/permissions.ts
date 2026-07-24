@@ -11,14 +11,11 @@ export const Permission = {
   VIEW_BOARD_REPORTS: "view_board_reports",
 } as const;
 
-export type Permission = (typeof Permission)[keyof typeof Permission];
+export type PermissionType = (typeof Permission)[keyof typeof Permission];
 
-const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+const ROLE_PERMISSIONS: Record<Role, PermissionType[]> = {
   SUPER_ADMIN: Object.values(Permission),
-  CHAIRPERSON: [
-    Permission.VIEW_BOARD_REPORTS,
-    Permission.VIEW_AUDIT_LOGS,
-  ],
+  CHAIRPERSON: [Permission.VIEW_BOARD_REPORTS, Permission.VIEW_AUDIT_LOGS],
   BOARD_MEMBER: [Permission.VIEW_BOARD_REPORTS],
   PRINCIPAL: [
     Permission.MANAGE_TENANT_USERS,
@@ -48,7 +45,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
 
 export function hasPermission(
   role: Role | null | undefined,
-  permission: Permission,
+  permission: PermissionType,
 ): boolean {
   if (!role) {
     return false;
