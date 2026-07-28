@@ -12,7 +12,8 @@ export const selectIsAuthenticated = (state: AuthSelectorState) =>
   state.auth.isAuthenticated;
 export const selectIsFirstSetup = (state: AuthSelectorState) =>
   state.auth.isFirstSetup || (state.auth.user?.mustChangePassword ?? false);
-export const selectOtpSentAt = (state: AuthSelectorState) => state.auth.otpSentAt;
+export const selectOtpSentAt = (state: AuthSelectorState) =>
+  state.auth.otpSentAt;
 export const selectAuthStatus = (state: AuthSelectorState) => state.auth.status;
 export const selectAuthError = (state: AuthSelectorState) => state.auth.error;
 export const selectInstitution = (state: AuthSelectorState) =>

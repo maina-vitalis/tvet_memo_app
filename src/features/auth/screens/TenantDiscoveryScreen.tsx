@@ -23,6 +23,7 @@ import {
 } from "@/src/shared/components/ui/tabs";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
+import { cn } from "@/src/shared/utils/cn";
 
 type DiscoveryMode = "email" | "shortcode";
 
@@ -105,7 +106,7 @@ export default function TenantDiscoveryScreen() {
               </Text>
             </VStack>
 
-            <Box className="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <Box className="rounded-xl border-border bg-card p-6">
               <Box
                 className="mb-6"
                 onLayout={(event) => {
@@ -118,18 +119,20 @@ export default function TenantDiscoveryScreen() {
                   onValueChange={handleTabChange}
                   variant="filled"
                 >
-                  <TabsList className="w-full">
+                  <TabsList className="w-full h-14 rounded-full">
                     <TabsIndicator />
                     <TabsTrigger
                       value="email"
-                      className="items-center justify-center py-2"
+                      className={cn(
+                        "items-center justify-center py-2 rounded-full",
+                      )}
                       style={
                         tabTriggerWidth > 0
                           ? { width: tabTriggerWidth }
                           : undefined
                       }
                     >
-                      <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                      <TabsTriggerText className="text-base font-semibold data-[selected=true]:text-primary">
                         Email
                       </TabsTriggerText>
                     </TabsTrigger>
@@ -142,7 +145,7 @@ export default function TenantDiscoveryScreen() {
                           : undefined
                       }
                     >
-                      <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                      <TabsTriggerText className="text-base font-semibold data-[selected=true]:text-primary">
                         Shortcode
                       </TabsTriggerText>
                     </TabsTrigger>
@@ -151,7 +154,7 @@ export default function TenantDiscoveryScreen() {
               </Box>
 
               <VStack space="sm">
-                <Input className="rounded-lg border-border bg-background data-[focus=true]:border-primary">
+                <Input className="rounded-full border-border bg-background data-[focus=true]:border-primary h-14">
                   <InputSlot className="pl-4">
                     {mode === "email" ? (
                       <Mail className="h-5.5 w-5.5 text-muted-foreground" />
@@ -173,7 +176,7 @@ export default function TenantDiscoveryScreen() {
                     }
                     value={inputValue}
                     onChangeText={setInputValue}
-                    className="px-3 py-3 text-base text-foreground placeholder:text-red-500"
+                    className="px-3 py-3 text-base text-foreground"
                   />
                 </Input>
 
@@ -186,11 +189,10 @@ export default function TenantDiscoveryScreen() {
                 ) : null}
 
                 <Button
-                  variant="default"
                   size="lg"
                   isDisabled={!canContinue}
                   onPress={handleContinue}
-                  className="mt-2 rounded-lg shadow-sm bg-[#ea580c]"
+                  className="mt-2 shadow-sm bg-[#ea580c] rounded-full h-14"
                 >
                   {isSearching ? <ButtonSpinner /> : null}
                   <ButtonText className="text-sm font-semibold">

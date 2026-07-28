@@ -8,6 +8,8 @@ import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonText } from "@/src/shared/components/ui/button";
 import { Image } from "@/src/shared/components/ui/image";
 import { Text } from "@/src/shared/components/ui/text";
+import { router } from "expo-router";
+import { setHasSeenWelcome } from "../storage/onboardingStorage";
 
 const IMAGE = require("@/src/assets/images/welcome.jpg");
 
@@ -16,6 +18,11 @@ const PRIMARY_DEEP = "#162d5c";
 const SECONDARY = "#F36F12";
 
 export default function WelcomeScreen() {
+  function handleContinue() {
+    setHasSeenWelcome();
+    router.replace("/(auth)/tenant-discovery");
+  }
+
   return (
     <Box className="flex-1 bg-primary">
       <StatusBar style="light" />
@@ -66,7 +73,9 @@ export default function WelcomeScreen() {
 
       <SafeAreaView style={{ flex: 1 }}>
         <Box className="flex-1 justify-end px-8 pb-8">
-          <Animated.View entering={FadeInDown.delay(180).duration(560).springify()}>
+          <Animated.View
+            entering={FadeInDown.delay(180).duration(560).springify()}
+          >
             <Text className="text-primary-foreground text-5xl font-bold tracking-tight">
               TVET-MEMO
             </Text>
@@ -76,16 +85,21 @@ export default function WelcomeScreen() {
             />
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(340).duration(560).springify()}>
+          <Animated.View
+            entering={FadeInDown.delay(340).duration(560).springify()}
+          >
             <Text className="text-primary-foreground/90 text-base leading-6 mt-5">
               Let&apos;s take care of your memo delivery with a faster, simpler
               and more reliable experience.
             </Text>
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(500).duration(560).springify()}>
+          <Animated.View
+            entering={FadeInDown.delay(500).duration(560).springify()}
+          >
             <Button
               className="items-center h-14 mt-10 rounded-full bg-white data-[hover=true]:bg-white/90 data-[active=true]:bg-white/90"
+              onPress={handleContinue}
             >
               <ButtonText className="text-primary text-lg font-bold">
                 Get started
