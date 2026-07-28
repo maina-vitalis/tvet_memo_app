@@ -22,10 +22,7 @@ import { VStack } from "@/src/shared/components/ui/vstack";
 import { useKeyboardHeight } from "@/src/shared/hooks/use-keyboard-height";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
 import { AUTH_ROUTES } from "@/src/features/auth/navigation";
-import {
-  selectIsFirstSetup,
-  selectPendingPassword,
-} from "@/src/features/auth/store/authSelectors";
+import { selectPendingPassword } from "@/src/features/auth/store/authSelectors";
 import { useAppSelector } from "@/src/shared/store/hooks";
 import {
   getMetRequirementCount,
@@ -78,18 +75,23 @@ function StrengthMeter({ metCount }: { metCount: number }) {
 }
 
 export default function ResetPasswordScreen() {
-  const { institution, changePassword } = useAuth();
-  const isFirstSetup = useAppSelector(selectIsFirstSetup);
+  const { institution, changePassword, isAuthenticated } = useAuth();
   const pendingPassword = useAppSelector(selectPendingPassword);
   const { isKeyboardVisible } = useKeyboardHeight();
   const scrollRef = useRef<ScrollView>(null);
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Registry sign-in hands over the password it just used; email, OTP and
+  // setup-link flows do not, so those users have to type it here.
+  const needsCurrentPassword = !pendingPassword;
 
   const metCount = useMemo(
     () => getMetRequirementCount(newPassword),
@@ -101,13 +103,17 @@ export default function ResetPasswordScreen() {
   const showMismatch =
     confirmPassword.length > 0 && newPassword !== confirmPassword;
   const canSubmit =
-    passwordValid && passwordsMatch && !isSubmitting && !isSuccess;
+    passwordValid &&
+    passwordsMatch &&
+    (!needsCurrentPassword || currentPassword.length > 0) &&
+    !isSubmitting &&
+    !isSuccess;
 
   useEffect(() => {
-    if (isFirstSetup && !pendingPassword) {
-      router.replace(AUTH_ROUTES.admissionNumber);
+    if (!isAuthenticated) {
+      router.replace(AUTH_ROUTES.tenantDiscovery);
     }
-  }, [isFirstSetup, pendingPassword]);
+  }, [isAuthenticated]);
 
   const scrollContentStyle = useMemo(
     () => ({
@@ -136,7 +142,10 @@ export default function ResetPasswordScreen() {
     setError(null);
 
     try {
-      const result = await changePassword(newPassword);
+      const result = await changePassword(
+        newPassword,
+        needsCurrentPassword ? currentPassword : undefined,
+      );
 
       if (!result.success) {
         setError(result.error);
@@ -189,6 +198,40 @@ export default function ResetPasswordScreen() {
             </VStack>
 
             <VStack className="gap-5 px-6 py-6">
+              {needsCurrentPassword ? (
+                <FormControl>
+                  <FormControlLabel>
+                    <FormControlLabelText className="text-sm font-semibold">
+                      Current Password
+                    </FormControlLabelText>
+                  </FormControlLabel>
+                  <Input className="h-12 rounded-lg border-border bg-card data-[focus=true]:border-primary">
+                    <InputField
+                      secureTextEntry={!showCurrentPassword}
+                      placeholder="Enter current password"
+                      value={currentPassword}
+                      onChangeText={setCurrentPassword}
+                      accessibilityLabel="Current password"
+                      className="px-3 text-base text-foreground"
+                    />
+                    <InputSlot className="pr-2">
+                      <Pressable
+                        onPress={() =>
+                          setShowCurrentPassword((current) => !current)
+                        }
+                        className="h-8 w-8 items-center justify-center rounded-md data-[active=true]:bg-muted"
+                      >
+                        {showCurrentPassword ? (
+                          <EyeOff className="h-4.5 w-4.5 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4.5 w-4.5 text-muted-foreground" />
+                        )}
+                      </Pressable>
+                    </InputSlot>
+                  </Input>
+                </FormControl>
+              ) : null}
+
               <FormControl>
                 <FormControlLabel>
                   <FormControlLabelText className="text-sm font-semibold">

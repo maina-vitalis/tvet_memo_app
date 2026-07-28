@@ -16,10 +16,13 @@ import memosReducer from "@/src/features/memos/store/memosSlice";
 import notificationsReducer from "@/src/features/notifications/store/notificationsSlice";
 import { registerStore } from "./storeRef";
 
+// AsyncStorage is not encrypted, so tokens must never be persisted here.
+// Access/refresh tokens live in SecureStore only and are restored into memory
+// on cold start by loadTokensFromSecureStorage().
 const authPersistConfig = {
   key: "auth",
   storage: AsyncStorage,
-  whitelist: ["user", "token", "isAuthenticated"],
+  whitelist: ["user"],
 };
 
 const rootReducer = combineReducers({

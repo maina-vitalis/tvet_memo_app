@@ -10,7 +10,7 @@
 import { getStore } from "@/src/shared/store/storeRef";
 import type { User } from "@/src/shared/types";
 import { tokenStorage } from "../api/tokenStorage";
-import { setCredentials } from "./authSlice";
+import { logout, setCredentials } from "./authSlice";
 
 export async function loadTokensFromSecureStorage(): Promise<boolean> {
   try {
@@ -19,9 +19,15 @@ export async function loadTokensFromSecureStorage(): Promise<boolean> {
       tokenStorage.getRefreshToken(),
     ]);
 
-    if (!access) return false;
-
     const store = getStore();
+
+    if (!access) {
+      // A persisted profile without a token in SecureStore is not a session,
+      // so drop it instead of leaving a half-authenticated state behind.
+      store.dispatch(logout());
+      return false;
+    }
+
     const existingUser = store.getState().auth.user;
 
     // If we have a persisted user, keep it. Otherwise we may need /me later.

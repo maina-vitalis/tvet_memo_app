@@ -1,39 +1,40 @@
-import { selectIsFirstSetup, useAuth } from "@/src/features/auth";
-import { AUTH_ROUTES } from "@/src/features/auth/navigation";
+import { resolvePostAuthRoute } from "@/src/features/auth/navigation";
 import { loadTokensFromSecureStorage } from "@/src/features/auth/store/authBoot";
 import { PushNotificationBootstrap } from "@/src/features/notifications";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { ThemeProvider } from "../hooks/theme-context";
-import { useAppSelector } from "../store/hooks";
 import { getStore } from "../store/storeRef";
 
 const AppBootstrap = () => {
-  const isFirstSetup = useAppSelector(selectIsFirstSetup);
-  const { isAuthenticated } = useAuth();
-
   useEffect(() => {
-    // [REFRESH TOKENS] On boot, restore tokens from secure storage into redux before deciding navigation.
-    // This runs in parallel with the boot animation.
-    (async () => {
-      loadTokensFromSecureStorage().catch(() => {});
-    })();
+    let isMounted = true;
 
-    //checking if the current user is authenticated
-    const currentIsAuthed = getStore().getState().auth.isAuthenticated;
+    // Tokens live in SecureStore only, so the session has to be restored before
+    // we can decide where a cold start lands. Routing after login is owned by
+    // the individual auth flows, so this only runs once on mount.
+    const restoreSession = async () => {
+      const restored = await loadTokensFromSecureStorage().catch(() => false);
 
-    //checking if its the first set up
-    const currentIsFirstSetup =
-      getStore().getState().auth.isFirstSetup ||
-      (getStore().getState().auth.user?.mustChangePassword ?? false);
+      if (!isMounted || !restored) {
+        return;
+      }
 
-    if (currentIsAuthed) {
+      const { auth } = getStore().getState();
+
       router.replace(
-        currentIsFirstSetup ? AUTH_ROUTES.resetPassword : AUTH_ROUTES.home,
+        resolvePostAuthRoute(
+          auth.isFirstSetup || (auth.user?.mustChangePassword ?? false),
+        ),
       );
-      return;
-    }
-  }, [isFirstSetup, isAuthenticated]);
+    };
+
+    void restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
   return (
     <ThemeProvider>
       <PushNotificationBootstrap />

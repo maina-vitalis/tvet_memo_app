@@ -1,9 +1,16 @@
+import { Platform } from "react-native";
+
+import type { LocalMemoAttachment } from "@/src/features/memos/components/MemoAttachmentPicker";
 import type { Memo } from "@/src/features/memos/types";
 import type {
   CreateMemoPayload,
   CreatedMemo,
 } from "@/src/features/memos/types/CreateMemoTypes";
+import type { MemoAttachmentItem } from "@/src/features/memos/types/MemoTypes";
 import type { PaginatedResponse } from "@/src/shared/types";
+import tokenStorage from "@/src/features/auth/api/tokenStorage";
+import { getStore } from "@/src/shared/store/storeRef";
+import { API_BASE_URL } from "@/src/shared/utils/config";
 import apiClient from "@/src/shared/utils/apiClient";
 
 const UUID_RE =
@@ -19,12 +26,23 @@ function assertMemoId(id: string): void {
   }
 }
 
+type BackendAttachment = {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  url: string;
+  uploadedAt?: string;
+};
+
 type BackendMemo = {
   id: string;
   subject: string;
   body: string;
+  bodyFormat?: "plain" | "html";
   sentAt: string | null;
   createdAt: string;
+  attachments?: BackendAttachment[];
 };
 
 type InboxRecipient = {
@@ -36,16 +54,33 @@ type InboxRow = {
   recipient: InboxRecipient;
 };
 
-function mapInboxRow(row: InboxRow): Memo {
-  const publishedAt = row.memo.sentAt ?? row.memo.createdAt;
+function mapAttachment(row: BackendAttachment): MemoAttachmentItem {
+  return {
+    id: row.id,
+    fileName: row.fileName,
+    mimeType: row.mimeType,
+    sizeBytes: row.sizeBytes,
+    url: row.url,
+    uploadedAt: row.uploadedAt,
+  };
+}
+
+function mapMemo(row: BackendMemo, isRead = false): Memo {
+  const publishedAt = row.sentAt ?? row.createdAt;
 
   return {
-    id: row.memo.id,
-    title: row.memo.subject,
-    body: row.memo.body,
+    id: row.id,
+    title: row.subject,
+    body: row.body,
+    bodyFormat: row.bodyFormat ?? "plain",
+    attachments: row.attachments?.map(mapAttachment),
     publishedAt,
-    isRead: Boolean(row.recipient.readAt),
+    isRead,
   };
+}
+
+function mapInboxRow(row: InboxRow): Memo {
+  return mapMemo(row.memo, Boolean(row.recipient.readAt));
 }
 
 let inboxCache: Memo[] | null = null;
@@ -86,20 +121,13 @@ export async function getMemos(
 export async function getMemoById(id: string): Promise<Memo> {
   assertMemoId(id);
 
-  const cached = inboxCache?.find((memo) => memo.id === id);
-  if (cached) {
-    return cached;
-  }
-
   const { data } = await apiClient.get<BackendMemo>(`/memos/${id}`);
+  return mapMemo(data);
+}
 
-  return {
-    id: data.id,
-    title: data.subject,
-    body: data.body,
-    publishedAt: data.sentAt ?? data.createdAt,
-    isRead: false,
-  };
+export async function markMemoRead(id: string): Promise<void> {
+  assertMemoId(id);
+  await apiClient.post(`/memos/${id}/read`);
 }
 
 export async function createMemo(
@@ -115,7 +143,7 @@ export type PublishMemoResponse = {
   recipientCount: number;
 };
 
-/** Create and send in one request — avoids duplicate memos when the send step times out. */
+/** Create and send in one request — used when there are no attachments. */
 export async function publishMemo(
   payload: CreateMemoPayload,
 ): Promise<PublishMemoResponse> {
@@ -127,6 +155,54 @@ export async function publishMemo(
   clearMemosCache();
 
   return data;
+}
+
+/** Create, attach files, and send in one multipart request. */
+export async function publishMemoWithAttachments(
+  payload: CreateMemoPayload,
+  files: LocalMemoAttachment[],
+): Promise<PublishMemoResponse> {
+  const formData = new FormData();
+  formData.append("memo", JSON.stringify(payload));
+
+  for (const file of files) {
+    if (Platform.OS === "web") {
+      const picked = await fetch(file.uri);
+      const blob = await picked.blob();
+      formData.append("files", blob, file.name);
+    } else {
+      formData.append("files", {
+        uri: file.uri,
+        name: file.name,
+        type: file.mimeType,
+      } as unknown as Blob);
+    }
+  }
+
+  let token = await tokenStorage.getAccessToken();
+  if (!token) {
+    token = getStore().getState().auth.token;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/memos/publish-with-attachments`, {
+    method: "POST",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: formData,
+  });
+
+  const json = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    const rawMessage = json?.message;
+    const message = Array.isArray(rawMessage)
+      ? rawMessage.join(", ")
+      : (rawMessage ?? "Could not publish this memo.");
+    throw new Error(message);
+  }
+
+  clearMemosCache();
+
+  return (json?.data ?? json) as PublishMemoResponse;
 }
 
 export async function sendMemo(id: string): Promise<PublishMemoResponse> {

@@ -2,7 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { router } from "expo-router";
 
-import { createMemo, publishMemo } from "@/src/features/memos/api/memosApi";
+import type { LocalMemoAttachment } from "@/src/features/memos/components/MemoAttachmentPicker";
+import {
+  createMemo,
+  publishMemo,
+  publishMemoWithAttachments,
+} from "@/src/features/memos/api/memosApi";
 import { memosKeys } from "@/src/features/memos/hooks/useMemos";
 import type { CreateMemoPayload } from "@/src/features/memos/types/CreateMemoTypes";
 import { notificationsKeys } from "@/src/features/notifications/queryKeys";
@@ -10,6 +15,7 @@ import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
 
 export type MemoComposerInput = CreateMemoPayload & {
   publishNow?: boolean;
+  attachments?: LocalMemoAttachment[];
 };
 
 function isTimeoutError(error: unknown): boolean {
@@ -25,10 +31,18 @@ export function useMemoComposer() {
 
   const mutation = useMutation({
     mutationFn: async (payload: MemoComposerInput) => {
-      const { publishNow: _publishNow, ...createPayload } = payload;
+      const {
+        publishNow: _publishNow,
+        attachments = [],
+        ...createPayload
+      } = payload;
 
       if (payload.publishNow === false) {
         return createMemo(createPayload);
+      }
+
+      if (attachments.length > 0) {
+        return publishMemoWithAttachments(createPayload, attachments);
       }
 
       return publishMemo(createPayload);
@@ -40,8 +54,6 @@ export function useMemoComposer() {
     },
 
     onError: (error, variables) => {
-      // Refresh feeds even on failure — the server may have committed the send
-      // while the client timed out waiting for the response.
       void queryClient.invalidateQueries({ queryKey: memosKeys.lists() });
       void queryClient.invalidateQueries({
         queryKey: notificationsKeys.list(),

@@ -2,10 +2,20 @@ export interface Memo {
   id: string;
   title: string;
   body: string;
-  attachmentUrl?: string;
+  bodyFormat?: "plain" | "html";
+  attachments?: MemoAttachmentItem[];
   publishedAt: string;
   isRead: boolean;
 }
+
+export type MemoAttachmentItem = {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  sizeBytes: number;
+  url: string;
+  uploadedAt?: string;
+};
 
 export type MemoTag = {
   label: string;

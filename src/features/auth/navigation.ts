@@ -11,6 +11,17 @@ export const AUTH_ROUTE_PATHS = {
   home: "/(tabs)/home",
 } as const;
 
+/**
+ * Single place that decides where a freshly authenticated user lands.
+ * Every login path must go through this so a user who still owes a password
+ * change can never reach the app with a temporary password.
+ */
+export function resolvePostAuthRoute(mustChangePassword: boolean): Href {
+  return mustChangePassword
+    ? AUTH_ROUTE_PATHS.resetPassword
+    : AUTH_ROUTE_PATHS.home;
+}
+
 export const AUTH_ROUTES: Record<keyof typeof AUTH_ROUTE_PATHS, Href> = {
   tenantDiscovery: AUTH_ROUTE_PATHS.tenantDiscovery,
   login: AUTH_ROUTE_PATHS.login,

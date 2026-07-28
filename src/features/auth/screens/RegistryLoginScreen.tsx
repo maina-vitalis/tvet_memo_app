@@ -31,7 +31,10 @@ import { Pressable } from "@/src/shared/components/ui/pressable";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
-import { AUTH_ROUTES } from "@/src/features/auth/navigation";
+import {
+  AUTH_ROUTES,
+  resolvePostAuthRoute,
+} from "@/src/features/auth/navigation";
 import {
   selectInstitution,
   selectPendingAdmissionNumber,
@@ -76,12 +79,7 @@ export default function RegistryLoginScreen() {
     setIsSubmitting(false);
 
     if (result.success) {
-      if (result.mustResetPassword) {
-        router.replace(AUTH_ROUTES.resetPassword);
-        return;
-      }
-
-      router.replace(AUTH_ROUTES.home);
+      router.replace(resolvePostAuthRoute(result.mustResetPassword));
       return;
     }
 

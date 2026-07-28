@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { RefreshCcw } from "lucide-react-native";
 import { useMemo } from "react";
 import { ActivityIndicator } from "react-native";
@@ -35,7 +36,7 @@ export default function NotificationsScreen() {
   };
 
   const handleAlertPress = (id: string) => {
-    markRead.mutate(id);
+    router.push(`/memo/${id}`);
   };
 
   return (

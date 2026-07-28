@@ -80,20 +80,27 @@ export const signInWithRegistry = createAsyncThunk<
 
 export const changePassword = createAsyncThunk<
   void,
-  { newPassword: string },
+  { newPassword: string; currentPassword?: string },
   { state: AuthRootState; rejectValue: string }
 >(
   "auth/changePassword",
-  async ({ newPassword }, { getState, rejectWithValue }) => {
+  async ({ newPassword, currentPassword }, { getState, rejectWithValue }) => {
     const { token, pendingPassword } = getState().auth;
+    // Registry sign-in carries the password it just used; every other flow has
+    // to ask the user for it on the reset screen.
+    const knownCurrentPassword = currentPassword ?? pendingPassword;
 
-    if (!token || !pendingPassword) {
+    if (!token) {
       return rejectWithValue("Session expired. Please sign in again.");
+    }
+
+    if (!knownCurrentPassword) {
+      return rejectWithValue("Enter your current password to continue.");
     }
 
     try {
       await changePasswordRequest({
-        currentPassword: pendingPassword,
+        currentPassword: knownCurrentPassword,
         newPassword,
       });
     } catch (error) {

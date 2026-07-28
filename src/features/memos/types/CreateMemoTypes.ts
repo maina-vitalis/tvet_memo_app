@@ -16,6 +16,7 @@ export type MemoTargetType =
 export type CreateMemoPayload = {
   subject: string;
   body: string;
+  bodyFormat?: "plain" | "html";
   category: MemoCategory;
   targetType: MemoTargetType;
   priority?: MemoPriority;
@@ -29,6 +30,7 @@ export type CreatedMemo = {
   senderId: string;
   subject: string;
   body: string;
+  bodyFormat?: "plain" | "html";
   priority: MemoPriority;
   category: MemoCategory;
   status: "draft" | "sent" | "archived" | "cancelled";

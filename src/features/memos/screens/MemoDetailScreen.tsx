@@ -1,9 +1,12 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Clock } from "lucide-react-native";
+import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { MemoDetail } from "@/src/features/memos/components/MemoDetail";
+import { markMemoRead } from "@/src/features/memos/api/memosApi";
+import { MemoAttachmentsList } from "@/src/features/memos/components/MemoAttachmentsList";
+import { MemoBodyContent } from "@/src/features/memos/components/MemoBodyContent";
 import { useMemoDetail } from "@/src/features/memos/hooks/useMemos";
 import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonText } from "@/src/shared/components/ui/button";
@@ -20,6 +23,14 @@ export default function MemoDetailScreen() {
   const memoId = id ?? "";
 
   const { data: memo, isLoading, isError } = useMemoDetail(memoId);
+
+  useEffect(() => {
+    if (!memoId || !memo) {
+      return;
+    }
+
+    void markMemoRead(memoId).catch(() => {});
+  }, [memo, memoId]);
 
   if (isLoading) {
     return (
@@ -103,7 +114,9 @@ export default function MemoDetailScreen() {
               </Text>
             </HStack>
 
-            <MemoDetail blocks={[{ type: "paragraph", text: memo.body }]} />
+            <MemoBodyContent body={memo.body} bodyFormat={memo.bodyFormat} />
+
+            <MemoAttachmentsList attachments={memo.attachments ?? []} />
           </Card>
         </ScrollView>
       </Box>

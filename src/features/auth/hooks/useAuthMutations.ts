@@ -12,7 +12,11 @@ import {
   verifyOtp,
 } from "@/src/features/auth/api/authApi";
 import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
-import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
+import {
+  AUTH_ROUTE_PATHS,
+  AUTH_ROUTES,
+  resolvePostAuthRoute,
+} from "@/src/features/auth/navigation";
 import {
   setCredentials,
   setOtpSentAt,
@@ -153,7 +157,7 @@ export function useVerifyOtp() {
           refreshToken: session.refreshToken,
         }),
       );
-      router.replace(AUTH_ROUTES.home);
+      router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
     onError: (mutationError) => {
       const message = "Invalid verification code. Please try again.";
@@ -190,7 +194,7 @@ export function useLogin() {
           refreshToken: session.refreshToken,
         }),
       );
-      router.replace(AUTH_ROUTES.home);
+      router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
     onError: (mutationError) => {
       const message = "Invalid email or password.";
@@ -227,7 +231,7 @@ export function useAccountSetup() {
           refreshToken: session.refreshToken,
         }),
       );
-      router.replace(AUTH_ROUTES.home);
+      router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
     onError: (mutationError) => {
       const message =

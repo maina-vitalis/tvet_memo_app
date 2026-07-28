@@ -64,8 +64,10 @@ export function useAuth() {
   );
 
   const changePassword = useCallback(
-    async (newPassword: string) => {
-      const result = await dispatch(changePasswordThunk({ newPassword }));
+    async (newPassword: string, currentPassword?: string) => {
+      const result = await dispatch(
+        changePasswordThunk({ newPassword, currentPassword }),
+      );
 
       if (changePasswordThunk.rejected.match(result)) {
         return {

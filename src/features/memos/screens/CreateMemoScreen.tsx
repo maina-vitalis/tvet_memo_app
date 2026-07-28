@@ -8,6 +8,10 @@ import {
 } from "react-native-safe-area-context";
 
 import { MemoAudienceFields } from "@/src/features/memos/components/MemoAudienceFields";
+import type { LocalMemoAttachment } from "@/src/features/memos/components/MemoAttachmentPicker";
+import { MemoAttachmentPicker } from "@/src/features/memos/components/MemoAttachmentPicker";
+import { isRichTextEmpty } from "@/src/features/memos/components/MemoBodyContent";
+import { MemoRichTextEditor } from "@/src/features/memos/components/MemoRichTextEditor";
 import { useMemoComposer } from "@/src/features/memos/hooks/useMemoComposer";
 import { useCanBroadcastMemo } from "@/src/features/memos/hooks/useMemoPermissions";
 import { useActorRole } from "@/src/features/memos/hooks/useMemoTargeting";
@@ -50,7 +54,6 @@ import {
   SelectTrigger,
 } from "@/src/shared/components/ui/select";
 import { Text } from "@/src/shared/components/ui/text";
-import { Textarea, TextareaInput } from "@/src/shared/components/ui/textarea";
 import { VStack } from "@/src/shared/components/ui/vstack";
 
 const CATEGORY_OPTIONS: { label: string; value: MemoCategory }[] = [
@@ -89,7 +92,8 @@ export default function CreateMemoScreen() {
   const composer = useMemoComposer();
 
   const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
+  const [bodyHtml, setBodyHtml] = useState("");
+  const [attachments, setAttachments] = useState<LocalMemoAttachment[]>([]);
   const [category, setCategory] = useState<MemoCategory>("general");
   const [priority, setPriority] = useState<MemoPriority>("normal");
   const [audience, setAudience] =
@@ -97,15 +101,15 @@ export default function CreateMemoScreen() {
   const [userSearch, setUserSearch] = useState("");
 
   const trimmedSubject = subject.trim();
-  const trimmedBody = body.trim();
+  const hasBody = !isRichTextEmpty(bodyHtml);
 
   const isFormValid = useMemo(() => {
-    if (!actorRole || trimmedSubject.length === 0 || trimmedBody.length === 0) {
+    if (!actorRole || trimmedSubject.length === 0 || !hasBody) {
       return false;
     }
 
     return isAudienceSelectionValid(actorRole, audience);
-  }, [actorRole, audience, trimmedBody.length, trimmedSubject.length]);
+  }, [actorRole, audience, hasBody, trimmedSubject.length]);
 
   if (!canBroadcastMemo) {
     return (
@@ -139,12 +143,14 @@ export default function CreateMemoScreen() {
 
     return {
       subject: trimmedSubject,
-      body: trimmedBody,
+      body: bodyHtml,
+      bodyFormat: "html" as const,
       category,
       priority,
       targetType,
       targetPayload,
       publishNow: true,
+      attachments,
     };
   };
 
@@ -216,18 +222,17 @@ export default function CreateMemoScreen() {
                   Message
                 </FormControlLabelText>
               </FormControlLabel>
-              <Textarea className="min-h-40 rounded-lg border-border bg-card">
-                <TextareaInput
-                  placeholder="Write your memo..."
-                  value={body}
-                  onChangeText={setBody}
-                  multiline
-                  textAlignVertical="top"
-                  accessibilityLabel="Memo body"
-                  className="px-3 py-3 text-sm text-foreground"
-                />
-              </Textarea>
+              <MemoRichTextEditor
+                value={bodyHtml}
+                onChange={setBodyHtml}
+                placeholder="Write your memo..."
+              />
             </FormControl>
+
+            <MemoAttachmentPicker
+              attachments={attachments}
+              onChange={setAttachments}
+            />
 
             <FormControl>
               <FormControlLabel>

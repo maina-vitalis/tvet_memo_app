@@ -1,4 +1,5 @@
 import type { Notification } from "@/src/features/notifications/types";
+import { memoExcerpt } from "@/src/features/memos/utils/memoContent";
 import { getStore } from "@/src/shared/store/storeRef";
 import apiClient from "@/src/shared/utils/apiClient";
 
@@ -7,6 +8,7 @@ type InboxRow = {
     id: string;
     subject: string;
     body: string;
+    bodyFormat?: "plain" | "html";
     sentAt: string | null;
     createdAt: string;
   };
@@ -36,7 +38,7 @@ function mapInboxToNotification(
     createdAt: publishedAt,
     read: Boolean(row.recipient.readAt),
     title: row.memo.subject,
-    message: row.memo.body.slice(0, 160),
+    message: memoExcerpt(row.memo.body, row.memo.bodyFormat),
   };
 }
 
