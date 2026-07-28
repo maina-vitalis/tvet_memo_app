@@ -60,7 +60,7 @@ function SettingsSection({
       <Text className="px-2 text-sm font-semibold uppercase tracking-wider text-primary">
         {title}
       </Text>
-      <Card className="gap-0 overflow-hidden border-0 p-0 shadow-sm">
+      <Card className="gap-0 overflow-hidden rounded-2xl border-border/70 p-0 shadow-sm">
         {children}
       </Card>
     </VStack>
@@ -79,7 +79,7 @@ function SettingsRow({
   const content = (
     <HStack className="min-h-12 items-center justify-between px-4 py-3">
       <HStack className="flex-1 items-center gap-3">
-        <Box className="h-10 w-10 items-center justify-center rounded-full bg-muted">
+        <Box className="h-10 w-10 items-center justify-center rounded-xl bg-accent">
           {icon}
         </Box>
         <VStack className="flex-1">
@@ -138,7 +138,10 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Box className="flex-1 bg-background">
-        <ScreenHeader title="Settings" />
+        <ScreenHeader
+          title="Settings"
+          subtitle="Manage your account and preferences."
+        />
 
         <ScrollView
           className="flex-1"
@@ -147,13 +150,13 @@ export default function ProfileScreen() {
         >
           <VStack className="items-center gap-4">
             <Box className="relative">
-              <Avatar className="h-24 w-24 border-4 border-card shadow-sm">
+              <Avatar className="h-24 w-24 rounded-3xl border-4 border-card shadow-md">
                 <AvatarImage source={{ uri: avatarUri }} />
               </Avatar>
               <Pressable
                 onPress={() => router.push("/edit-profile")}
                 accessibilityLabel="Edit profile"
-                className="absolute right-0 bottom-0 h-8 w-8 items-center justify-center rounded-full bg-primary data-[active=true]:opacity-90"
+                className="absolute right-0 bottom-0 h-9 w-9 items-center justify-center rounded-xl bg-secondary shadow-sm data-[active=true]:opacity-90"
               >
                 <Pencil className="h-4 w-4 text-primary-foreground" />
               </Pressable>
@@ -166,7 +169,7 @@ export default function ProfileScreen() {
               <Text className="text-base text-muted-foreground">
                 {displayRole}
               </Text>
-              <HStack className="mt-2 items-center gap-1 rounded-md border border-border bg-accent px-2 py-1">
+              <HStack className="mt-2 items-center gap-1 rounded-full border border-border/80 bg-accent px-3 py-1.5">
                 <School className="h-4 w-4 text-primary" />
                 <Text className="text-xs font-medium text-primary">
                   {institutionName}
@@ -257,7 +260,7 @@ export default function ProfileScreen() {
 
           <Pressable
             onPress={handleLogout}
-            className="flex-row items-center justify-center gap-2 rounded-lg border border-destructive bg-card py-3 shadow-sm active:scale-[0.98] data-[active=true]:bg-destructive/10"
+            className="flex-row items-center justify-center gap-2 rounded-xl border border-destructive bg-card py-3 shadow-sm active:scale-[0.98] data-[active=true]:bg-destructive/10"
           >
             <LogOut className="h-5 w-5 text-destructive" />
             <Text className="text-sm font-semibold text-destructive">

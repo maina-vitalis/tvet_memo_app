@@ -284,7 +284,7 @@ export default function OtpScreen() {
                     maxLength={1}
                     autoFocus={index === 0}
                     accessibilityLabel={`OTP digit ${index + 1}`}
-                    className="h-14 w-10 rounded-lg border border-border bg-card text-center text-xl font-semibold text-foreground shadow-sm sm:h-16 sm:w-12"
+                    className="h-14 w-10 rounded-xl border border-border bg-card text-center text-xl font-semibold text-foreground shadow-sm sm:h-16 sm:w-12"
                     selectTextOnFocus
                   />
                 ))}

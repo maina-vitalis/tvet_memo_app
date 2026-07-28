@@ -3,19 +3,15 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonText } from "@/src/shared/components/ui/button";
 import { Image } from "@/src/shared/components/ui/image";
 import { Text } from "@/src/shared/components/ui/text";
-import { router } from "expo-router";
 import { setHasSeenWelcome } from "../storage/onboardingStorage";
 
 const IMAGE = require("@/src/assets/images/welcome.jpg");
-
-const PRIMARY = "#234698";
-const PRIMARY_DEEP = "#162d5c";
-const SECONDARY = "#F36F12";
 
 export default function WelcomeScreen() {
   function handleContinue() {
@@ -24,7 +20,7 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <Box className="flex-1 bg-primary">
+    <Box className="flex-1 bg-primary-container">
       <StatusBar style="light" />
 
       <Animated.View
@@ -34,7 +30,7 @@ export default function WelcomeScreen() {
         <Image
           source={IMAGE}
           size="none"
-          className="w-full h-full"
+          className="h-full w-full"
           resizeMode="cover"
           accessibilityLabel="Student using TVET-MEMO on a phone"
         />
@@ -42,32 +38,30 @@ export default function WelcomeScreen() {
 
       <LinearGradient
         colors={[
-          "rgba(22, 45, 92, 0.25)",
-          "rgba(35, 70, 152, 0.35)",
-          "rgba(22, 45, 92, 0.88)",
-          PRIMARY_DEEP,
+          "rgba(27, 58, 124, 0.2)",
+          "rgba(35, 70, 152, 0.4)",
+          "rgba(27, 58, 124, 0.92)",
+          "#1B3A7C",
         ]}
-        locations={[0, 0.35, 0.7, 1]}
+        locations={[0, 0.35, 0.72, 1]}
         start={{ x: 0.2, y: 0 }}
         end={{ x: 0.8, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
 
       <LinearGradient
-        colors={["transparent", `${SECONDARY}33`, `${SECONDARY}55`]}
+        colors={["transparent", "rgba(243, 111, 18, 0.18)", "rgba(243, 111, 18, 0.42)"]}
         locations={[0.55, 0.82, 1]}
         style={StyleSheet.absoluteFill}
         pointerEvents="none"
       />
 
       <Box
-        className="absolute -top-16 -right-10 w-56 h-56 rounded-full"
-        style={{ backgroundColor: `${SECONDARY}28` }}
+        className="absolute -right-10 -top-16 h-56 w-56 rounded-full bg-secondary/20"
         pointerEvents="none"
       />
       <Box
-        className="absolute top-1/3 -left-20 w-72 h-72 rounded-full"
-        style={{ backgroundColor: `${PRIMARY}40` }}
+        className="absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-primary/30"
         pointerEvents="none"
       />
 
@@ -76,21 +70,18 @@ export default function WelcomeScreen() {
           <Animated.View
             entering={FadeInDown.delay(180).duration(560).springify()}
           >
-            <Text className="text-primary-foreground text-5xl font-bold tracking-tight">
-              TVET-MEMO
+            <Text className="text-5xl font-bold tracking-tight text-primary-foreground">
+              TVET MEMO
             </Text>
-            <Box
-              className="mt-3 h-1 w-14 rounded-full"
-              style={{ backgroundColor: SECONDARY }}
-            />
+            <Box className="mt-3 h-1.5 w-16 rounded-full bg-secondary" />
           </Animated.View>
 
           <Animated.View
             entering={FadeInDown.delay(340).duration(560).springify()}
           >
-            <Text className="text-primary-foreground/90 text-base leading-6 mt-5">
-              Let&apos;s take care of your memo delivery with a faster, simpler
-              and more reliable experience.
+            <Text className="mt-5 text-base leading-6 text-primary-foreground/90">
+              Official memos, alerts, and updates — delivered reliably to your
+              institution.
             </Text>
           </Animated.View>
 
@@ -98,10 +89,10 @@ export default function WelcomeScreen() {
             entering={FadeInDown.delay(500).duration(560).springify()}
           >
             <Button
-              className="items-center h-14 mt-10 rounded-full bg-white data-[hover=true]:bg-white/90 data-[active=true]:bg-white/90"
+              className="mt-10 h-14 rounded-xl bg-card shadow-lg data-[active=true]:bg-card/95 data-[hover=true]:bg-card/95"
               onPress={handleContinue}
             >
-              <ButtonText className="text-primary text-lg font-bold">
+              <ButtonText className="text-lg font-bold text-primary">
                 Get started
               </ButtonText>
             </Button>

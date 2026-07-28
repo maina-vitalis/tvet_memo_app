@@ -52,14 +52,14 @@ export function NotificationItem({
   return (
     <Pressable
       onPress={onPress}
-      className="active:scale-[0.99] data-[active=true]:opacity-95"
+      className="active:scale-[0.98] transition-all duration-200 data-[active=true]:opacity-95"
     >
       <Card
         size="sm"
-        className={`relative gap-0 rounded-lg shadow-sm ${
+        className={`relative gap-0 overflow-hidden rounded-2xl shadow-sm ${
           alert.unread
-            ? "border-0 border-l-4 border-l-secondary"
-            : "border border-border opacity-80"
+            ? "border border-border/70 border-l-[3px] border-l-secondary bg-accent/30"
+            : "border border-border/70 bg-card opacity-90"
         }`}
       >
         {alert.unread ? (
@@ -68,7 +68,7 @@ export function NotificationItem({
 
         <HStack className="items-start gap-3">
           <Box
-            className={`h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone.container}`}
+            className={`h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${tone.container}`}
           >
             <Icon className={`h-5 w-5 ${tone.icon}`} />
           </Box>

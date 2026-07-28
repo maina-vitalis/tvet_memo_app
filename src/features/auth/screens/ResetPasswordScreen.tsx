@@ -205,7 +205,7 @@ export default function ResetPasswordScreen() {
                       Current Password
                     </FormControlLabelText>
                   </FormControlLabel>
-                  <Input className="h-12 rounded-lg border-border bg-card data-[focus=true]:border-primary">
+                  <Input className="h-12 rounded-xl border-border bg-card data-[focus=true]:border-primary">
                     <InputField
                       secureTextEntry={!showCurrentPassword}
                       placeholder="Enter current password"
@@ -238,7 +238,7 @@ export default function ResetPasswordScreen() {
                     New Password
                   </FormControlLabelText>
                 </FormControlLabel>
-                <Input className="h-12 rounded-lg border-border bg-card data-[focus=true]:border-primary">
+                <Input className="h-12 rounded-xl border-border bg-card data-[focus=true]:border-primary">
                   <InputField
                     secureTextEntry={!showNewPassword}
                     placeholder="Enter new password"
@@ -270,7 +270,7 @@ export default function ResetPasswordScreen() {
                 </FormControlLabel>
                 <Input
                   isDisabled={newPassword.length === 0}
-                  className={`h-12 rounded-lg border-border bg-card data-[focus=true]:border-primary ${
+                  className={`h-12 rounded-xl border-border bg-card data-[focus=true]:border-primary ${
                     showMismatch ? "border-destructive" : ""
                   }`}
                 >
@@ -327,7 +327,7 @@ export default function ResetPasswordScreen() {
                   size="lg"
                   isDisabled={!canSubmit}
                   onPress={handleSubmit}
-                  className={`w-full rounded-lg shadow-sm ${
+                  className={`w-full rounded-xl shadow-sm ${
                     isSuccess ? "bg-emerald-500" : ""
                   }`}
                 >

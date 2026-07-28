@@ -28,7 +28,7 @@ function MemoTagBadge({ tag }: { tag: MemoTag }) {
         : "text-muted-foreground";
 
   return (
-    <Badge className={`rounded px-2 py-1 ${toneClassName}`}>
+    <Badge className={`rounded-full px-2.5 py-1 ${toneClassName}`}>
       {tag.showWarning ? (
         <BadgeIcon
           as={AlertCircle}
@@ -47,12 +47,12 @@ export function MemoCard({ item }: { item: MemoFeedItem }) {
   return (
     <Pressable
       onPress={() => router.push(`/memo/${item.id}`)}
-      className="active:scale-[0.99] data-[active=true]:opacity-95"
+      className="active:scale-[0.98] transition-all duration-200 data-[active=true]:opacity-95"
     >
       <Card
         size="sm"
-        className={`relative gap-0 rounded-lg border-0 shadow-sm ${
-          item.unread ? "border-l-4 border-l-secondary" : ""
+        className={`relative gap-0 overflow-hidden rounded-2xl border border-border/70 shadow-sm ${
+          item.unread ? "border-l-[3px] border-l-secondary bg-accent/30" : "bg-card"
         }`}
       >
         {item.unread ? (
@@ -65,7 +65,7 @@ export function MemoCard({ item }: { item: MemoFeedItem }) {
               <AvatarImage source={{ uri: item.avatarUri }} />
             </Avatar>
           ) : (
-            <Box className="h-10 w-10 items-center justify-center rounded-full bg-muted">
+            <Box className="h-10 w-10 items-center justify-center rounded-2xl bg-muted">
               <MessageCircle className="h-4.5 w-4.5 text-muted-foreground" />
             </Box>
           )}

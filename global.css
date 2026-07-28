@@ -5,29 +5,32 @@
   :root {
     --primary: 35 70 152;
     --primary-foreground: 250 250 250;
+    --primary-container: 27 58 124;
     --card: 255 255 255;
     --secondary: 243 111 18;
     --secondary-foreground: 250 250 250;
-    --background: 255 255 255;
+    --background: 248 250 252;
     --popover: 255 255 255;
     --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
     --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
+    --foreground: 15 23 42;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 35 70 152;
+    --accent: 239 246 255;
+    --accent-foreground: 27 58 124;
     --success: 34 197 94;
     --success-foreground: 255 255 255;
+    --radius: 0.875rem;
   }
 }
 
 @theme inline {
   --color-primary: rgb(var(--primary));
   --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-primary-container: rgb(var(--primary-container));
   --color-card: rgb(var(--card));
   --color-secondary: rgb(var(--secondary));
   --color-secondary-foreground: rgb(var(--secondary-foreground));
@@ -45,4 +48,7 @@
   --color-accent-foreground: rgb(var(--accent-foreground));
   --color-success: rgb(var(--success));
   --color-success-foreground: rgb(var(--success-foreground));
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.15);
+  --radius-2xl: calc(var(--radius) * 1.35);
 }

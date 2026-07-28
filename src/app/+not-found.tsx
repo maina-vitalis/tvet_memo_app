@@ -15,19 +15,19 @@ export default function NotFoundScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Box className="flex-1 items-center justify-center bg-background px-6">
-          <VStack className="max-w-sm items-center gap-4">
+          <VStack className="max-w-sm items-center gap-4 rounded-2xl border border-border/70 bg-card p-8 shadow-sm">
             <Heading
               size="2xl"
-              className="text-center font-bold text-foreground"
+              className="text-center font-bold text-primary"
             >
               Page not found
             </Heading>
-            <Text className="text-center text-base text-muted-foreground">
+            <Text className="text-center text-base leading-6 text-muted-foreground">
               The page you are looking for does not exist or may have been
               moved.
             </Text>
             <Link href="/(tabs)/feed" asChild>
-              <Button className="mt-2">
+              <Button className="mt-2 w-full">
                 <ButtonText>Go to home</ButtonText>
               </Button>
             </Link>

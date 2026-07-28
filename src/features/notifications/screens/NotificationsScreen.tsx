@@ -49,19 +49,19 @@ export default function NotificationsScreen() {
             hasUnread ? (
               <Pressable
                 onPress={handleMarkAllRead}
-                className="rounded-lg px-2 py-1 data-[active=true]:bg-accent"
+                className="rounded-xl bg-primary-foreground/15 px-3 py-1.5 data-[active=true]:bg-primary-foreground/25"
               >
-                <Text className="text-xs font-medium text-primary">
+                <Text className="text-xs font-medium text-primary-foreground">
                   Mark all read
                 </Text>
               </Pressable>
             ) : (
               <Pressable
                 onPress={() => void refetch()}
-                className="h-10 w-10 items-center justify-center rounded-full data-[active=true]:bg-muted"
+                className="h-10 w-10 items-center justify-center rounded-xl bg-primary-foreground/15 data-[active=true]:bg-primary-foreground/25"
               >
                 <RefreshCcw
-                  className={`h-5 w-5 text-muted-foreground ${
+                  className={`h-5 w-5 text-primary-foreground ${
                     isRefetching ? "opacity-50" : ""
                   }`}
                 />

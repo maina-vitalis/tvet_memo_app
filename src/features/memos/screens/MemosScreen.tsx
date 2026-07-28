@@ -34,10 +34,13 @@ export default function MemosScreen() {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
       <Box className="flex-1">
-        <ScreenHeader title="Feed" />
+        <ScreenHeader
+          title="Feed"
+          subtitle="Official memos and updates for your institution."
+        />
 
-        <Box className="border-b border-border bg-background/95 px-4 py-4">
-          <Input className="h-12 rounded-lg border-border bg-card shadow-sm">
+        <Box className="border-b border-border/60 bg-background/95 px-4 py-4">
+          <Input className="h-12 shadow-sm">
             <InputSlot className="pl-3">
               <Search className="h-4.5 w-4.5 text-muted-foreground" />
             </InputSlot>

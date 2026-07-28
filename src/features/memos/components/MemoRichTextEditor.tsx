@@ -19,7 +19,7 @@ export function MemoRichTextEditor({
   const editorRef = useRef<RichEditor>(null);
 
   return (
-    <Box className="overflow-hidden rounded-lg border border-border bg-card">
+    <Box className="overflow-hidden rounded-xl border border-border bg-card">
       <RichToolbar
         editor={editorRef}
         actions={[

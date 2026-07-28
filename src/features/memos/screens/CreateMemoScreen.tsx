@@ -204,7 +204,7 @@ export default function CreateMemoScreen() {
                   Subject
                 </FormControlLabelText>
               </FormControlLabel>
-              <Input className="h-12 rounded-lg border-border bg-card">
+              <Input className="h-12 rounded-xl border-border bg-card">
                 <InputField
                   placeholder="Memo subject"
                   value={subject}
@@ -244,7 +244,7 @@ export default function CreateMemoScreen() {
                 selectedValue={category}
                 onValueChange={(value) => setCategory(value as MemoCategory)}
               >
-                <SelectTrigger className="h-12 rounded-lg bg-card">
+                <SelectTrigger className="h-12 rounded-xl bg-card">
                   <SelectInput
                     value={getOptionLabel(CATEGORY_OPTIONS, category)}
                     editable={false}
@@ -280,7 +280,7 @@ export default function CreateMemoScreen() {
                 selectedValue={priority}
                 onValueChange={(value) => setPriority(value as MemoPriority)}
               >
-                <SelectTrigger className="h-12 rounded-lg bg-card">
+                <SelectTrigger className="h-12 rounded-xl bg-card">
                   <SelectInput
                     value={getOptionLabel(PRIORITY_OPTIONS, priority)}
                     editable={false}
@@ -324,7 +324,7 @@ export default function CreateMemoScreen() {
               size="lg"
               isDisabled={!isFormValid || composer.isPending}
               onPress={handlePublish}
-              className="min-h-11 w-full rounded-lg bg-secondary shadow-md data-[active=true]:bg-secondary/90"
+              className="min-h-11 w-full rounded-xl bg-secondary shadow-md data-[active=true]:bg-secondary/90"
             >
               {composer.isPending ? (
                 <ButtonSpinner className="text-secondary-foreground" />

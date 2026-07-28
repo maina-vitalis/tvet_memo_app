@@ -1,12 +1,13 @@
 import { router } from "expo-router";
 import { Mail, Tag } from "lucide-react-native";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
+import {
+  AuthFormCard,
+  AuthScreenShell,
+} from "@/src/features/auth/components/AuthScreenShell";
 import { AUTH_ROUTE_PATHS, AUTH_ROUTES } from "@/src/features/auth/navigation";
-import { Box } from "@/src/shared/components/ui/box";
 import {
   Button,
   ButtonSpinner,
@@ -24,6 +25,8 @@ import {
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { cn } from "@/src/shared/utils/cn";
+import { Box } from "@/src/shared/components/ui/box";
+import { Heading } from "@/src/shared/components/ui/heading";
 
 type DiscoveryMode = "email" | "shortcode";
 
@@ -51,6 +54,7 @@ export default function TenantDiscoveryScreen() {
     const nextMode = value as DiscoveryMode;
     setMode(nextMode);
     setInputValue("");
+    setError(null);
   };
 
   const handleContinue = async () => {
@@ -88,130 +92,105 @@ export default function TenantDiscoveryScreen() {
   const canContinue = isInputValid(mode, inputValue) && !isSearching;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Box className="flex-1 bg-background">
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          style={{ flex: 1 }}
+    <AuthScreenShell contentClassName="justify-center">
+      <VStack className="mb-6 items-center gap-2">
+        <Heading size="lg" className="text-center font-bold text-primary">
+          Find your institution
+        </Heading>
+        <Text className="text-center text-sm text-muted-foreground">
+          Sign in with your official email or school shortcode.
+        </Text>
+      </VStack>
+
+      <AuthFormCard>
+        <Box
+          className="mb-6"
+          onLayout={(event) => {
+            const width = event.nativeEvent.layout.width - 8;
+            setTabTriggerWidth(width / 2);
+          }}
         >
-          <Box className="absolute inset-0 overflow-hidden">
-            <Box className="absolute top-[-20%] left-[-10%] h-[50%] w-[50%] rounded-full bg-primary/10" />
-            <Box className="absolute top-[60%] right-[-10%] h-[60%] w-[40%] rounded-full bg-muted/60" />
-          </Box>
-
-          <VStack className="z-10 flex-1 justify-center px-4 pb-8 md:px-6">
-            <VStack className="mb-8 items-center">
-              <Text className="text-center text-2xl font-bold leading-8 text-primary md:text-[28px]">
-                Welcome let&apos;s find your institution.
-              </Text>
-            </VStack>
-
-            <Box className="rounded-xl border-border bg-card p-6">
-              <Box
-                className="mb-6"
-                onLayout={(event) => {
-                  const width = event.nativeEvent.layout.width - 8;
-                  setTabTriggerWidth(width / 2);
-                }}
+          <Tabs value={mode} onValueChange={handleTabChange} variant="filled">
+            <TabsList className="h-12 w-full rounded-xl bg-muted/80">
+              <TabsIndicator />
+              <TabsTrigger
+                value="email"
+                className={cn("items-center justify-center rounded-lg py-2")}
+                style={
+                  tabTriggerWidth > 0 ? { width: tabTriggerWidth } : undefined
+                }
               >
-                <Tabs
-                  value={mode}
-                  onValueChange={handleTabChange}
-                  variant="filled"
-                >
-                  <TabsList className="w-full h-14 rounded-full">
-                    <TabsIndicator />
-                    <TabsTrigger
-                      value="email"
-                      className={cn(
-                        "items-center justify-center py-2 rounded-full",
-                      )}
-                      style={
-                        tabTriggerWidth > 0
-                          ? { width: tabTriggerWidth }
-                          : undefined
-                      }
-                    >
-                      <TabsTriggerText className="text-base font-semibold data-[selected=true]:text-primary">
-                        Email
-                      </TabsTriggerText>
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="shortcode"
-                      className="items-center justify-center py-2"
-                      style={
-                        tabTriggerWidth > 0
-                          ? { width: tabTriggerWidth }
-                          : undefined
-                      }
-                    >
-                      <TabsTriggerText className="text-base font-semibold data-[selected=true]:text-primary">
-                        Shortcode
-                      </TabsTriggerText>
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </Box>
+                <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                  Email
+                </TabsTriggerText>
+              </TabsTrigger>
+              <TabsTrigger
+                value="shortcode"
+                className="items-center justify-center rounded-lg py-2"
+                style={
+                  tabTriggerWidth > 0 ? { width: tabTriggerWidth } : undefined
+                }
+              >
+                <TabsTriggerText className="text-sm font-semibold data-[selected=true]:text-primary">
+                  Shortcode
+                </TabsTriggerText>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </Box>
 
-              <VStack space="sm">
-                <Input className="rounded-full border-border bg-background data-[focus=true]:border-primary h-14">
-                  <InputSlot className="pl-4">
-                    {mode === "email" ? (
-                      <Mail className="h-5.5 w-5.5 text-muted-foreground" />
-                    ) : (
-                      <Tag className="h-5.5 w-5.5 text-muted-foreground" />
-                    )}
-                  </InputSlot>
-                  <InputField
-                    autoCapitalize="none"
-                    autoComplete="off"
-                    autoCorrect={false}
-                    keyboardType={
-                      mode === "email" ? "email-address" : "default"
-                    }
-                    placeholder={
-                      mode === "email"
-                        ? "you@institution.ac.ke"
-                        : "e.g. KMTC-NRB"
-                    }
-                    value={inputValue}
-                    onChangeText={setInputValue}
-                    className="px-3 py-3 text-base text-foreground"
-                  />
-                </Input>
+        <VStack space="sm">
+          <Input className="h-12">
+            <InputSlot className="pl-1">
+              {mode === "email" ? (
+                <Mail className="h-5 w-5 text-primary" />
+              ) : (
+                <Tag className="h-5 w-5 text-primary" />
+              )}
+            </InputSlot>
+            <InputField
+              autoCapitalize="none"
+              autoComplete="off"
+              autoCorrect={false}
+              keyboardType={mode === "email" ? "email-address" : "default"}
+              placeholder={
+                mode === "email" ? "you@institution.ac.ke" : "e.g. KMTC-NRB"
+              }
+              value={inputValue}
+              onChangeText={setInputValue}
+              className="px-2 text-base text-foreground"
+            />
+          </Input>
 
-                <Text className="px-1 text-sm text-muted-foreground">
-                  We&apos;ll detect your institution automatically.
-                </Text>
+          <Text className="px-1 text-sm text-muted-foreground">
+            We&apos;ll detect your institution automatically.
+          </Text>
 
-                {error ? (
-                  <Text className="px-1 text-sm text-destructive">{error}</Text>
-                ) : null}
+          {error ? (
+            <Text className="px-1 text-sm text-destructive">{error}</Text>
+          ) : null}
 
-                <Button
-                  size="lg"
-                  isDisabled={!canContinue}
-                  onPress={handleContinue}
-                  className="mt-2 shadow-sm bg-[#ea580c] rounded-full h-14"
-                >
-                  {isSearching ? <ButtonSpinner /> : null}
-                  <ButtonText className="text-sm font-semibold">
-                    {isSearching ? "Searching..." : "Continue"}
-                  </ButtonText>
-                </Button>
-              </VStack>
-            </Box>
+          <Button
+            size="lg"
+            isDisabled={!canContinue}
+            onPress={handleContinue}
+            className="mt-2 h-12 rounded-xl bg-secondary data-[active=true]:bg-secondary/90"
+          >
+            {isSearching ? <ButtonSpinner /> : null}
+            <ButtonText className="text-sm font-semibold text-secondary-foreground">
+              {isSearching ? "Searching..." : "Continue"}
+            </ButtonText>
+          </Button>
+        </VStack>
+      </AuthFormCard>
 
-            <Box className="mt-6 items-center">
-              <Link href="#" className="items-center">
-                <LinkText className="text-sm text-primary underline decoration-primary/30">
-                  Need help finding your shortcode?
-                </LinkText>
-              </Link>
-            </Box>
-          </VStack>
-        </KeyboardAvoidingView>
+      <Box className="mt-6 items-center">
+        <Link href="#" className="items-center">
+          <LinkText className="text-sm text-primary underline decoration-primary/30">
+            Need help finding your shortcode?
+          </LinkText>
+        </Link>
       </Box>
-    </SafeAreaView>
+    </AuthScreenShell>
   );
 }

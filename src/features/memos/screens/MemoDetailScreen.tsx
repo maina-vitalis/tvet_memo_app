@@ -98,7 +98,7 @@ export default function MemoDetailScreen() {
         >
           <Card
             size="sm"
-            className="gap-0 rounded-lg border border-border/30 bg-card p-4 shadow-sm"
+            className="gap-0 rounded-xl border border-border/30 bg-card p-4 shadow-sm"
           >
             <Heading
               size="lg"

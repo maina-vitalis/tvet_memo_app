@@ -144,7 +144,7 @@ export default function RegistryLoginScreen() {
                       Password
                     </FormControlLabelText>
                   </FormControlLabel>
-                  <Input className="h-11 rounded-lg border-border bg-card data-[focus=true]:border-primary">
+                  <Input className="h-11 rounded-xl border-border bg-card data-[focus=true]:border-primary">
                     <InputSlot className="pl-3">
                       <Lock className="h-4.5 w-4.5 text-muted-foreground" />
                     </InputSlot>
@@ -183,7 +183,7 @@ export default function RegistryLoginScreen() {
                   size="lg"
                   isDisabled={!canSubmit}
                   onPress={handleSignIn}
-                  className="mt-1 rounded-lg shadow-sm active:scale-[0.98]"
+                  className="mt-1 rounded-xl shadow-sm active:scale-[0.98]"
                 >
                   {isSubmitting ? <ButtonSpinner /> : null}
                   <ButtonText className="text-sm font-semibold">

@@ -73,19 +73,19 @@ function TabButton({
       onPress={onPress}
       className={
         isRail
-          ? `w-full items-center rounded-2xl px-2 py-3 active:scale-95 ${
-              isFocused ? "bg-primary/10" : "data-[active=true]:bg-muted"
+          ? `w-full items-center rounded-2xl px-2 py-3 transition-all duration-200 active:scale-95 ${
+              isFocused ? "bg-primary/12" : "data-[active=true]:bg-muted"
             }`
-          : `min-w-16 flex-1 items-center justify-center rounded-xl px-2 py-1 active:scale-95 ${
-              isFocused ? "" : "data-[active=true]:bg-muted"
+          : `min-w-16 flex-1 items-center justify-center rounded-2xl px-2 py-1.5 transition-all duration-200 active:scale-95 ${
+              isFocused ? "bg-primary/8" : "data-[active=true]:bg-muted"
             }`
       }
     >
       <IconComponent
         strokeWidth={isFocused ? "2.5" : "1.5"}
-        stroke={isFocused ? "#234698" : "black"}
+        stroke={isFocused ? "#234698" : "#64748b"}
         className={`h-4.5 w-4.5 ${
-          isFocused ? "text-primary-foreground" : "text-muted-foreground"
+          isFocused ? "text-primary" : "text-muted-foreground"
         }`}
       />
       <Text
@@ -111,7 +111,7 @@ function DesktopSideNav() {
 
   return (
     <Box
-      className="hidden w-24 border-r border-border bg-card md:flex"
+      className="hidden w-24 border-r border-border/80 bg-card shadow-sm md:flex"
       style={{ paddingTop: Math.max(insets.top, 16), paddingBottom: 16 }}
     >
       <VStack className="flex-1 items-center gap-2 px-2">
@@ -162,7 +162,7 @@ function BottomTabBar({ state, navigation }: BottomTabBarProps) {
 
   return (
     <Box
-      className="border-t border-border bg-card shadow-lg md:hidden"
+      className="border-t border-border/80 bg-card/95 shadow-lg backdrop-blur-md md:hidden"
       style={{ paddingBottom: Math.max(insets.bottom, 8) }}
     >
       <HStack className="h-16 items-end justify-around px-1">
@@ -186,7 +186,7 @@ export default function TabsLayout() {
   return (
     <Box className="flex-1 flex-row bg-background">
       <DesktopSideNav />
-      <Box className="flex-1 bg-red-500">
+      <Box className="flex-1 bg-background">
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Tabs
           tabBar={(props) => (
