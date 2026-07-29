@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft } from "lucide-react-native";
@@ -20,14 +19,8 @@ type AuthScreenShellProps = {
   contentClassName?: string;
 };
 
-export function AuthGradientBackdrop() {
-  return (
-    <Box className="absolute inset-0 overflow-hidden">
-      <Box className="absolute -left-16 -top-20 h-56 w-56 rounded-full bg-primary/10" />
-      <Box className="absolute -right-12 top-1/3 h-48 w-48 rounded-full bg-secondary/10" />
-      <Box className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-muted/70" />
-    </Box>
-  );
+export function AuthScreenBackdrop() {
+  return <Box className="absolute inset-0 bg-background" />;
 }
 
 export function AuthFormCard({
@@ -39,14 +32,8 @@ export function AuthFormCard({
 }) {
   return (
     <Box
-      className={`overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm ${className ?? ""}`}
+      className={`overflow-hidden rounded-2xl border border-border/70 border-t-2 border-t-primary bg-card shadow-sm ${className ?? ""}`}
     >
-      <LinearGradient
-        colors={["#234698", "#1B3A7C"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{ height: 4 }}
-      />
       <Box className="p-6">{children}</Box>
     </Box>
   );
@@ -64,7 +51,7 @@ export function AuthScreenShell({
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Box className="flex-1 bg-background">
-        <AuthGradientBackdrop />
+        <AuthScreenBackdrop />
 
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -87,20 +74,24 @@ export function AuthScreenShell({
             {header}
 
             {title ? (
-              <VStack className="mb-6 gap-2">
-                <Heading size="xl" className="font-bold text-foreground">
+              <VStack className="mb-6 gap-1.5">
+                <Heading
+                  size="2xl"
+                  className="font-semibold tracking-tight text-foreground"
+                >
                   {title}
                 </Heading>
                 {subtitle ? (
-                  <Text className="text-base leading-6 text-muted-foreground">
+                  <Text className="text-sm leading-5 text-muted-foreground">
                     {subtitle}
                   </Text>
                 ) : null}
                 {institutionName ? (
-                  <Text className="text-sm font-semibold text-primary">
+                  <Text className="text-sm font-medium text-primary">
                     {institutionName}
                   </Text>
                 ) : null}
+                <Box className="mt-2 h-0.5 w-9 rounded-full bg-primary" />
               </VStack>
             ) : null}
 

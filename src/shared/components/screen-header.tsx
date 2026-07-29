@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { Box } from "@/src/shared/components/ui/box";
 import { Heading } from "@/src/shared/components/ui/heading";
@@ -11,68 +10,32 @@ type ScreenHeaderProps = {
   title: string;
   subtitle?: string;
   rightAction?: ReactNode;
-  variant?: "gradient" | "plain";
 };
 
 export function ScreenHeader({
   title,
   subtitle,
   rightAction,
-  variant = "gradient",
 }: ScreenHeaderProps) {
-  if (variant === "plain") {
-    return (
-      <Box className="border-b border-border/80 bg-card px-4 py-4 shadow-sm">
-        <HStack className="items-center justify-between">
-          <HeaderText title={title} subtitle={subtitle} light={false} />
-          {rightAction}
-        </HStack>
-      </Box>
-    );
-  }
-
   return (
-    <Box className="overflow-hidden shadow-sm">
-      <LinearGradient
-        colors={["#234698", "#1B3A7C", "#234698"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ paddingHorizontal: 16, paddingTop: 14, paddingBottom: 16 }}
-      >
-        <HStack className="items-start justify-between">
-          <HeaderText title={title} subtitle={subtitle} light />
-          {rightAction}
-        </HStack>
-      </LinearGradient>
-      <Box className="h-1 bg-secondary/90" />
+    <Box className="border-b border-border/60 bg-card px-5 pb-5 pt-1">
+      <HStack className="items-start justify-between gap-3">
+        <VStack className="min-w-0 flex-1 gap-1.5">
+          <Heading
+            size="2xl"
+            className="font-semibold tracking-tight text-foreground"
+          >
+            {title}
+          </Heading>
+          {subtitle ? (
+            <Text className="text-sm leading-5 text-muted-foreground">
+              {subtitle}
+            </Text>
+          ) : null}
+          <Box className="mt-2 h-0.5 w-9 rounded-full bg-primary" />
+        </VStack>
+        {rightAction}
+      </HStack>
     </Box>
-  );
-}
-
-function HeaderText({
-  title,
-  subtitle,
-  light,
-}: {
-  title: string;
-  subtitle?: string;
-  light: boolean;
-}) {
-  return (
-    <VStack className="min-w-0 flex-1 pr-4">
-      <Heading
-        size="md"
-        className={`font-bold ${light ? "text-primary-foreground" : "text-primary"}`}
-      >
-        {title}
-      </Heading>
-      {subtitle ? (
-        <Text
-          className={`mt-0.5 text-sm ${light ? "text-primary-foreground/80" : "text-muted-foreground"}`}
-        >
-          {subtitle}
-        </Text>
-      ) : null}
-    </VStack>
   );
 }

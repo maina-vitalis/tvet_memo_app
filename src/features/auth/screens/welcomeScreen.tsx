@@ -1,4 +1,3 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
@@ -36,32 +35,8 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-      <LinearGradient
-        colors={[
-          "rgba(27, 58, 124, 0.2)",
-          "rgba(35, 70, 152, 0.4)",
-          "rgba(27, 58, 124, 0.92)",
-          "#1B3A7C",
-        ]}
-        locations={[0, 0.35, 0.72, 1]}
-        start={{ x: 0.2, y: 0 }}
-        end={{ x: 0.8, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      />
-
-      <LinearGradient
-        colors={["transparent", "rgba(243, 111, 18, 0.18)", "rgba(243, 111, 18, 0.42)"]}
-        locations={[0.55, 0.82, 1]}
-        style={StyleSheet.absoluteFill}
-        pointerEvents="none"
-      />
-
       <Box
-        className="absolute -right-10 -top-16 h-56 w-56 rounded-full bg-secondary/20"
-        pointerEvents="none"
-      />
-      <Box
-        className="absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-primary/30"
+        className="absolute inset-0 bg-primary-container/88"
         pointerEvents="none"
       />
 
@@ -73,13 +48,13 @@ export default function WelcomeScreen() {
             <Text className="text-5xl font-bold tracking-tight text-primary-foreground">
               TVET MEMO
             </Text>
-            <Box className="mt-3 h-1.5 w-16 rounded-full bg-secondary" />
+            <Box className="mt-3 h-0.5 w-12 rounded-full bg-primary-foreground/70" />
           </Animated.View>
 
           <Animated.View
             entering={FadeInDown.delay(340).duration(560).springify()}
           >
-            <Text className="mt-5 text-base leading-6 text-primary-foreground/90">
+            <Text className="mt-5 text-base leading-6 text-primary-foreground/85">
               Official memos, alerts, and updates — delivered reliably to your
               institution.
             </Text>
