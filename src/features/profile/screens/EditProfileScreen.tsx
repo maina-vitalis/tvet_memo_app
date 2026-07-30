@@ -2,7 +2,7 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { ArrowLeft, Pencil } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, AvatarImage } from "@/src/shared/components/ui/avatar";
@@ -73,6 +73,10 @@ export default function EditProfileScreen() {
   const handlePickAvatar = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
+      Alert.alert(
+        "Photos permission required",
+        "Allow photo library access to choose a profile picture.",
+      );
       return;
     }
 
@@ -88,10 +92,12 @@ export default function EditProfileScreen() {
     }
 
     const asset = result.assets[0];
+    const fileName = asset.fileName ?? `avatar-${Date.now()}.jpg`;
+
     setPendingImage({
       uri: asset.uri,
-      fileName: asset.fileName,
-      mimeType: asset.mimeType,
+      fileName,
+      mimeType: asset.mimeType ?? "image/jpeg",
     });
   };
 

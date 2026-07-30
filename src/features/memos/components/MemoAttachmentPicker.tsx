@@ -1,6 +1,7 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { FileText, Image as ImageIcon, Paperclip, X } from "lucide-react-native";
+import { Alert } from "react-native";
 
 import { formatFileSize } from "@/src/features/memos/utils/memoContent";
 import { Box } from "@/src/shared/components/ui/box";
@@ -9,6 +10,7 @@ import { HStack } from "@/src/shared/components/ui/hstack";
 import { Pressable } from "@/src/shared/components/ui/pressable";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
+import { normalizeMimeType } from "@/src/shared/utils/multipartUpload";
 
 export type LocalMemoAttachment = {
   uri: string;
@@ -23,9 +25,37 @@ type MemoAttachmentPickerProps = {
 };
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_ATTACHMENT_MIMES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/pdf",
+]);
 
 function guessSizeLabel(_attachment: LocalMemoAttachment): string {
   return "Pending upload";
+}
+
+function buildAttachment(
+  uri: string,
+  name: string,
+  mimeType: string | null | undefined,
+): LocalMemoAttachment | null {
+  const normalizedMimeType = normalizeMimeType(mimeType, name);
+
+  if (!ALLOWED_ATTACHMENT_MIMES.has(normalizedMimeType)) {
+    Alert.alert(
+      "Unsupported file",
+      "Only JPEG, PNG, WEBP images and PDF documents can be attached.",
+    );
+    return null;
+  }
+
+  return {
+    uri,
+    name,
+    mimeType: normalizedMimeType,
+  };
 }
 
 export function MemoAttachmentPicker({
@@ -37,6 +67,7 @@ export function MemoAttachmentPicker({
 
   const appendAttachment = (file: LocalMemoAttachment) => {
     if (attachments.length >= maxFiles) {
+      Alert.alert("Attachment limit reached", `You can attach up to ${maxFiles} files.`);
       return;
     }
 
@@ -46,6 +77,10 @@ export function MemoAttachmentPicker({
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
+      Alert.alert(
+        "Photos permission required",
+        "Allow photo library access to attach images to your memo.",
+      );
       return;
     }
 
@@ -60,14 +95,15 @@ export function MemoAttachmentPicker({
 
     const asset = result.assets[0];
     if (asset.fileSize && asset.fileSize > MAX_FILE_BYTES) {
+      Alert.alert("File too large", "Each attachment must be 10 MB or smaller.");
       return;
     }
 
-    appendAttachment({
-      uri: asset.uri,
-      name: asset.fileName ?? `image-${Date.now()}.jpg`,
-      mimeType: asset.mimeType ?? "image/jpeg",
-    });
+    const fileName = asset.fileName ?? `image-${Date.now()}.jpg`;
+    const attachment = buildAttachment(asset.uri, fileName, asset.mimeType);
+    if (attachment) {
+      appendAttachment(attachment);
+    }
   };
 
   const pickDocument = async () => {
@@ -83,14 +119,14 @@ export function MemoAttachmentPicker({
 
     const asset = result.assets[0];
     if (asset.size && asset.size > MAX_FILE_BYTES) {
+      Alert.alert("File too large", "Each attachment must be 10 MB or smaller.");
       return;
     }
 
-    appendAttachment({
-      uri: asset.uri,
-      name: asset.name,
-      mimeType: asset.mimeType ?? "application/octet-stream",
-    });
+    const attachment = buildAttachment(asset.uri, asset.name, asset.mimeType);
+    if (attachment) {
+      appendAttachment(attachment);
+    }
   };
 
   const removeAttachment = (index: number) => {

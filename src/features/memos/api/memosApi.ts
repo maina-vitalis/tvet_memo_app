@@ -1,5 +1,3 @@
-import { Platform } from "react-native";
-
 import type { LocalMemoAttachment } from "@/src/features/memos/components/MemoAttachmentPicker";
 import type { Memo } from "@/src/features/memos/types";
 import type {
@@ -8,9 +6,10 @@ import type {
 } from "@/src/features/memos/types/CreateMemoTypes";
 import type { MemoAttachmentItem } from "@/src/features/memos/types/MemoTypes";
 import type { PaginatedResponse } from "@/src/shared/types";
-import tokenStorage from "@/src/features/auth/api/tokenStorage";
-import { getStore } from "@/src/shared/store/storeRef";
-import { API_BASE_URL } from "@/src/shared/utils/config";
+import {
+  appendLocalFileToFormData,
+  authenticatedMultipartRequest,
+} from "@/src/shared/utils/multipartUpload";
 import apiClient from "@/src/shared/utils/apiClient";
 
 const UUID_RE =
@@ -166,43 +165,21 @@ export async function publishMemoWithAttachments(
   formData.append("memo", JSON.stringify(payload));
 
   for (const file of files) {
-    if (Platform.OS === "web") {
-      const picked = await fetch(file.uri);
-      const blob = await picked.blob();
-      formData.append("files", blob, file.name);
-    } else {
-      formData.append("files", {
-        uri: file.uri,
-        name: file.name,
-        type: file.mimeType,
-      } as unknown as Blob);
-    }
+    await appendLocalFileToFormData(formData, "files", file);
   }
 
-  let token = await tokenStorage.getAccessToken();
-  if (!token) {
-    token = getStore().getState().auth.token;
-  }
-
-  const response = await fetch(`${API_BASE_URL}/memos/publish-with-attachments`, {
-    method: "POST",
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    body: formData,
-  });
-
-  const json = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    const rawMessage = json?.message;
-    const message = Array.isArray(rawMessage)
-      ? rawMessage.join(", ")
-      : (rawMessage ?? "Could not publish this memo.");
-    throw new Error(message);
-  }
+  const result = await authenticatedMultipartRequest<PublishMemoResponse>(
+    "/memos/publish-with-attachments",
+    {
+      method: "POST",
+      formData,
+      fallbackError: "Could not publish this memo.",
+    },
+  );
 
   clearMemosCache();
 
-  return (json?.data ?? json) as PublishMemoResponse;
+  return result;
 }
 
 export async function sendMemo(id: string): Promise<PublishMemoResponse> {
