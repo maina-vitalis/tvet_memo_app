@@ -13,7 +13,6 @@
   "dependencies": {
     "@10play/react-native-web-webview": "^0.0.3",
     "@10play/tentap-editor": "^1.0.1",
-    "@expo-google-fonts/inter": "^0.4.2",
     "@expo/html-elements": "^0.10.1",
     "@expo/vector-icons": "^15.0.3",
     "@gluestack-ui/core": "^4.1.0-alpha.0",
