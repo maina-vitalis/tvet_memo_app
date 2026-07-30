@@ -1,5 +1,5 @@
 module.exports = function (api) {
-  api.cache(true);
+  api.cache.using(() => require("react-native-worklets/package.json").version);
 
   return {
     presets: ["babel-preset-expo"],
@@ -13,7 +13,7 @@ module.exports = function (api) {
           },
         },
       ],
-      "react-native-worklets/plugin",
+      "react-native-reanimated/plugin",
     ],
   };
 };
