@@ -4,12 +4,17 @@ import {
   useEditorBridge,
   useEditorContent,
 } from "@10play/tentap-editor";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { StyleSheet } from "react-native";
 
+import {
+  memoEditorContentCss,
+  memoEditorTheme,
+  MEMO_EDITOR_MIN_HEIGHT,
+  memoToolbarItems,
+} from "@/src/features/memos/components/memoRichTextEditorTheme";
 import type { MemoRichTextEditorProps } from "@/src/features/memos/components/memoRichTextEditor.types";
 import { Box } from "@/src/shared/components/ui/box";
-import { Text } from "@/src/shared/components/ui/text";
 
 export function MemoRichTextEditor({
   value,
@@ -22,6 +27,8 @@ export function MemoRichTextEditor({
   const editor = useEditorBridge({
     initialContent: value || "",
     avoidIosKeyboard: false,
+    dynamicHeight: true,
+    theme: memoEditorTheme,
   });
 
   const content = useEditorContent(editor, {
@@ -29,9 +36,17 @@ export function MemoRichTextEditor({
     debounceInterval: 200,
   });
 
+  const applyEditorStyles = useCallback(() => {
+    editor.injectCSS(memoEditorContentCss, "memo-editor-content");
+  }, [editor]);
+
   useEffect(() => {
     editor.setPlaceholder(placeholder);
   }, [editor, placeholder]);
+
+  useEffect(() => {
+    applyEditorStyles();
+  }, [applyEditorStyles]);
 
   useEffect(() => {
     if (content === undefined) {
@@ -62,30 +77,34 @@ export function MemoRichTextEditor({
   }, [value, editor]);
 
   return (
-    <Box className="overflow-hidden rounded-xl border border-border bg-card">
-      <Toolbar editor={editor} hidden={false} />
+    <Box className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+      <Box className="border-b border-border bg-muted/50 px-2 py-1.5">
+        <Toolbar
+          editor={editor}
+          hidden={false}
+          items={memoToolbarItems}
+          shouldHideDisabledToolbarItems
+        />
+      </Box>
 
-      <RichText
-        editor={editor}
-        style={styles.editor}
-        containerStyle={styles.editorContainer}
-      />
-
-      <Text className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
-        Use the toolbar for bold, lists, and headings.
-      </Text>
+      <Box className="bg-card">
+        <RichText
+          editor={editor}
+          style={styles.editor}
+          containerStyle={styles.editorContainer}
+          onLoad={applyEditorStyles}
+        />
+      </Box>
     </Box>
   );
 }
 
 const styles = StyleSheet.create({
   editor: {
-    minHeight: 180,
-    height: 180,
+    minHeight: MEMO_EDITOR_MIN_HEIGHT,
     backgroundColor: "#ffffff",
   },
   editorContainer: {
-    minHeight: 180,
-    height: 180,
+    minHeight: MEMO_EDITOR_MIN_HEIGHT,
   },
 });
