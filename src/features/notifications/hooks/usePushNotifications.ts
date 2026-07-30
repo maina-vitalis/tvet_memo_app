@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { clearMemosCache } from "@/src/features/memos/api/memosApi";
 import { memosKeys } from "@/src/features/memos/hooks/useMemos";
@@ -71,12 +72,21 @@ async function resolveExpoPushToken(): Promise<string | null> {
   return tokenResponse.data;
 }
 
-function resolveDeviceId(): string {
-  return (
+const PUSH_DEVICE_ID_KEY = "memo_push_device_id";
+
+async function resolveDeviceId(): Promise<string> {
+  const storedDeviceId = await AsyncStorage.getItem(PUSH_DEVICE_ID_KEY);
+  if (storedDeviceId) {
+    return storedDeviceId;
+  }
+
+  const deviceId =
     Constants.installationId ??
     Device.osBuildId ??
-    `${Platform.OS}-${Device.modelName ?? "unknown"}`
-  );
+    `${Platform.OS}-${Device.modelName ?? "unknown"}`;
+
+  await AsyncStorage.setItem(PUSH_DEVICE_ID_KEY, deviceId);
+  return deviceId;
 }
 
 export function usePushNotifications(): void {
@@ -103,7 +113,7 @@ export function usePushNotifications(): void {
 
         await registerPushToken({
           token,
-          deviceId: resolveDeviceId(),
+          deviceId: await resolveDeviceId(),
           deviceName: Device.deviceName ?? Device.modelName ?? undefined,
         });
 
