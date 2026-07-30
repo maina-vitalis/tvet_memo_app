@@ -1,62 +1,75 @@
-import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
-import { useRef } from "react";
-import { KeyboardAvoidingView, Platform } from "react-native";
+import {
+  RichText,
+  Toolbar,
+  useEditorBridge,
+  useEditorContent,
+} from "@10play/tentap-editor";
+import { useEffect, useRef } from "react";
+import { StyleSheet } from "react-native";
 
+import type { MemoRichTextEditorProps } from "@/src/features/memos/components/memoRichTextEditor.types";
 import { Box } from "@/src/shared/components/ui/box";
 import { Text } from "@/src/shared/components/ui/text";
-
-type MemoRichTextEditorProps = {
-  value: string;
-  onChange: (html: string) => void;
-  placeholder?: string;
-};
 
 export function MemoRichTextEditor({
   value,
   onChange,
   placeholder = "Write your memo...",
 }: MemoRichTextEditorProps) {
-  const editorRef = useRef<RichEditor>(null);
+  const lastEmittedHtml = useRef(value);
+  const skipNextContentSync = useRef(false);
+
+  const editor = useEditorBridge({
+    initialContent: value || "",
+    avoidIosKeyboard: false,
+  });
+
+  const content = useEditorContent(editor, {
+    type: "html",
+    debounceInterval: 200,
+  });
+
+  useEffect(() => {
+    editor.setPlaceholder(placeholder);
+  }, [editor, placeholder]);
+
+  useEffect(() => {
+    if (content === undefined) {
+      return;
+    }
+
+    if (skipNextContentSync.current) {
+      skipNextContentSync.current = false;
+      return;
+    }
+
+    if (content === lastEmittedHtml.current) {
+      return;
+    }
+
+    lastEmittedHtml.current = content;
+    onChange(content);
+  }, [content, onChange]);
+
+  useEffect(() => {
+    if (value === lastEmittedHtml.current) {
+      return;
+    }
+
+    skipNextContentSync.current = true;
+    editor.setContent(value || "");
+    lastEmittedHtml.current = value;
+  }, [value, editor]);
 
   return (
     <Box className="overflow-hidden rounded-xl border border-border bg-card">
-      <RichToolbar
-        editor={editorRef}
-        actions={[
-          actions.setBold,
-          actions.setItalic,
-          actions.setUnderline,
-          actions.insertBulletsList,
-          actions.insertOrderedList,
-          actions.heading1,
-          actions.heading2,
-          actions.setStrikethrough,
-          actions.removeFormat,
-        ]}
-        style={{
-          backgroundColor: "#f8fafc",
-          borderBottomWidth: 1,
-          borderBottomColor: "#e2e8f0",
-        }}
-      />
+      <Toolbar editor={editor} hidden={false} />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <RichEditor
-          ref={editorRef}
-          initialContentHTML={value}
-          placeholder={placeholder}
-          onChange={onChange}
-          editorStyle={{
-            backgroundColor: "#ffffff",
-            color: "#0f172a",
-            placeholderColor: "#94a3b8",
-            contentCSSText: "font-size: 16px; line-height: 24px; padding: 12px;",
-          }}
-          style={{ minHeight: 180 }}
-        />
-      </KeyboardAvoidingView>
+      <RichText
+        editor={editor}
+        style={styles.editor}
+        containerStyle={styles.editorContainer}
+      />
 
       <Text className="border-t border-border px-3 py-2 text-xs text-muted-foreground">
         Use the toolbar for bold, lists, and headings.
@@ -64,3 +77,15 @@ export function MemoRichTextEditor({
     </Box>
   );
 }
+
+const styles = StyleSheet.create({
+  editor: {
+    minHeight: 180,
+    height: 180,
+    backgroundColor: "#ffffff",
+  },
+  editorContainer: {
+    minHeight: 180,
+    height: 180,
+  },
+});

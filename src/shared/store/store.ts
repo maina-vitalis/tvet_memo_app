@@ -22,7 +22,13 @@ import { registerStore } from "./storeRef";
 const authPersistConfig = {
   key: "auth",
   storage: AsyncStorage,
-  whitelist: ["user"],
+  whitelist: [
+    "user",
+    "institution",
+    "pendingEmail",
+    "otpSentAt",
+    "pendingAdmissionNumber",
+  ],
 };
 
 const rootReducer = combineReducers({

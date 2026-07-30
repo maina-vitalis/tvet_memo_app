@@ -10,7 +10,7 @@
 import { getStore } from "@/src/shared/store/storeRef";
 import type { User } from "@/src/shared/types";
 import { tokenStorage } from "../api/tokenStorage";
-import { logout, setCredentials } from "./authSlice";
+import { clearSession, setCredentials } from "./authSlice";
 
 export async function loadTokensFromSecureStorage(): Promise<boolean> {
   try {
@@ -20,15 +20,16 @@ export async function loadTokensFromSecureStorage(): Promise<boolean> {
     ]);
 
     const store = getStore();
+    const existingUser = store.getState().auth.user;
 
     if (!access) {
-      // A persisted profile without a token in SecureStore is not a session,
-      // so drop it instead of leaving a half-authenticated state behind.
-      store.dispatch(logout());
+      // Drop a stale persisted profile without a secure token, but keep
+      // institution/pendingEmail so an in-progress signup is not wiped.
+      if (existingUser) {
+        store.dispatch(clearSession());
+      }
       return false;
     }
-
-    const existingUser = store.getState().auth.user;
 
     // If we have a persisted user, keep it. Otherwise we may need /me later.
     // For now we set a minimal credential so interceptors + isAuthenticated work.

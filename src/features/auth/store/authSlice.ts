@@ -87,7 +87,25 @@ const authSlice = createSlice({
     setVerifiedOtp: (state, action: PayloadAction<string | null>) => {
       state.verifiedOtp = action.payload;
     },
-    clearInstitution: () => initialState,
+    clearInstitution: (state) => {
+      state.institution = null;
+      state.pendingAdmissionNumber = null;
+      state.pendingEmail = null;
+      state.otpSentAt = null;
+      state.status = "idle";
+      state.error = null;
+    },
+    clearSession: (state) => {
+      state.user = null;
+      state.token = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+      state.isFirstSetup = false;
+      state.pendingPassword = null;
+      state.verifiedOtp = null;
+      state.status = "idle";
+      state.error = null;
+    },
     logout: () => initialState,
   },
 
@@ -165,6 +183,7 @@ export const {
   setPendingAdmissionNumber,
   setVerifiedOtp,
   clearInstitution,
+  clearSession,
   logout,
 } = authSlice.actions;
 
