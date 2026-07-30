@@ -22,9 +22,11 @@ import {
   TabsTrigger,
   TabsTriggerText,
 } from "@/src/shared/components/ui/tabs";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { cn } from "@/src/shared/utils/cn";
+import { getFormErrorMessage } from "@/src/shared/utils/formErrors";
 import { Box } from "@/src/shared/components/ui/box";
 import { Heading } from "@/src/shared/components/ui/heading";
 
@@ -78,11 +80,14 @@ export default function TenantDiscoveryScreen() {
       }
 
       router.push(AUTH_ROUTES.admissionNumber);
-    } catch {
+    } catch (err) {
       setError(
-        mode === "email"
-          ? "No institution found for this email domain. Use your official institutional email address."
-          : "Institution not found. Check your school code and try again.",
+        getFormErrorMessage(
+          err,
+          mode === "email"
+            ? "No institution found for this email domain. Use your official institutional email address."
+            : "Institution not found. Check your school code and try again.",
+        ),
       );
     } finally {
       setIsSearching(false);
@@ -166,9 +171,7 @@ export default function TenantDiscoveryScreen() {
             We&apos;ll detect your institution automatically.
           </Text>
 
-          {error ? (
-            <Text className="px-1 text-sm text-destructive">{error}</Text>
-          ) : null}
+          <FormErrorMessage message={error} />
 
           <Button
             size="lg"

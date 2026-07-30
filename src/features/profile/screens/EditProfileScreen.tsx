@@ -17,6 +17,7 @@ import { Heading } from "@/src/shared/components/ui/heading";
 import { HStack } from "@/src/shared/components/ui/hstack";
 import { Input, InputField } from "@/src/shared/components/ui/input";
 import { Pressable } from "@/src/shared/components/ui/pressable";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { ScreenStatusBar } from "@/src/shared/components/screen-status-bar";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
 import { VStack } from "@/src/shared/components/ui/vstack";
@@ -27,6 +28,7 @@ import {
 } from "@/src/features/profile/hooks/useProfile";
 import type { ProfileImageInput } from "@/src/features/profile/api/profileApi";
 import { useAppSelector } from "@/src/shared/store/hooks";
+import { getFormErrorMessage } from "@/src/shared/utils/formErrors";
 
 const PROFILE_AVATAR_URI =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuABQZaAwedUgXA5VgbCkwYf_G84rE21w_hOJSspZrwsWSwJ74b0blOw41di6I6SRospLCEsde9WWJiWGJujyBdSmO6xgEb8SFI6tlHumbaacAGPYlS08iQDF1LEo14AT4vhBTm4iZauzKebPquhlW6omgL9NODXe_TodVLowJIW3DgONw5qrWlT3LkBUxOpFeVJAZzKCxygbHV8EME0TeEjJ2BPg_gOi-6JIEjynYCh9if22rHy6g1V1OVUTsko0BwwDPlwpjqJSlu2";
@@ -43,6 +45,7 @@ export default function EditProfileScreen() {
   const [pendingImage, setPendingImage] = useState<ProfileImageInput | null>(
     null,
   );
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const initialized = useRef(false);
 
   useEffect(() => {
@@ -95,6 +98,7 @@ export default function EditProfileScreen() {
   const handleSave = () => {
     if (!canSubmit) return;
 
+    setSubmitError(null);
     updateMutation.mutate(
       {
         firstName: firstName.trim(),
@@ -104,6 +108,14 @@ export default function EditProfileScreen() {
       },
       {
         onSuccess: () => router.back(),
+        onError: (error) => {
+          setSubmitError(
+            getFormErrorMessage(
+              error,
+              "Could not update your profile. Please try again.",
+            ),
+          );
+        },
       },
     );
   };
@@ -208,6 +220,8 @@ export default function EditProfileScreen() {
                   />
                 </Input>
               </FormControl>
+
+              <FormErrorMessage message={submitError} />
 
               <Button
                 size="lg"

@@ -23,16 +23,33 @@ import {
   setPendingEmail,
 } from "@/src/features/auth/store/authSlice";
 import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
+import { getFormErrorMessage } from "@/src/shared/utils/formErrors";
 import { useAppDispatch } from "@/src/shared/store/hooks";
+
+function useFormMutationError(fallback: string) {
+  const [error, setError] = useState<string | null>(null);
+
+  const handleError = useCallback(
+    (mutationError: unknown) => {
+      setError(getFormErrorMessage(mutationError, fallback));
+    },
+    [fallback],
+  );
+
+  const resetError = useCallback(() => setError(null), []);
+
+  return { error, handleError, resetError };
+}
 
 export function useCheckEmail() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Could not verify this email. Please try again.",
+  );
 
   const mutation = useMutation({
     mutationFn: checkEmail,
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (result, email) => {
       const normalizedEmail = email.trim().toLowerCase();
       dispatch(setPendingEmail(normalizedEmail));
@@ -58,14 +75,8 @@ export function useCheckEmail() {
         params: { mode: "login" },
       });
     },
-    onError: (mutationError) => {
-      const message = "Could not verify this email. Please try again.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     checkEmail: mutation.mutate,
@@ -78,13 +89,14 @@ export function useCheckEmail() {
 
 export function useSignupRegister() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Could not create your account. Please try again.",
+  );
 
   const mutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       signupRegister(email, password),
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (_result, variables) => {
       dispatch(setPendingEmail(variables.email.trim().toLowerCase()));
       router.push({
@@ -92,14 +104,8 @@ export function useSignupRegister() {
         params: { email: variables.email.trim().toLowerCase() },
       });
     },
-    onError: (mutationError) => {
-      const message = "Could not create your account. Please try again.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     signupRegister: mutation.mutate,
@@ -110,26 +116,20 @@ export function useSignupRegister() {
   };
 }
 
-//send otp
 export function useSendOtp() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Could not send verification code. Please try again.",
+  );
 
   const mutation = useMutation({
     mutationFn: sendOtp,
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (result) => {
       dispatch(setOtpSentAt(result.sentAt));
     },
-    onError: (mutationError) => {
-      const message = "Could not send verification code. Please try again.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     sendOtp: mutation.mutate,
@@ -142,13 +142,14 @@ export function useSendOtp() {
 
 export function useVerifyOtp() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Invalid verification code. Please try again.",
+  );
 
   const mutation = useMutation({
     mutationFn: ({ email, otp }: { email: string; otp: string }) =>
       verifyOtp(email, otp),
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (session) => {
       dispatch(
         setCredentials({
@@ -159,18 +160,12 @@ export function useVerifyOtp() {
       );
       router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
-    onError: (mutationError) => {
-      const message = "Invalid verification code. Please try again.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     verifyOtp: mutation.mutate,
-    verifyOtpAsync: mutation.mutateAsync,   
+    verifyOtpAsync: mutation.mutateAsync,
     isPending: mutation.isPending,
     error,
     resetError,
@@ -179,13 +174,14 @@ export function useVerifyOtp() {
 
 export function useLogin() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Invalid email or password.",
+  );
 
   const mutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (session) => {
       dispatch(
         setCredentials({
@@ -196,14 +192,8 @@ export function useLogin() {
       );
       router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
-    onError: (mutationError) => {
-      const message = "Invalid email or password.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     login: mutation.mutate,
@@ -216,13 +206,14 @@ export function useLogin() {
 
 export function useAccountSetup() {
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, resetError } = useFormMutationError(
+    "Invalid or expired setup link. Please contact your administrator.",
+  );
 
   const mutation = useMutation({
     mutationFn: ({ token, password }: { token: string; password: string }) =>
       completeAccountSetup(token, password),
-    onMutate: () => setError(null),
+    onMutate: resetError,
     onSuccess: (session) => {
       dispatch(
         setCredentials({
@@ -233,15 +224,8 @@ export function useAccountSetup() {
       );
       router.replace(resolvePostAuthRoute(session.user.mustChangePassword));
     },
-    onError: (mutationError) => {
-      const message =
-        "Invalid or expired setup link. Please contact your administrator.";
-      setError(message);
-      showError(mutationError, message);
-    },
+    onError: handleError,
   });
-
-  const resetError = useCallback(() => setError(null), []);
 
   return {
     completeAccountSetup: mutation.mutate,

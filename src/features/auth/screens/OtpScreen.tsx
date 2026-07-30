@@ -24,6 +24,7 @@ import { Heading } from "@/src/shared/components/ui/heading";
 import { HStack } from "@/src/shared/components/ui/hstack";
 import { Image } from "@/src/shared/components/ui/image";
 import { Pressable } from "@/src/shared/components/ui/pressable";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAppSelector } from "@/src/shared/store/hooks";
@@ -307,9 +308,7 @@ export default function OtpScreen() {
                 )}
               </Text>
 
-              {error ? (
-                <Text className="mb-4 text-sm text-destructive">{error}</Text>
-              ) : null}
+              <FormErrorMessage message={error} className="mb-4 px-1" />
 
               <Button
                 size="lg"

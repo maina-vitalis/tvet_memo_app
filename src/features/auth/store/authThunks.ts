@@ -12,14 +12,14 @@ import { clearAuthSession } from "@/src/features/auth/api/sessionCleanup";
 import { tokenStorage } from "@/src/features/auth/api/tokenStorage";
 import type { AuthState } from "@/src/features/auth/types/AuthTypes";
 import type { User } from "@/src/shared/types";
-import { toApiError } from "@/src/shared/utils/apiClient";
+import { getFormErrorMessage } from "@/src/shared/utils/formErrors";
 
 type AuthRootState = {
   auth: AuthState;
 };
 
 function getErrorMessage(error: unknown, fallback: string): string {
-  return toApiError(error, fallback).message;
+  return getFormErrorMessage(error, fallback);
 }
 
 export const discoverInstitution = createAsyncThunk<

@@ -22,7 +22,7 @@ import {
 } from "@/src/shared/components/ui/form-control";
 import { Image } from "@/src/shared/components/ui/image";
 import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
-import { Text } from "@/src/shared/components/ui/text";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAppSelector } from "@/src/shared/store/hooks";
 
@@ -104,16 +104,17 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 placeholder="you@institution.ac.ke"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(value) => {
+                  setEmail(value);
+                  resetError();
+                }}
                 accessibilityLabel="Email address"
                 className="px-2 text-base text-foreground"
               />
             </Input>
           </FormControl>
 
-          {error ? (
-            <Text className="text-sm text-destructive">{error}</Text>
-          ) : null}
+          <FormErrorMessage message={error} />
 
           <Button
             size="lg"

@@ -11,7 +11,7 @@ import {
 import { memosKeys } from "@/src/features/memos/hooks/useMemos";
 import type { CreateMemoPayload } from "@/src/features/memos/types/CreateMemoTypes";
 import { notificationsKeys } from "@/src/features/notifications/queryKeys";
-import { useMutationToast } from "@/src/shared/hooks/useMutationToast";
+import { getFormErrorMessage } from "@/src/shared/utils/formErrors";
 
 export type MemoComposerInput = CreateMemoPayload & {
   publishNow?: boolean;
@@ -25,9 +25,23 @@ function isTimeoutError(error: unknown): boolean {
   );
 }
 
+function getComposerFallback(
+  error: unknown,
+  variables?: MemoComposerInput,
+): string {
+  const timeoutHint = isTimeoutError(error)
+    ? " The request timed out — check your feed before trying again to avoid sending duplicates."
+    : "";
+
+  if (variables?.publishNow === false) {
+    return "Could not save this draft. Please try again.";
+  }
+
+  return `Could not publish this memo. Please try again.${timeoutHint}`;
+}
+
 export function useMemoComposer() {
   const queryClient = useQueryClient();
-  const { showError } = useMutationToast();
 
   const mutation = useMutation({
     mutationFn: async (payload: MemoComposerInput) => {
@@ -58,19 +72,17 @@ export function useMemoComposer() {
       void queryClient.invalidateQueries({
         queryKey: notificationsKeys.list(),
       });
-
-      const timeoutHint = isTimeoutError(error)
-        ? " The request timed out — check your feed before trying again to avoid sending duplicates."
-        : "";
-
-      const fallback =
-        variables.publishNow === false
-          ? "Could not save this draft. Please try again."
-          : `Could not publish this memo. Please try again.${timeoutHint}`;
-
-      showError(error, fallback);
     },
   });
 
-  return mutation;
+  return {
+    ...mutation,
+    submitError:
+      mutation.isError && mutation.error
+        ? getFormErrorMessage(
+            mutation.error,
+            getComposerFallback(mutation.error, mutation.variables),
+          )
+        : null,
+  };
 }

@@ -84,6 +84,21 @@ export function toApiError(error: unknown, fallback: string): ApiError {
   return { message: fallback, statusCode: 500 };
 }
 
+const PUBLIC_AUTH_PATH_PREFIXES = [
+  "/institutions/discover",
+  "/auth/login/",
+  "/auth/signup/",
+  "/auth/setup/",
+];
+
+function isPublicAuthRequest(url?: string): boolean {
+  if (!url) {
+    return false;
+  }
+
+  return PUBLIC_AUTH_PATH_PREFIXES.some((prefix) => url.includes(prefix));
+}
+
 const apiClient = create({
   baseURL: API_BASE_URL,
   headers: {
@@ -212,6 +227,10 @@ apiClient.interceptors.response.use(
     };
 
     const status = error.response?.status;
+
+    if (status === 401 && isPublicAuthRequest(originalRequest.url)) {
+      return Promise.reject(error);
+    }
 
     if (status === 401 && !originalRequest._retry) {
       // Do not try to refresh on the refresh endpoint itself

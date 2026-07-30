@@ -17,6 +17,7 @@ import { HStack } from "@/src/shared/components/ui/hstack";
 import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useKeyboardHeight } from "@/src/shared/hooks/use-keyboard-height";
@@ -318,9 +319,7 @@ export default function ResetPasswordScreen() {
                   </Text>
                 </VStack>
 
-                {error ? (
-                  <Text className="text-sm text-destructive">{error}</Text>
-                ) : null}
+                <FormErrorMessage message={error} />
 
                 <Button
                   variant={isSuccess ? "secondary" : "default"}

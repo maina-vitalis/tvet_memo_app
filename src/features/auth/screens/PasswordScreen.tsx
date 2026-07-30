@@ -32,6 +32,7 @@ import { Image } from "@/src/shared/components/ui/image";
 import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Pressable } from "@/src/shared/components/ui/pressable";
 import { ScrollView } from "@/src/shared/components/ui/scroll-view";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAppSelector } from "@/src/shared/store/hooks";
@@ -236,7 +237,7 @@ export default function PasswordScreen() {
                 value={password}
                 onChangeText={(value) => {
                   setPasswordValue(value);
-                  resetLoginError();
+                  resetError();
                 }}
                 placeholder="Password"
                 label="Password"
@@ -263,9 +264,7 @@ export default function PasswordScreen() {
                 />
               ) : null}
 
-              {error ? (
-                <Text className="text-sm text-destructive">{error}</Text>
-              ) : null}
+              <FormErrorMessage message={error} />
 
               <Button
                 size="lg"

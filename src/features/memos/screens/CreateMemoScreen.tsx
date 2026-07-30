@@ -24,6 +24,7 @@ import {
   isAudienceSelectionValid,
   type MemoAudienceSelection,
 } from "@/src/features/memos/utils/buildMemoTargetPayload";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { ScreenStatusBar } from "@/src/shared/components/screen-status-bar";
 import { Box } from "@/src/shared/components/ui/box";
 import {
@@ -320,6 +321,7 @@ export default function CreateMemoScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         >
           <VStack className="mx-auto w-full max-w-3xl gap-3 px-4 pt-4">
+            <FormErrorMessage message={composer.submitError} />
             <Button
               size="lg"
               isDisabled={!isFormValid || composer.isPending}

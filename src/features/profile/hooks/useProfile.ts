@@ -40,7 +40,6 @@ export function useProfileQuery() {
 export function useUpdateMyProfile() {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
-  const { showError } = useMutationToast();
 
   return useMutation({
     mutationFn: updateMyProfile,
@@ -51,9 +50,6 @@ export function useUpdateMyProfile() {
       );
       queryClient.invalidateQueries({ queryKey: profileKeys.all });
       dispatch(setUser(updatedUser));
-    },
-    onError: (error) => {
-      showError(error, "Could not update your profile. Please try again.");
     },
   });
 }

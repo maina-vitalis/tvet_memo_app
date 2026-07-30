@@ -28,6 +28,7 @@ import { HStack } from "@/src/shared/components/ui/hstack";
 import { Input, InputField, InputSlot } from "@/src/shared/components/ui/input";
 import { Link, LinkText } from "@/src/shared/components/ui/link";
 import { Pressable } from "@/src/shared/components/ui/pressable";
+import { FormErrorMessage } from "@/src/shared/components/form-error-message";
 import { Text } from "@/src/shared/components/ui/text";
 import { VStack } from "@/src/shared/components/ui/vstack";
 import { useAuth } from "@/src/features/auth/hooks/useAuth";
@@ -152,7 +153,10 @@ export default function RegistryLoginScreen() {
                       secureTextEntry={!showPassword}
                       placeholder="Enter password"
                       value={password}
-                      onChangeText={setPassword}
+                      onChangeText={(value) => {
+                        setPassword(value);
+                        setError(null);
+                      }}
                       accessibilityLabel="Password"
                       className="px-2 text-sm text-foreground"
                     />
@@ -174,9 +178,7 @@ export default function RegistryLoginScreen() {
                   </Text>
                 </FormControl>
 
-                {error ? (
-                  <Text className="text-sm text-destructive">{error}</Text>
-                ) : null}
+                <FormErrorMessage message={error} />
 
                 <Button
                   variant="default"
