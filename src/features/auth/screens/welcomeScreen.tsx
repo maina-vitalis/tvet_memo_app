@@ -1,8 +1,9 @@
+import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
 
 import { Box } from "@/src/shared/components/ui/box";
 import { Button, ButtonText } from "@/src/shared/components/ui/button";
@@ -11,12 +12,14 @@ import { Text } from "@/src/shared/components/ui/text";
 import { setHasSeenWelcome } from "../storage/onboardingStorage";
 
 const IMAGE = require("@/src/assets/images/welcome.jpg");
+function handleContinue() {
+  void setHasSeenWelcome().then(() => {
+    router.replace("/(auth)/tenant-discovery");
+  });
+}
 
 export default function WelcomeScreen() {
-  function handleContinue() {
-    setHasSeenWelcome();
-    router.replace("/(auth)/tenant-discovery");
-  }
+
 
   return (
     <Box className="flex-1 bg-primary-container">
@@ -35,9 +38,16 @@ export default function WelcomeScreen() {
         />
       </Animated.View>
 
-      <Box
-        className="absolute inset-0 bg-primary-container/88"
+      <LinearGradient
+        colors={[
+          "transparent",
+          "rgba(27, 58, 124, 0.25)",
+          "rgba(27, 58, 124, 0.82)",
+          "rgba(27, 58, 124, 0.96)",
+        ]}
+        locations={[0, 0.35, 0.72, 1]}
         pointerEvents="none"
+        style={styles.bottomScrim}
       />
 
       <SafeAreaView style={{ flex: 1 }}>
@@ -48,13 +58,13 @@ export default function WelcomeScreen() {
             <Text className="text-5xl font-bold tracking-tight text-primary-foreground">
               TVET MEMO
             </Text>
-            <Box className="mt-3 h-0.5 w-12 rounded-full bg-primary-foreground/70" />
+            <Box className="mt-3 h-1 w-14 rounded-full bg-secondary" />
           </Animated.View>
 
           <Animated.View
             entering={FadeInDown.delay(340).duration(560).springify()}
           >
-            <Text className="mt-5 text-base leading-6 text-primary-foreground/85">
+            <Text className="mt-5 text-base leading-6 text-primary-foreground/90">
               Official memos, alerts, and updates — delivered reliably to your
               institution.
             </Text>
@@ -64,10 +74,10 @@ export default function WelcomeScreen() {
             entering={FadeInDown.delay(500).duration(560).springify()}
           >
             <Button
-              className="mt-10 h-14 rounded-xl bg-card shadow-lg data-[active=true]:bg-card/95 data-[hover=true]:bg-card/95"
+              className="mt-10 h-14 rounded-xl bg-secondary shadow-lg data-[active=true]:bg-secondary/90 data-[hover=true]:bg-secondary/90"
               onPress={handleContinue}
             >
-              <ButtonText className="text-lg font-bold text-primary">
+              <ButtonText className="text-lg font-bold text-secondary-foreground">
                 Get started
               </ButtonText>
             </Button>
@@ -77,3 +87,13 @@ export default function WelcomeScreen() {
     </Box>
   );
 }
+
+const styles = StyleSheet.create({
+  bottomScrim: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "58%",
+  },
+});

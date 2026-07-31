@@ -28,7 +28,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "color": "#1a365d",
+          "defaultChannel": "default"
+        }
+      ],
       "expo-sharing",
       [
         "expo-splash-screen",
