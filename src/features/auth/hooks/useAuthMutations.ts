@@ -97,11 +97,16 @@ export function useSignupRegister() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       signupRegister(email, password),
     onMutate: resetError,
-    onSuccess: (_result, variables) => {
-      dispatch(setPendingEmail(variables.email.trim().toLowerCase()));
+    onSuccess: (result, variables) => {
+      const normalizedEmail = variables.email.trim().toLowerCase();
+      dispatch(setPendingEmail(normalizedEmail));
+      // Registration already sent the code. Record it so the OTP screen does
+      // not fire a resend on mount — that resend would replace the code the
+      // user is about to read out of their inbox.
+      dispatch(setOtpSentAt(result.sentAt));
       router.push({
         pathname: AUTH_ROUTE_PATHS.verifyEmail,
-        params: { email: variables.email.trim().toLowerCase() },
+        params: { email: normalizedEmail },
       });
     },
     onError: handleError,

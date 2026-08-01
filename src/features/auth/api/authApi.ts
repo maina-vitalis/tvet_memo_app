@@ -79,10 +79,13 @@ export async function checkEmail(email: string): Promise<{
   };
 }
 
+// Registration already emails the first verification code, so it reports
+// `sentAt` exactly like sendOtp does — the OTP screen relies on this to avoid
+// requesting a second code that would invalidate the one already delivered.
 export async function signupRegister(
   email: string,
   password: string,
-): Promise<{ message: string }> {
+): Promise<{ message: string; sentAt: number }> {
   const { institutionId } = getAuthContext();
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -95,7 +98,9 @@ export async function signupRegister(
     },
   );
 
-  return data;
+  // Local clock on purpose: the resend countdown is rendered against Date.now(),
+  // so a server timestamp would drift with device clock skew.
+  return { ...data, sentAt: Date.now() };
 }
 
 export async function sendOtp(email: string): Promise<{ sentAt: number }> {

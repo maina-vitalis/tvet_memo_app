@@ -32,6 +32,8 @@ import { useAppSelector } from "@/src/shared/store/hooks";
 const APP_LOGO = require("@/src/assets/images/splash-icon.png");
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
+// Mirrors OTP_TTL_SECONDS in the backend otp.service.
+const OTP_VALIDITY_MS = 10 * 60 * 1000;
 
 function formatCountdown(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -83,14 +85,21 @@ export default function OtpScreen() {
     }
   }, [institution, email]);
 
+  // A new address has no code outstanding, so allow one automatic send for it.
+  useEffect(() => {
+    hasAttemptedInitialSend.current = false;
+  }, [email]);
+
   //effect to attempt to send the email
   useEffect(() => {
-    if (
-      !institution ||
-      !email ||
-      otpSentAt !== null ||
-      hasAttemptedInitialSend.current
-    ) {
+    if (!institution || !email || hasAttemptedInitialSend.current) {
+      return;
+    }
+
+    // Sending here when a code is already outstanding replaces it, and the user
+    // is holding the earlier one. otpSentAt is persisted across app launches
+    // though, so an old timestamp may point at a code that has since expired.
+    if (otpSentAt !== null && Date.now() - otpSentAt < OTP_VALIDITY_MS) {
       return;
     }
 
@@ -167,7 +176,9 @@ export default function OtpScreen() {
   );
 
   const handleResend = async () => {
-    if (countdown > 0 || !email) {
+    // isSendingCode blocks a double-tap from issuing two codes back to back,
+    // which would leave the user holding the one that no longer verifies.
+    if (countdown > 0 || !email || isSendingCode) {
       return;
     }
 

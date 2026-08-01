@@ -72,6 +72,13 @@ const authSlice = createSlice({
     },
 
     setPendingEmail: (state, action: PayloadAction<string | null>) => {
+      // A different address has no code outstanding, so drop the timestamp and
+      // let the OTP screen request one. Keeping it would leave that screen
+      // waiting on a countdown for a code that was never sent.
+      if (state.pendingEmail !== action.payload) {
+        state.otpSentAt = null;
+      }
+
       state.pendingEmail = action.payload;
     },
 
