@@ -106,9 +106,11 @@ export const memoEditorTheme: Partial<EditorTheme> = {
   },
   webview: {
     backgroundColor: colors.card,
+    flex: 1,
   },
   webviewContainer: {
-    minHeight: MEMO_EDITOR_MIN_HEIGHT,
+    height: MEMO_EDITOR_MIN_HEIGHT,
+    flex: 1,
   },
 };
 

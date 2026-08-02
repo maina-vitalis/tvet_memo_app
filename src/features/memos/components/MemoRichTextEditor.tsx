@@ -4,7 +4,7 @@ import {
   useEditorBridge,
   useEditorContent,
 } from "@10play/tentap-editor";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 
 import {
@@ -20,41 +20,57 @@ export function MemoRichTextEditor({
   value,
   onChange,
   placeholder = "Write your memo...",
-}: MemoRichTextEditorProps) {
+}: Readonly<MemoRichTextEditorProps>) {
+  // Freeze initial HTML so bridge options stay stable across parent re-renders.
+  const [initialContent] = useState(() => value || "");
   const lastEmittedHtml = useRef(value);
-  const skipNextContentSync = useRef(false);
+  const isApplyingExternalValue = useRef(false);
+  const lastPlaceholderRef = useRef<string | null>(null);
+  const onChangeRef = useRef(onChange);
 
   const editor = useEditorBridge({
-    initialContent: value || "",
+    initialContent,
     avoidIosKeyboard: false,
-    dynamicHeight: true,
+    // dynamicHeight remounts/resizes the WebView on each content height change
+    // and is a known source of scroll jumps / flicker in tentap.
+    dynamicHeight: false,
     theme: memoEditorTheme,
   });
 
+  // Bridge methods close over a stable webviewRef, so the first instance is enough.
+  const editorRef = useRef(editor);
+
   const content = useEditorContent(editor, {
     type: "html",
-    debounceInterval: 200,
+    debounceInterval: 250,
   });
 
-  const applyEditorStyles = useCallback(() => {
-    editor.injectCSS(memoEditorContentCss, "memo-editor-content");
-  }, [editor]);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  const applyEditorStyles = () => {
+    editorRef.current.injectCSS(memoEditorContentCss, "memo-editor-content");
+  };
 
   useEffect(() => {
-    editor.setPlaceholder(placeholder);
-  }, [editor, placeholder]);
+    if (lastPlaceholderRef.current === placeholder) {
+      return;
+    }
 
-  useEffect(() => {
-    applyEditorStyles();
-  }, [applyEditorStyles]);
+    lastPlaceholderRef.current = placeholder;
+    editorRef.current.setPlaceholder(placeholder);
+  }, [placeholder]);
 
   useEffect(() => {
     if (content === undefined) {
       return;
     }
 
-    if (skipNextContentSync.current) {
-      skipNextContentSync.current = false;
+    // Ignore the echo from a programmatic setContent (external value sync).
+    if (isApplyingExternalValue.current) {
+      isApplyingExternalValue.current = false;
+      lastEmittedHtml.current = content;
       return;
     }
 
@@ -63,18 +79,20 @@ export function MemoRichTextEditor({
     }
 
     lastEmittedHtml.current = content;
-    onChange(content);
-  }, [content, onChange]);
+    onChangeRef.current(content);
+  }, [content]);
 
   useEffect(() => {
+    // Only push into the WebView for true external updates (draft load, reset, etc.).
+    // Do not depend on `editor` — its identity changes every render.
     if (value === lastEmittedHtml.current) {
       return;
     }
 
-    skipNextContentSync.current = true;
-    editor.setContent(value || "");
+    isApplyingExternalValue.current = true;
     lastEmittedHtml.current = value;
-  }, [value, editor]);
+    editorRef.current.setContent(value || "");
+  }, [value]);
 
   return (
     <Box className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
@@ -87,11 +105,12 @@ export function MemoRichTextEditor({
         />
       </Box>
 
-      <Box className="bg-card">
+      <Box className="bg-card" style={styles.editorShell}>
         <RichText
           editor={editor}
           style={styles.editor}
           containerStyle={styles.editorContainer}
+          scrollEnabled
           onLoad={applyEditorStyles}
         />
       </Box>
@@ -100,11 +119,15 @@ export function MemoRichTextEditor({
 }
 
 const styles = StyleSheet.create({
+  editorShell: {
+    height: MEMO_EDITOR_MIN_HEIGHT,
+  },
   editor: {
-    minHeight: MEMO_EDITOR_MIN_HEIGHT,
+    flex: 1,
     backgroundColor: "#ffffff",
   },
   editorContainer: {
-    minHeight: MEMO_EDITOR_MIN_HEIGHT,
+    flex: 1,
+    height: MEMO_EDITOR_MIN_HEIGHT,
   },
 });
