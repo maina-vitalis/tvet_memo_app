@@ -114,8 +114,12 @@ function DesktopSideNav() {
       className="hidden w-24 border-r border-border/80 bg-card shadow-sm md:flex"
       style={{ paddingTop: Math.max(insets.top, 16), paddingBottom: 16 }}
     >
-      <VStack className="flex-1 items-center gap-2 px-2">
-        {canBroadcastMemo ? <MemoCreateNavButton variant="rail" /> : null}
+      <VStack className="flex-1 items-center gap-1 px-2">
+        {canBroadcastMemo ? (
+          <Box className="mb-2 w-full items-center border-b border-border/60 pb-3">
+            <MemoCreateNavButton variant="rail" />
+          </Box>
+        ) : null}
         {ALL_TAB_ITEMS.map((tab) => (
           <TabButton
             key={tab.name}

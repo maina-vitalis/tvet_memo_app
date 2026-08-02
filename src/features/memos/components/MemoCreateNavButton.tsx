@@ -14,12 +14,14 @@ type MemoCreateNavButtonProps = {
   onPress?: () => void;
 } & Pick<ComponentProps<typeof Pressable>, "accessibilityLabel">;
 
+const PLUS_STROKE = "#ffffff";
+
 export function MemoCreateNavButton({
   variant = "fab",
   className,
   onPress,
   accessibilityLabel = "Create memo",
-}: MemoCreateNavButtonProps) {
+}: Readonly<MemoCreateNavButtonProps>) {
   const handlePress = () => {
     if (onPress) {
       onPress();
@@ -31,32 +33,39 @@ export function MemoCreateNavButton({
 
   if (variant === "rail") {
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel}
-        onPress={handlePress}
-        className={cn(
-          "items-center justify-center rounded-2xl bg-primary px-3 py-3 shadow-md active:scale-95 data-[active=true]:bg-primary/90",
-          className,
-        )}
-      >
-        <Plus className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
-        <Text className="mt-1 text-[10px] font-bold text-primary-foreground">
-          Create
-        </Text>
-      </Pressable>
+      <Box className={cn("w-full items-center", className)}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={accessibilityLabel}
+          onPress={handlePress}
+          className="h-12 w-12 items-center justify-center rounded-full bg-primary shadow-md transition-all duration-200 active:scale-95 data-[active=true]:bg-primary/90"
+        >
+          <Plus
+            stroke={PLUS_STROKE}
+            strokeWidth={2.5}
+            className="h-6 w-6 text-primary-foreground"
+          />
+        </Pressable>
+        <Text className="mt-1.5 text-[10px] font-bold text-primary">Create</Text>
+      </Box>
     );
   }
 
   return (
-    <Box className={cn("min-w-[72px] flex-1 items-center justify-end pb-1", className)}>
+    <Box
+      className={cn("min-w-[72px] flex-1 items-center justify-end pb-1", className)}
+    >
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         onPress={handlePress}
         className="-mt-6 h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg active:scale-95 data-[active=true]:bg-primary/90"
       >
-        <Plus className="h-7 w-7 text-primary-foreground" strokeWidth={2.5} />
+        <Plus
+          stroke={PLUS_STROKE}
+          strokeWidth={2.5}
+          className="h-7 w-7 text-primary-foreground"
+        />
       </Pressable>
       <Text className="mt-1 text-xs font-bold text-primary">Create</Text>
     </Box>
