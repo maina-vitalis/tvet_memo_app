@@ -14,6 +14,7 @@ import {
 } from "lucide-react-native";
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Avatar, AvatarImage } from "@/src/shared/components/ui/avatar";
@@ -119,6 +120,7 @@ export default function ProfileScreen() {
   const authUser = useAppSelector(selectCurrentUser);
   const { data: profile } = useProfileQuery();
   const [biometricsEnabled, setBiometricsEnabled] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const user = profile ?? authUser;
   const displayName = user
@@ -131,8 +133,13 @@ export default function ProfileScreen() {
     institution?.name ?? "Metro Technical Institute";
 
   const handleLogout = async () => {
-    await signOut();
-    router.replace("/(auth)/tenant-discovery");
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+    } finally {
+      router.replace("/(auth)/tenant-discovery");
+    }
   };
 
   return (
@@ -260,11 +267,16 @@ export default function ProfileScreen() {
 
           <Pressable
             onPress={handleLogout}
-            className="flex-row items-center justify-center gap-2 rounded-xl border border-destructive bg-card py-3 shadow-sm active:scale-[0.98] data-[active=true]:bg-destructive/10"
+            disabled={isLoggingOut}
+            className={`flex-row items-center justify-center gap-2 rounded-xl border border-destructive bg-card py-3 shadow-sm active:scale-[0.98] data-[active=true]:bg-destructive/10 ${isLoggingOut ? "opacity-60" : ""}`}
           >
-            <LogOut className="h-5 w-5 text-destructive" />
+            {isLoggingOut ? (
+              <ActivityIndicator size="small" color="#ef4444" />
+            ) : (
+              <LogOut className="h-5 w-5 text-destructive" />
+            )}
             <Text className="text-sm font-semibold text-destructive">
-              Log Out securely
+              {isLoggingOut ? "Logging out…" : "Log Out securely"}
             </Text>
           </Pressable>
         </ScrollView>
@@ -272,3 +284,4 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
+
