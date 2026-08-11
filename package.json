@@ -99,6 +99,7 @@
     "brace-expansion": "2.1.4",
     "minimatch": "9.0.8",
     "fast-xml-parser": "5.7.0",
+    "image-size": "1.2.1",
     "uuid": "11.1.1"
   },
   "allowScripts": {
