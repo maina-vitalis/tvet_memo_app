@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import { WifiOff, Wifi } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
@@ -6,7 +7,6 @@ import Animated, {
   SlideOutUp,
 } from 'react-native-reanimated';
 
-import { useNetworkStatus } from '@/src/shared/hooks/useNetworkStatus';
 import { HStack } from '@/src/shared/components/ui/hstack';
 import { Text } from '@/src/shared/components/ui/text';
 
@@ -15,23 +15,40 @@ type BannerState = 'hidden' | 'offline' | 'back-online';
 /**
  * Global banner that slides down from the top when the device loses
  * connectivity, and briefly shows a "Back online" message when it reconnects.
+ *
+ * Subscribes directly to NetInfo and calls setState inside the subscription
+ * callback — the pattern React 19 recommends for external system sync.
  */
 export function OfflineBanner() {
-  const { isConnected } = useNetworkStatus();
   const [bannerState, setBannerState] = useState<BannerState>('hidden');
   const wasOfflineRef = useRef<boolean>(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (isConnected === false) {
-      wasOfflineRef.current = true;
-      setBannerState('offline');
-    } else if (isConnected === true && wasOfflineRef.current) {
-      wasOfflineRef.current = false;
-      setBannerState('back-online');
-      const timer = setTimeout(() => setBannerState('hidden'), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isConnected]);
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      // Clear any pending "back-online" dismiss timer
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+
+      if (state.isConnected === false) {
+        wasOfflineRef.current = true;
+        setBannerState('offline');
+      } else if (state.isConnected === true && wasOfflineRef.current) {
+        wasOfflineRef.current = false;
+        setBannerState('back-online');
+        timerRef.current = setTimeout(() => setBannerState('hidden'), 3000);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   if (bannerState === 'hidden') return null;
 
@@ -68,7 +85,8 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 9999,
     ...Platform.select({
-      web: { position: 'fixed' as unknown as undefined },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      web: { position: 'fixed' as any },
       default: {},
     }),
   },
@@ -82,3 +100,4 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
 });
+
