@@ -1,4 +1,13 @@
-import { QueryClient } from "@tanstack/react-query";
+import NetInfo from '@react-native-community/netinfo';
+import { onlineManager, QueryClient } from '@tanstack/react-query';
+
+// Sync React Query's online status with the device's actual connectivity.
+// When offline, queries pause instead of firing and failing repeatedly.
+onlineManager.setEventListener((setOnline) => {
+  return NetInfo.addEventListener((state) => {
+    setOnline(!!state.isConnected);
+  });
+});
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,4 +20,4 @@ export const queryClient = new QueryClient({
       retry: 1,
     },
   },
-});
+});

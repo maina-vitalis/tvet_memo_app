@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { Platform } from "react-native";
 import { ThemeProvider } from "../hooks/theme-context";
 import { getStore } from "../store/storeRef";
+import { OfflineBanner } from "./OfflineBanner";
 
 const AppBootstrap = () => {
   const hasNavigatedRef = useRef(false);
@@ -81,6 +82,7 @@ const AppBootstrap = () => {
 
   return (
     <ThemeProvider>
+      <OfflineBanner />
       <PushNotificationBootstrap />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
