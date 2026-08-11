@@ -1,34 +1,11 @@
-import { Redirect } from "expo-router";
-import { useEffect, useState } from "react";
-
-import { getHasSeenWelcome } from "@/src/features/auth/storage/onboardingStorage";
-
+/**
+ * Landing screen – intentionally renders nothing.
+ *
+ * All initial routing (auth vs. onboarding vs. home) is handled by
+ * AppBootstrap after it finishes restoring the session from secure storage.
+ * Keeping this screen blank prevents a race where index.tsx would redirect
+ * to an auth route before tokens had been loaded.
+ */
 export default function IndexScreen() {
-  const [hasSeenWelcome, setHasSeenWelcome] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    void getHasSeenWelcome().then((seen) => {
-      if (isMounted) {
-        setHasSeenWelcome(seen);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (hasSeenWelcome === null) {
-    return null;
-  }
-
-  return (
-    <Redirect
-      href={
-        hasSeenWelcome ? "/(auth)/tenant-discovery" : "/(auth)/welcome"
-      }
-    />
-  );
+  return null;
 }
