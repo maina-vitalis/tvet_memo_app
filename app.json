@@ -19,8 +19,7 @@
 
       "predictiveBackGestureEnabled": false,
       "softwareKeyboardLayoutMode": "resize",
-      "package": "com.vitalis058.tvetmemo",
-      "usesClearTextTraffic": true
+      "package": "com.vitalis058.tvetmemo"
     },
     "web": {
       "output": "static",
@@ -52,6 +51,14 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow TVET Memo to access your photos to set a profile picture."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
       ]
     ],

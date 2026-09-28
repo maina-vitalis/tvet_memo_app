@@ -13,9 +13,10 @@
         }
       },
       "oauth_client": [],
+
       "api_key": [
         {
-          "current_key": "AIzaSyBMY9sISq93mODcwJ4SAXUGINGQ2INnU3g"
+          "current_key": "revoked_key"
         }
       ],
       "services": {
