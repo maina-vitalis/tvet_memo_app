@@ -16,10 +16,7 @@ export default function NotFoundScreen() {
         <ScreenStatusBar style="dark" backgroundColor="#ffffff" />
         <Box className="flex-1 items-center justify-center bg-background px-6">
           <VStack className="max-w-sm items-center gap-4 rounded-2xl border border-border/70 bg-card p-8 shadow-sm">
-            <Heading
-              size="2xl"
-              className="text-center font-bold text-primary"
-            >
+            <Heading size="2xl" className="text-center font-bold text-primary">
               Page not found
             </Heading>
             <Text className="text-center text-base leading-6 text-muted-foreground">
